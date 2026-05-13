@@ -238,7 +238,7 @@
 
 <span class="comment">// 本地 — gitignored, never leaves this machine</span>
 <span class="comment">//   file:     private/your_report.html</span>
-<span class="comment">//   registry: reports.local.json</span>
+<span class="comment">//   registry: private/reports.local.json</span>
 
 <span class="key">{</span>
   <span class="str">"id"</span>: <span class="str">"your_report_id"</span>,
@@ -254,7 +254,7 @@
 <span class="key">}</span></pre>
   <div class="modes">
     <span>↘ 拷贝模板：<code>shared/starter.html</code></span>
-    <span>↘ 想公开：把文件从 <code>private/</code> 挪到 <code>prototypes/</code>，条目从 <code>reports.local.json</code> 挪到 <code>reports.json</code></span>
+    <span>↘ 想公开：把文件从 <code>private/</code> 挪到 <code>prototypes/</code>，条目从 <code>private/reports.local.json</code> 挪到 <code>reports.json</code></span>
     <span>↘ 完全自包含：把 <code>shared/*</code> 内容内联进单文件</span>
   </div>
 </section>
@@ -283,11 +283,11 @@
   // ---- load reports ----
   // Two registries:
   //   reports.json        — public, committed to git, deployed to GitHub Pages
-  //   reports.local.json  — local-only, gitignored. Optional; 404 is silently ignored.
+  //   private/reports.local.json — local-only, gitignored. Optional; 404 is silently ignored.
   // Local-only entries get `local: true` and a "local" badge on the card.
   Promise.all([
     fetch('reports.json').then(r => r.ok ? r.json() : { reports: [] }).catch(() => ({ reports: [] })),
-    fetch('reports.local.json').then(r => r.ok ? r.json() : { reports: [] }).catch(() => ({ reports: [] }))
+    fetch('private/reports.local.json').then(r => r.ok ? r.json() : { reports: [] }).catch(() => ({ reports: [] }))
   ]).then(([pub, loc]) => {
     const publicReports = (pub.reports || []);
     const localReports = (loc.reports || []).map(r => ({ ...r, local: true }));

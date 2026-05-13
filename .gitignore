@@ -15,7 +15,6 @@ node_modules/
 *.log
 
 # Local-only reports (half-public hub):
-#   files in private/ and reports.local.json are local-only,
+#   everything in private/ (HTML files + reports.local.json) is local-only,
 #   never pushed to git, never deployed to GitHub Pages.
 /private/
-/reports.local.json
