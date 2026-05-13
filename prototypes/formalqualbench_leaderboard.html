@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FormalQualBench Leaderboard — Report Hub</title>
+<style>
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Apple Garamond", "Baskerville", "Source Serif Pro", Georgia, serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  --bg: #FAF7F2; --bg-elevated: #FFFFFF; --bg-subtle: #F0EDE6; --bg-code: #1C1A17;
+  --text: #1A1815; --text-muted: #6B6557; --text-faint: #9C957F;
+  --border: #E8E2D5; --border-strong: #C9C2B0;
+  --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12);
+  --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F;
+  --shadow-sm: 0 1px 2px rgba(26,18,0,.04);
+  --shadow-md: 0 4px 16px rgba(26,18,0,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0F0E0C; --bg-elevated: #1A1815; --bg-subtle: #252320; --bg-code: #0A0908;
+    --text: #F0EDE6; --text-muted: #9C957F; --text-faint: #6B6557;
+    --border: #2D2A25; --border-strong: #45403A;
+    --accent: #E48060; --accent-muted: rgba(228,128,96,.16);
+    --success: #82B374; --warn: #D9A847; --danger: #D87268;
+  }
+}
+[data-theme="light"] { --bg: #FAF7F2; --bg-elevated: #FFFFFF; --bg-subtle: #F0EDE6; --bg-code: #1C1A17; --text: #1A1815; --text-muted: #6B6557; --text-faint: #9C957F; --border: #E8E2D5; --border-strong: #C9C2B0; --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12); --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F; }
+[data-theme="dark"]  { --bg: #0F0E0C; --bg-elevated: #1A1815; --bg-subtle: #252320; --bg-code: #0A0908; --text: #F0EDE6; --text-muted: #9C957F; --text-faint: #6B6557; --border: #2D2A25; --border-strong: #45403A; --accent: #E48060; --accent-muted: rgba(228,128,96,.16); --success: #82B374; --warn: #D9A847; --danger: #D87268; }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+.page { max-width: 1240px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+@media (max-width: 720px) { .page { padding: 2rem 1rem 4rem; } }
+
+/* ---- header bar ---- */
+.hdr-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 3rem; font-size: .75rem; color: var(--text-faint); letter-spacing: .08em; text-transform: uppercase; }
+.hdr-bar a { color: var(--text-faint); text-decoration: none; }
+.hdr-bar a:hover { color: var(--accent); }
+.theme-toggle { background: none; border: 1px solid var(--border); border-radius: 999px; color: var(--text-muted); cursor: pointer; font-size: .75rem; padding: .25rem .75rem; font-family: inherit; letter-spacing: .04em; }
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- hero ---- */
+.hero { margin-bottom: 3rem; }
+.hero .eyebrow { font-size: .75rem; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); margin-bottom: .75rem; font-weight: 600; }
+.hero h1 { font-family: var(--font-serif); font-weight: 500; font-size: 2.75rem; line-height: 1.1; margin: 0 0 1rem; letter-spacing: -.015em; }
+.hero .deck { font-family: var(--font-serif); font-size: 1.15rem; color: var(--text-muted); margin: 0 0 1.5rem; max-width: 60ch; line-height: 1.5; }
+.hero .gen { font-size: .8rem; color: var(--text-faint); font-family: var(--font-mono); }
+
+/* ---- KPI strip ---- */
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 2rem 0 3rem; }
+@media (max-width: 720px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
+.kpi { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+.kpi .l { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: .35rem; }
+.kpi .v { font-family: var(--font-serif); font-size: 2.1rem; line-height: 1; font-weight: 500; letter-spacing: -.02em; }
+.kpi .v .sub { font-family: var(--font-mono); font-size: .85rem; color: var(--text-faint); margin-left: .25rem; }
+.kpi .s { font-size: .78rem; color: var(--text-muted); margin-top: .35rem; }
+.kpi.featured { background: var(--accent-muted); border-color: var(--accent); }
+.kpi.featured .v { color: var(--accent); }
+
+/* ---- section ---- */
+.sec { margin: 3rem 0; }
+.sec-head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1rem; }
+.sec h2 { font-family: var(--font-serif); font-weight: 500; font-size: 1.6rem; margin: 0; letter-spacing: -.01em; }
+.sec h2 .num { color: var(--text-faint); font-family: var(--font-mono); font-size: .55em; font-weight: 400; margin-right: .55rem; letter-spacing: .04em; }
+.sec-head .sub { font-size: .82rem; color: var(--text-muted); }
+
+/* ---- leaderboard table ---- */
+.lb-wrap { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+table.lb { width: 100%; border-collapse: collapse; font-size: .88rem; }
+table.lb th { text-align: left; padding: .7rem 1rem; background: var(--bg-subtle); font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+table.lb th.right { text-align: right; }
+table.lb th.center { text-align: center; }
+table.lb td { padding: .85rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+table.lb tr:last-child td { border-bottom: none; }
+table.lb tr:hover td { background: var(--bg-subtle); }
+table.lb td.rank { width: 36px; font-family: var(--font-mono); color: var(--text-faint); font-size: .85em; }
+table.lb tr.top td.rank { color: var(--accent); font-weight: 600; }
+table.lb td.run-name { font-family: var(--font-mono); font-size: .82em; color: var(--text-muted); max-width: 240px; word-break: break-all; }
+table.lb td.config { font-family: var(--font-mono); font-size: .82em; color: var(--accent); }
+table.lb td.model { font-family: var(--font-mono); font-size: .82em; }
+table.lb td.right { text-align: right; font-family: var(--font-mono); }
+table.lb .solve-cell { display: flex; align-items: center; gap: .55rem; min-width: 180px; }
+table.lb .solve-bar { flex: 1; height: 8px; background: var(--bg-subtle); border-radius: 4px; overflow: hidden; }
+table.lb .solve-bar .fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width .3s ease; }
+table.lb .solve-num { font-family: var(--font-mono); font-size: .85em; white-space: nowrap; color: var(--text); }
+table.lb .solve-num .pct { color: var(--text-faint); }
+table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
+
+/* ---- matrix toolbar ---- */
+.mx-toolbar { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; padding: .65rem .9rem; margin-bottom: 1rem; }
+.mx-toolbar .group { display: flex; align-items: center; gap: .35rem; flex-wrap: wrap; }
+.mx-toolbar .lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-faint); margin-right: .35rem; }
+.chip { font-family: inherit; font-size: .8rem; background: none; color: var(--text-muted); border: 1px solid var(--border); border-radius: 999px; padding: .2rem .7rem; cursor: pointer; transition: all .12s ease; }
+.chip:hover { border-color: var(--border-strong); color: var(--text); }
+.chip[aria-pressed="true"] { background: var(--accent); color: white; border-color: var(--accent); }
+
+/* ---- legend ---- */
+.legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: .78rem; color: var(--text-muted); margin-left: auto; }
+.legend .l-item { display: inline-flex; align-items: center; gap: .35rem; }
+.legend .sw { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
+.sw.solved { background: var(--success); }
+.sw.sorry  { background: var(--warn); }
+.sw.error  { background: var(--danger); }
+.sw.absent { background: var(--bg-subtle); border: 1px solid var(--border); }
+
+/* ---- matrix ---- */
+.mx-wrap { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.mx-scroll { overflow-x: auto; }
+.mx { display: grid; gap: 1px; padding: 1rem; background: var(--bg-subtle); font-size: .78rem; min-width: 720px; }
+.mx-cell { background: var(--bg-elevated); padding: .35rem .5rem; display: flex; align-items: center; justify-content: center; min-height: 32px; transition: transform .08s ease; }
+.mx-cell.prob { justify-content: flex-start; font-size: .78rem; color: var(--text); font-weight: 500; padding: .35rem .75rem; min-width: 220px; }
+.mx-cell.head { background: var(--bg-subtle); font-size: .68rem; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); font-family: var(--font-mono); padding: .5rem .35rem; min-height: 60px; flex-direction: column; gap: .25rem; cursor: pointer; user-select: none; }
+.mx-cell.head:hover { color: var(--text); }
+.mx-cell.head .ct { font-size: 1.1em; color: var(--text); font-weight: 600; }
+.mx-cell.head .sub { font-size: .7em; color: var(--text-faint); letter-spacing: 0; text-transform: none; }
+.mx-cell.row-sum { font-family: var(--font-mono); font-size: .82rem; min-width: 70px; }
+.mx-cell.row-sum .bar { width: 36px; height: 6px; background: var(--bg-subtle); border-radius: 3px; overflow: hidden; margin-left: .35rem; }
+.mx-cell.row-sum .bar .fill { height: 100%; background: var(--accent); border-radius: 3px; }
+.mx-cell.verdict { font-family: var(--font-mono); cursor: pointer; position: relative; }
+.mx-cell.verdict:hover { transform: scale(1.1); z-index: 5; box-shadow: var(--shadow-md); }
+.mx-cell.verdict.solved { background: rgba(92,138,79,.32); color: var(--success); font-weight: 600; }
+.mx-cell.verdict.sorry  { background: rgba(199,144,44,.18); color: var(--warn); }
+.mx-cell.verdict.error  { background: rgba(177,75,63,.18); color: var(--danger); }
+.mx-cell.verdict.absent { background: var(--bg-elevated); color: var(--text-faint); }
+@media (prefers-color-scheme: dark) {
+  .mx-cell.verdict.solved { background: rgba(130,179,116,.28); color: var(--success); }
+  .mx-cell.verdict.sorry  { background: rgba(217,168,71,.22); color: var(--warn); }
+  .mx-cell.verdict.error  { background: rgba(216,114,104,.22); color: var(--danger); }
+}
+[data-theme="dark"] .mx-cell.verdict.solved { background: rgba(130,179,116,.28); }
+[data-theme="dark"] .mx-cell.verdict.sorry  { background: rgba(217,168,71,.22); }
+[data-theme="dark"] .mx-cell.verdict.error  { background: rgba(216,114,104,.22); }
+
+/* heat cells (for wall/token mode) */
+.mx-cell.heat { font-family: var(--font-mono); font-size: .72rem; cursor: pointer; position: relative; }
+.mx-cell.heat:hover { transform: scale(1.1); z-index: 5; box-shadow: var(--shadow-md); }
+.mx-cell.heat.absent { background: var(--bg-elevated); color: var(--text-faint); }
+
+/* tooltip */
+.mx-tip { position: fixed; z-index: 100; background: var(--bg-elevated); border: 1px solid var(--border-strong); border-radius: 8px; padding: .65rem .85rem; box-shadow: var(--shadow-md); font-size: .82rem; pointer-events: none; opacity: 0; transition: opacity .12s ease; max-width: 280px; }
+.mx-tip[data-visible="true"] { opacity: 1; }
+.mx-tip .t-title { font-weight: 600; margin-bottom: .35rem; color: var(--text); }
+.mx-tip .t-row { display: flex; justify-content: space-between; gap: 1rem; font-family: var(--font-mono); font-size: .78rem; color: var(--text-muted); }
+.mx-tip .t-row .k { color: var(--text-faint); }
+.mx-tip .t-row .v { color: var(--text); }
+
+/* ---- per-run cards ---- */
+.run-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem; }
+.run-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+.run-card.top { border-color: var(--accent); }
+.run-card h4 { margin: 0 0 .25rem; font-size: .82rem; font-family: var(--font-mono); word-break: break-all; }
+.run-card .ck { display: flex; gap: .5rem; margin: .5rem 0; flex-wrap: wrap; font-size: .72rem; }
+.run-card .ck code { font-family: var(--font-mono); background: var(--bg-subtle); padding: .1rem .4rem; border-radius: 3px; color: var(--text-muted); }
+.run-card .ck .accent { background: var(--accent-muted); color: var(--accent); }
+.run-card .big { font-family: var(--font-serif); font-size: 2.2rem; line-height: 1; margin: .75rem 0 .25rem; letter-spacing: -.01em; font-weight: 500; }
+.run-card.top .big { color: var(--accent); }
+.run-card .big .sub { font-family: var(--font-mono); font-size: .85rem; color: var(--text-faint); margin-left: .35rem; }
+.run-card .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; margin-top: .75rem; font-size: .78rem; padding-top: .75rem; border-top: 1px solid var(--border); }
+.run-card .stats .lbl { color: var(--text-faint); font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; }
+.run-card .stats .vv { font-family: var(--font-mono); color: var(--text); margin-top: .15rem; }
+.run-card .solved-list { margin-top: .85rem; }
+.run-card .solved-list .lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-faint); margin-bottom: .35rem; }
+.run-card .solved-list .items { display: flex; gap: .25rem; flex-wrap: wrap; }
+.run-card .solved-list .it { font-family: var(--font-mono); font-size: .68rem; background: rgba(92,138,79,.15); color: var(--success); padding: .1rem .4rem; border-radius: 3px; }
+
+/* ---- cost section ---- */
+.cost-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 720px) { .cost-grid { grid-template-columns: 1fr; } }
+.cost-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+.cost-card h4 { margin: 0 0 1rem; font-size: .82rem; font-weight: 600; color: var(--text-muted); letter-spacing: .04em; text-transform: uppercase; }
+.bars { display: flex; flex-direction: column; gap: .5rem; }
+.bar-row { display: grid; grid-template-columns: 150px 1fr 70px; gap: .65rem; align-items: center; font-size: .82rem; }
+.bar-row .name { font-family: var(--font-mono); font-size: .78rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-row .track { display: block; height: 10px; background: var(--bg-subtle); border-radius: 5px; overflow: hidden; }
+.bar-row .track .fill { display: block; height: 100%; background: var(--accent); border-radius: 5px; transition: width .3s ease; }
+.bar-row .num { font-family: var(--font-mono); font-size: .8rem; text-align: right; }
+
+/* ---- footer ---- */
+.footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: .82rem; color: var(--text-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; font-family: var(--font-mono); }
+.footer a { color: var(--accent); text-decoration: none; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr-bar">
+  <a href="../index.html">← The Book</a>
+  <span>FormalQualBench / runs / leaderboard</span>
+  <button class="theme-toggle" id="themeToggle">auto</button>
+</div>
+
+<header class="hero">
+  <div class="eyebrow">Benchmark Dashboard</div>
+  <h1>FormalQualBench Leaderboard</h1>
+  <p class="deck">23 research-level Lean theorems · 5 main runs · solve rates, wall time, and token usage compared side by side.</p>
+  <div class="gen">Auto-generated 2026-05-11T06:48Z · <code>harness/aggregate.py</code></div>
+</header>
+
+<section class="kpis">
+  <div class="kpi featured">
+    <div class="l">Best solve rate</div>
+    <div class="v">35%<span class="sub">8/23</span></div>
+    <div class="s">claude-opus-4-7 · <code>lean-tools</code></div>
+  </div>
+  <div class="kpi">
+    <div class="l">Highest solve rate on 8-subset</div>
+    <div class="v">62%<span class="sub">5/8</span></div>
+    <div class="s">deepseek-v4-pro[1m]</div>
+  </div>
+  <div class="kpi">
+    <div class="l">Main runs</div>
+    <div class="v">5</div>
+    <div class="s">2 models on full 23, 3 on subset</div>
+  </div>
+  <div class="kpi">
+    <div class="l">Problems</div>
+    <div class="v">23</div>
+    <div class="s">research-level Lean theorems</div>
+  </div>
+</section>
+
+<section class="sec" id="leaderboard">
+  <div class="sec-head"><h2><span class="num">01</span>Leaderboard</h2><span class="sub">Sorted by solved count. Hover a row for details; bars scale within each run's problem subset.</span></div>
+  <div class="lb-wrap">
+    <table class="lb">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Run</th>
+          <th>Config / Model</th>
+          <th class="right">Effort</th>
+          <th class="right">Solved</th>
+          <th class="right">Sorry</th>
+          <th class="right">Err</th>
+          <th class="right">Wall</th>
+        </tr>
+      </thead>
+      <tbody id="lbBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec" id="matrix">
+  <div class="sec-head"><h2><span class="num">02</span>Problem × Run matrix</h2><span class="sub">Click a column header to sort by that run's verdicts. Hover any cell for full data.</span></div>
+  <div class="mx-toolbar">
+    <div class="group">
+      <span class="lbl">Cell shows</span>
+      <button class="chip" data-mode="verdict" aria-pressed="true">Verdict</button>
+      <button class="chip" data-mode="wall" aria-pressed="false">Wall time</button>
+      <button class="chip" data-mode="tokens" aria-pressed="false">Tokens</button>
+    </div>
+    <div class="group">
+      <span class="lbl">Filter</span>
+      <button class="chip" id="onlySolved" aria-pressed="false">Only solved-by-someone</button>
+    </div>
+    <div class="legend">
+      <span class="l-item"><span class="sw solved"></span>solved</span>
+      <span class="l-item"><span class="sw sorry"></span>sorry</span>
+      <span class="l-item"><span class="sw error"></span>error</span>
+      <span class="l-item"><span class="sw absent"></span>not in run</span>
+    </div>
+  </div>
+  <div class="mx-wrap"><div class="mx-scroll"><div class="mx" id="mx"></div></div></div>
+</section>
+
+<section class="sec" id="runs">
+  <div class="sec-head"><h2><span class="num">03</span>Per-run breakdown</h2><span class="sub">Solved problems list, total wall time, dominant model.</span></div>
+  <div class="run-grid" id="runGrid"></div>
+</section>
+
+<section class="sec" id="costs">
+  <div class="sec-head"><h2><span class="num">04</span>Cost profile</h2><span class="sub">Tokens summed across all sessions per run; only tokens on solved sessions vs total burn shown side by side.</span></div>
+  <div class="cost-grid">
+    <div class="cost-card">
+      <h4>Total tokens — all sessions</h4>
+      <div class="bars" id="costAll"></div>
+    </div>
+    <div class="cost-card">
+      <h4>Tokens on solved sessions only</h4>
+      <div class="bars" id="costSolved"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>Source · <code>FormalQualBench/runs/{LEADERBOARD,MATRIX}.md</code></span>
+  <span>Snapshot · 2026-05-11</span>
+</footer>
+
+<div class="mx-tip" id="mxTip" aria-hidden="true"></div>
+
+</div>
+
+<script>
+const RUNS = [
+  { id: '5th_try_opus_4_7_lean_tools', short: '5th_try_opus_4_7_lean_tools', config: 'claude-code-lean-tools', model: 'claude-opus-4-7', effort: 'xhigh', solved: 8, sorry: 15, err: 0, wall: '4h', n: 23, walltime_total_solved: '5h41m', token_total: 1992.5 /* M, summed across models */, token_solved: 159.2 },
+  { id: 'deepseek_opus8',            short: 'deepseek_opus8',            config: 'claude-code-deepseek',   model: 'deepseek-v4-pro[1m]', effort: 'max',   solved: 5, sorry: 1, err: 2, wall: '4h', n: 8, walltime_total_solved: '5h43m', token_total: 153.1, token_solved: 107.5 },
+  { id: '4th_try_opus_4_7',          short: '4th_try_opus_4_7',          config: '?',                       model: 'claude-opus-4-7',     effort: 'xhigh', solved: 4, sorry: 18, err: 1, wall: '42m', n: 23, walltime_total_solved: '1h27m', token_total: 96.5, token_solved: 24.7 },
+  { id: 'claude-sonnet-4-6',         short: 'claude-sonnet-4-6',         config: 'claude-code-sonnet',     model: 'claude-sonnet-4-6',   effort: 'xhigh', solved: 3, sorry: 20, err: 0, wall: '2h51m', n: 23, walltime_total_solved: '1h15m', token_total: 201.1, token_solved: 11.8 },
+  { id: 'mimo_opus8',                short: 'mimo_opus8',                config: 'claude-code-mimo',       model: 'mimo-v2.5-pro',       effort: 'xhigh', solved: 2, sorry: 3, err: 3, wall: '4h', n: 8, walltime_total_solved: '1h54m', token_total: 26.2, token_solved: 14.0 }
+];
+
+// problems × runs verdicts
+const PROBLEMS = [
+  { name: 'BanachStoneTheorem',                v: ['s', '·', 's', 's', '·'] },
+  { name: 'BorsukUlamTheorem',                 v: ['s', '·', 's', 's', '·'] },
+  { name: 'BurnsidePrimeDegreeTheorem',        v: ['s', '·', 's', 's', '·'] },
+  { name: 'CollatzMapAlmostBoundedValues',     v: ['s', '·', 's', 's', '·'] },
+  { name: 'ColorfulCaratheodoryTheorem',       v: ['✓', 'e', '✓', 's', 's'] },
+  { name: 'DLOQuantifierElimination',          v: ['✓', 'e', 's', '✓', 'e'] },
+  { name: 'DeBruijnErdos',                     v: ['✓', '✓', '✓', '✓', '✓'] },
+  { name: 'ErdosDiscrepancyProblem',           v: ['s', '·', 's', 's', '·'] },
+  { name: 'GleasonKahaneZelazkoTheorem',       v: ['s', '·', 's', 's', '·'] },
+  { name: 'GreenTaoTheorem',                   v: ['✓', '✓', 's', 's', 's'] },
+  { name: 'Hilbert17thProblem',                v: ['s', '·', 's', 's', '·'] },
+  { name: 'JordanCycleTheorem',                v: ['s', '·', 's', 's', '·'] },
+  { name: 'JordanDerangementTheorem',          v: ['✓', '✓', '✓', '✓', 's'] },
+  { name: 'KakeyaTheorem3D',                   v: ['s', '·', 's', 's', '·'] },
+  { name: 'MaynardTaoBoundedPrimeGaps',        v: ['✓', '✓', 's', 's', '✓'] },
+  { name: 'ParisHarringtonPrinciple',          v: ['✓', '✓', '✓', 's', 'e'] },
+  { name: 'PontryaginDuality',                 v: ['s', '·', 's', 's', '·'] },
+  { name: 'QuillenSuslinTheorem',              v: ['s', '·', 's', 's', '·'] },
+  { name: 'RungeTheorem',                      v: ['s', '·', 's', 's', '·'] },
+  { name: 'SchauderFixedPointTheorem',         v: ['s', '·', 's', 's', '·'] },
+  { name: 'SkolemMahlerLechTheorem',           v: ['s', '·', 's', 's', '·'] },
+  { name: 'TernaryGoldbachTheorem',            v: ['s', '·', 'e', 's', '·'] },
+  { name: 'VonNeumannDoubleCommutantTheorem',  v: ['✓', 's', 's', 's', 'e'] }
+];
+
+// wall time / tokens per solved cell (column index = run index)
+// keys: <problem>:<runIdx>
+const WALL = {
+  'ColorfulCaratheodoryTheorem:0': '1h39m', 'ColorfulCaratheodoryTheorem:2': '42m',
+  'DLOQuantifierElimination:0': '1h30m', 'DLOQuantifierElimination:3': '33m',
+  'DeBruijnErdos:0': '7m', 'DeBruijnErdos:1': '55m', 'DeBruijnErdos:2': '9m', 'DeBruijnErdos:3': '14m', 'DeBruijnErdos:4': '47m',
+  'GreenTaoTheorem:0': '21m', 'GreenTaoTheorem:1': '1h09m',
+  'JordanDerangementTheorem:0': '6m', 'JordanDerangementTheorem:1': '31m', 'JordanDerangementTheorem:2': '7m', 'JordanDerangementTheorem:3': '27m',
+  'MaynardTaoBoundedPrimeGaps:0': '20m', 'MaynardTaoBoundedPrimeGaps:1': '55m', 'MaynardTaoBoundedPrimeGaps:4': '1h07m',
+  'ParisHarringtonPrinciple:0': '37m', 'ParisHarringtonPrinciple:1': '2h12m', 'ParisHarringtonPrinciple:2': '28m',
+  'VonNeumannDoubleCommutantTheorem:0': '59m'
+};
+const TOKENS = {
+  'ColorfulCaratheodoryTheorem:0': '32.6M', 'ColorfulCaratheodoryTheorem:2': '11.9M',
+  'DLOQuantifierElimination:0': '61.0M', 'DLOQuantifierElimination:3': '3.8M',
+  'DeBruijnErdos:0': '3.1M', 'DeBruijnErdos:1': '4.6M', 'DeBruijnErdos:2': '3.3M', 'DeBruijnErdos:3': '2.9M', 'DeBruijnErdos:4': '4.0M',
+  'GreenTaoTheorem:0': '5.8M', 'GreenTaoTheorem:1': '11.7M',
+  'JordanDerangementTheorem:0': '2.1M', 'JordanDerangementTheorem:1': '6.2M', 'JordanDerangementTheorem:2': '3.1M', 'JordanDerangementTheorem:3': '5.1M',
+  'MaynardTaoBoundedPrimeGaps:0': '6.5M', 'MaynardTaoBoundedPrimeGaps:1': '10.8M', 'MaynardTaoBoundedPrimeGaps:4': '10.0M',
+  'ParisHarringtonPrinciple:0': '6.5M', 'ParisHarringtonPrinciple:1': '74.2M', 'ParisHarringtonPrinciple:2': '6.4M',
+  'VonNeumannDoubleCommutantTheorem:0': '41.7M'
+};
+
+const VERDICT_TO_CLASS = { '✓': 'solved', 's': 'sorry', 'e': 'error', '·': 'absent', '?': 'absent', 'a': 'sorry' };
+const STORAGE_KEY = 'report-hub:formalqualbench_leaderboard';
+const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"mode":"verdict","sortBy":null,"onlySolved":false,"theme":"auto"}');
+
+const themeBtn = document.getElementById('themeToggle');
+const applyTheme = () => {
+  if (state.theme === 'auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', state.theme);
+  themeBtn.textContent = state.theme;
+};
+themeBtn.addEventListener('click', () => {
+  const o = ['auto','light','dark']; state.theme = o[(o.indexOf(state.theme)+1)%o.length]; applyTheme(); persist();
+});
+applyTheme();
+
+// ---- leaderboard ----
+function renderLeaderboard() {
+  const tb = document.getElementById('lbBody');
+  tb.innerHTML = RUNS.map((r, i) => `
+    <tr class="${i === 0 ? 'top' : ''}">
+      <td class="rank">#${i + 1}</td>
+      <td class="run-name">${r.short}</td>
+      <td><span class="config">${r.config}</span><br><span class="model">${r.model}</span></td>
+      <td class="right"><code>${r.effort}</code></td>
+      <td class="right"><div class="solve-cell"><div class="solve-bar"><div class="fill" style="width:${(r.solved/r.n)*100}%"></div></div><span class="solve-num">${r.solved}<span class="pct">/${r.n}</span> · ${Math.round(r.solved/r.n*100)}%</span></div></td>
+      <td class="right">${r.sorry}</td>
+      <td class="right">${r.err}</td>
+      <td class="right">${r.wall}</td>
+    </tr>
+  `).join('');
+}
+
+// ---- matrix ----
+function renderMatrix() {
+  const mx = document.getElementById('mx');
+  let probs = [...PROBLEMS];
+  if (state.onlySolved) probs = probs.filter(p => p.v.includes('✓'));
+
+  // sort by current column if set
+  if (state.sortBy !== null) {
+    probs.sort((a, b) => {
+      const av = a.v[state.sortBy]; const bv = b.v[state.sortBy];
+      const order = { '✓': 0, 'e': 1, 's': 2, '·': 3 };
+      return (order[av] ?? 9) - (order[bv] ?? 9);
+    });
+  } else {
+    // default: sort by "how many runs solved it" descending
+    probs.sort((a, b) => b.v.filter(x => x === '✓').length - a.v.filter(x => x === '✓').length);
+  }
+
+  // grid template: 220px (problem) + 1fr × runs + 80px (row sum)
+  const cols = RUNS.length;
+  mx.style.gridTemplateColumns = `220px repeat(${cols}, minmax(80px, 1fr)) 80px`;
+
+  let html = '';
+  // header row
+  html += `<div class="mx-cell head" style="cursor:default;"><span style="font-size:.7em;">problem ↓</span></div>`;
+  RUNS.forEach((r, i) => {
+    const arrow = state.sortBy === i ? ' ↑' : '';
+    html += `<div class="mx-cell head" data-col="${i}"><span>${r.short.replace(/[_-]/g, '<wbr>$&')}</span><span class="sub">${r.solved}/${r.n}${arrow}</span></div>`;
+  });
+  html += `<div class="mx-cell head" style="cursor:default;"><span>solved by</span></div>`;
+
+  // data rows
+  probs.forEach(p => {
+    html += `<div class="mx-cell prob">${p.name}</div>`;
+    p.v.forEach((cell, i) => {
+      const cls = VERDICT_TO_CLASS[cell] || 'absent';
+      let display = cell;
+      const wall = WALL[`${p.name}:${i}`];
+      const toks = TOKENS[`${p.name}:${i}`];
+      if (state.mode === 'wall')   display = wall || (cell === '✓' ? '—' : cell);
+      if (state.mode === 'tokens') display = toks || (cell === '✓' ? '—' : cell);
+      const heatCls = state.mode === 'verdict' ? `verdict ${cls}` : `heat ${cls}`;
+      html += `<div class="mx-cell ${heatCls}" data-prob="${p.name}" data-run="${i}" data-verdict="${cell}">${display}</div>`;
+    });
+    const solveCount = p.v.filter(x => x === '✓').length;
+    const runsOnIt   = p.v.filter(x => x !== '·').length;
+    const pct = runsOnIt > 0 ? (solveCount / runsOnIt) * 100 : 0;
+    html += `<div class="mx-cell row-sum"><span>${solveCount}/${runsOnIt}</span><span class="bar"><span class="fill" style="width:${pct}%"></span></span></div>`;
+  });
+  mx.innerHTML = html;
+
+  // wire header sort
+  mx.querySelectorAll('.mx-cell.head[data-col]').forEach(h => {
+    h.addEventListener('click', () => {
+      const col = parseInt(h.dataset.col);
+      state.sortBy = state.sortBy === col ? null : col;
+      persist(); renderMatrix();
+    });
+  });
+  // wire tooltip
+  const tip = document.getElementById('mxTip');
+  mx.querySelectorAll('.mx-cell[data-prob]').forEach(c => {
+    c.addEventListener('mouseenter', e => {
+      const p = c.dataset.prob; const i = parseInt(c.dataset.run); const r = RUNS[i];
+      const v = c.dataset.verdict;
+      const verdictLbl = { '✓': 'solved', 's': 'sorry', 'e': 'error', '·': 'not in run' }[v] || v;
+      const wall = WALL[`${p}:${i}`] || '—';
+      const toks = TOKENS[`${p}:${i}`] || '—';
+      tip.innerHTML = `<div class="t-title">${p}</div>
+        <div class="t-row"><span class="k">run</span><span class="v">${r.short}</span></div>
+        <div class="t-row"><span class="k">verdict</span><span class="v">${verdictLbl}</span></div>
+        <div class="t-row"><span class="k">wall</span><span class="v">${wall}</span></div>
+        <div class="t-row"><span class="k">tokens</span><span class="v">${toks}</span></div>`;
+      tip.setAttribute('data-visible', 'true');
+    });
+    c.addEventListener('mousemove', e => {
+      const tw = tip.offsetWidth; const th = tip.offsetHeight;
+      let x = e.clientX + 14; let y = e.clientY + 14;
+      if (x + tw > innerWidth - 12) x = e.clientX - tw - 14;
+      if (y + th > innerHeight - 12) y = e.clientY - th - 14;
+      tip.style.left = x + 'px'; tip.style.top = y + 'px';
+    });
+    c.addEventListener('mouseleave', () => tip.removeAttribute('data-visible'));
+  });
+}
+
+// ---- per-run cards ----
+function renderRunCards() {
+  const grid = document.getElementById('runGrid');
+  grid.innerHTML = RUNS.map((r, i) => {
+    const solvedProbs = PROBLEMS.filter(p => p.v[i] === '✓').map(p => p.name);
+    return `<div class="run-card ${i === 0 ? 'top' : ''}">
+      <h4>${r.short}</h4>
+      <div class="ck"><code class="accent">${r.config}</code><code>${r.model}</code><code>${r.effort}</code></div>
+      <div class="big">${r.solved}<span class="sub">/${r.n}</span></div>
+      <div style="font-size:.78rem;color:var(--text-muted);">solved · ${Math.round(r.solved/r.n*100)}% of in-scope</div>
+      <div class="stats">
+        <div><div class="lbl">Sorry</div><div class="vv">${r.sorry}</div></div>
+        <div><div class="lbl">Error</div><div class="vv">${r.err}</div></div>
+        <div><div class="lbl">Wall</div><div class="vv">${r.walltime_total_solved}</div></div>
+      </div>
+      ${solvedProbs.length > 0 ? `<div class="solved-list">
+        <div class="lbl">Solved problems</div>
+        <div class="items">${solvedProbs.map(s => `<span class="it">${s}</span>`).join('')}</div>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ---- cost bars ----
+function renderCosts() {
+  const all = document.getElementById('costAll');
+  const solved = document.getElementById('costSolved');
+  const maxAll = Math.max(...RUNS.map(r => r.token_total));
+  const maxSolved = Math.max(...RUNS.map(r => r.token_solved));
+  const fmt = (m) => m >= 1000 ? (m/1000).toFixed(1) + 'B' : m.toFixed(1) + 'M';
+  all.innerHTML = RUNS.map(r => `<div class="bar-row"><span class="name" title="${r.short}">${r.short}</span><span class="track"><span class="fill" style="width:${(r.token_total/maxAll)*100}%"></span></span><span class="num">${fmt(r.token_total)}</span></div>`).join('');
+  solved.innerHTML = RUNS.map(r => `<div class="bar-row"><span class="name" title="${r.short}">${r.short}</span><span class="track"><span class="fill" style="width:${(r.token_solved/maxSolved)*100}%"></span></span><span class="num">${fmt(r.token_solved)}</span></div>`).join('');
+}
+
+// ---- mode chips ----
+document.querySelectorAll('.mx-toolbar .chip[data-mode]').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.mx-toolbar .chip[data-mode]').forEach(c => c.setAttribute('aria-pressed', 'false'));
+    chip.setAttribute('aria-pressed', 'true');
+    state.mode = chip.dataset.mode; persist(); renderMatrix();
+  });
+  chip.setAttribute('aria-pressed', chip.dataset.mode === state.mode ? 'true' : 'false');
+});
+document.getElementById('onlySolved').addEventListener('click', () => {
+  state.onlySolved = !state.onlySolved;
+  document.getElementById('onlySolved').setAttribute('aria-pressed', state.onlySolved ? 'true' : 'false');
+  persist(); renderMatrix();
+});
+document.getElementById('onlySolved').setAttribute('aria-pressed', state.onlySolved ? 'true' : 'false');
+
+function persist() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+renderLeaderboard();
+renderMatrix();
+renderRunCards();
+renderCosts();
+</script>
+</body>
+</html>

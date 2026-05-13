@@ -1,0 +1,102 @@
+/* Report Hub — shared design tokens.
+ * Light-default; auto-dark via prefers-color-scheme; explicit override via
+ * <html data-theme="light"> or <html data-theme="dark">.
+ *
+ * Usage:
+ *   Linked mode:  <link rel="stylesheet" href="../shared/tokens.css">
+ *   Inline mode:  paste this entire file into a <style> tag (for fully
+ *                 self-contained, distributable single-file reports). */
+
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Apple Garamond", "Baskerville", "Source Serif Pro", Georgia, serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Menlo", "Consolas", monospace;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
+  --text-base: 1rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.375rem;
+  --text-2xl:  1.75rem;
+  --text-3xl:  2.25rem;
+  --text-4xl:  3rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-10: 4rem;
+  --space-12: 6rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+
+  /* Light (default) */
+  --bg:           #FAF7F2;
+  --bg-elevated:  #FFFFFF;
+  --bg-subtle:    #F0EDE6;
+  --bg-code:      #1C1A17;
+  --text:         #1A1815;
+  --text-muted:   #6B6557;
+  --text-faint:   #9C957F;
+  --border:       #E8E2D5;
+  --border-strong:#C9C2B0;
+  --accent:       #C75B3C;
+  --accent-muted: rgba(199, 91, 60, 0.12);
+  --success:      #5C8A4F;
+  --warn:         #C7902C;
+  --danger:       #B14B3F;
+
+  --shadow-sm: 0 1px 2px rgba(26, 18, 0, 0.04);
+  --shadow-md: 0 4px 16px rgba(26, 18, 0, 0.06);
+  --shadow-lg: 0 12px 40px rgba(26, 18, 0, 0.10);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:           #0F0E0C;
+    --bg-elevated:  #1A1815;
+    --bg-subtle:    #252320;
+    --bg-code:      #0A0908;
+    --text:         #F0EDE6;
+    --text-muted:   #9C957F;
+    --text-faint:   #6B6557;
+    --border:       #2D2A25;
+    --border-strong:#45403A;
+    --accent:       #E48060;
+    --accent-muted: rgba(228, 128, 96, 0.16);
+    --success:      #82B374;
+    --warn:         #D9A847;
+    --danger:       #D87268;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Explicit overrides — let the theme toggle force a mode regardless of OS preference. */
+[data-theme="light"] {
+  --bg: #FAF7F2; --bg-elevated: #FFFFFF; --bg-subtle: #F0EDE6; --bg-code: #1C1A17;
+  --text: #1A1815; --text-muted: #6B6557; --text-faint: #9C957F;
+  --border: #E8E2D5; --border-strong: #C9C2B0;
+  --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12);
+  --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F;
+  --shadow-sm: 0 1px 2px rgba(26,18,0,.04);
+  --shadow-md: 0 4px 16px rgba(26,18,0,.06);
+  --shadow-lg: 0 12px 40px rgba(26,18,0,.10);
+}
+[data-theme="dark"] {
+  --bg: #0F0E0C; --bg-elevated: #1A1815; --bg-subtle: #252320; --bg-code: #0A0908;
+  --text: #F0EDE6; --text-muted: #9C957F; --text-faint: #6B6557;
+  --border: #2D2A25; --border-strong: #45403A;
+  --accent: #E48060; --accent-muted: rgba(228,128,96,.16);
+  --success: #82B374; --warn: #D9A847; --danger: #D87268;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.4);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.5);
+}

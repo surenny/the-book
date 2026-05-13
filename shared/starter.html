@@ -1,0 +1,92 @@
+<!doctype html>
+<!--
+  The Book — report starter template.
+
+  Two ways to use:
+    1. LINKED MODE (this file as-is) — link to shared/*.css and shared/hub.js.
+       Lighter file, central updates. Best when serving from the hub directory.
+    2. INLINE MODE — paste the contents of tokens.css, base.css, components.css
+       inline into <style>; paste hub.js inline into <script>. Result is a
+       fully self-contained single HTML file you can email, paste into a
+       message, host anywhere. The four prototypes in prototypes/ are all in
+       inline mode for this reason.
+
+  To register your report on the hub, append an entry to ../reports.json.
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Report Title — The Book</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  /* report-specific styles here */
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hdr-bar">
+    <a href="../index.html">← The Book</a>
+    <span>project / path / report</span>
+    <button class="theme-toggle" id="themeToggle">auto</button>
+  </div>
+
+  <header class="hero">
+    <div class="eyebrow">Eyebrow · Date</div>
+    <h1>Your report title here</h1>
+    <p class="deck">One- or two-sentence lede that hooks the reader.</p>
+  </header>
+
+  <!-- Optional top-level summary visualization (key metrics, hero chart, …) -->
+  <!-- <div class="metric featured">…</div> -->
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">01</span>Section title</h2>
+      <span class="sub">Optional one-line subtitle.</span>
+    </div>
+    <p>Section body. Use <code>inline code</code> as needed.</p>
+
+    <!-- Callout block -->
+    <div class="callout">
+      <strong>Key insight.</strong> Pull out anything you want the reader to see at a glance.
+    </div>
+
+    <!-- Code block (always renders dark, regardless of theme) -->
+    <pre class="code-block"><span class="comment">-- example</span>
+<span class="kw">theorem</span> foo : 1 + 1 = 2 := <span class="kw">by</span> rfl</pre>
+
+    <!-- Embedded data table -->
+    <div class="tbl-wrap">
+      <table class="embed">
+        <thead><tr><th>Column A</th><th>Column B</th></tr></thead>
+        <tbody>
+          <tr><td>cell</td><td>cell</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><h2><span class="num">02</span>Another section</h2></div>
+    <p>…</p>
+  </section>
+
+  <footer class="footer">
+    <span>Source · <code>path/to/source.md</code></span>
+    <span><a href="mailto:surenny233@sjtu.edu.cn">surenny233@sjtu.edu.cn</a></span>
+  </footer>
+
+</div>
+
+<script src="../shared/hub.js"></script>
+<script>
+  // Replace the storage key with one unique to this report.
+  const state = setupTheme('themeToggle', 'report-hub:your_report_id');
+  // Add report-specific interactivity below…
+</script>
+</body>
+</html>

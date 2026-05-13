@@ -1,0 +1,15 @@
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Editors
+.vscode/
+.idea/
+*.sublime-*
+
+# Local dev
+node_modules/
+.cache/
+*.log

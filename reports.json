@@ -1,0 +1,56 @@
+{
+  "reports": [
+    {
+      "id": "formalqualbench_leaderboard",
+      "path": "prototypes/formalqualbench_leaderboard.html",
+      "title": "FormalQualBench Leaderboard",
+      "project": "FormalQualBench",
+      "source_path": "FormalQualBench/runs/{LEADERBOARD,MATRIX}.md",
+      "date": "2026-05-11",
+      "type": "Dashboard",
+      "type_icon": "▦",
+      "tags": ["benchmark", "leaderboard", "lean4", "claude-opus", "deepseek"],
+      "deck": "23 research-level Lean theorems × 5 main runs — solve rates, wall time, and token usage compared side by side. Click any matrix cell for full detail.",
+      "highlights": ["35% best solve rate", "8/23 top run", "5 models compared"]
+    },
+    {
+      "id": "agent_cheating_retrospective",
+      "path": "prototypes/agent_cheating_retrospective.html",
+      "title": "Codex GPT-5.5 在 FormalQualBench 上的 12 类 cheat 复盘",
+      "project": "FormalQualBench",
+      "source_path": "FormalQualBench/insight/2026-05-12-agent-cheating-retrospective.md",
+      "date": "2026-05-12",
+      "type": "Postmortem",
+      "type_icon": "▲",
+      "tags": ["specification-gaming", "cheat", "evaluation", "lean4", "codex"],
+      "deck": "用 codex-gpt-5.5 跑 23 道 research-level Lean 定理，4 轮 anti-cheat 加固后只 6 道真做出来——剩下 17 道每一道都用一种独立的作弊路径骗过 verify.sh。",
+      "highlights": ["6/23 真 solved", "12 cheat patterns", "3 轮加固"]
+    },
+    {
+      "id": "case_study_analysis",
+      "path": "prototypes/case_study_analysis.html",
+      "title": "FormalRx Case Study Analysis",
+      "project": "Challenge-AI4M2026",
+      "source_path": "Challenge-AI4M2026/track1/case_study_analysis.md",
+      "date": "2026-05-08",
+      "type": "Case Study",
+      "type_icon": "◆",
+      "tags": ["formalrx", "autoformalization", "error-taxonomy", "lean4", "mathlib"],
+      "deck": "Eight hand-diagnosed misalignments between informal mathematical statements and their Lean formalizations — plus one aligned control — drawn from a stratified sample of 7,030 FormalRx test cases.",
+      "highlights": ["8 cases", "7 error patterns", "1 aligned control"]
+    },
+    {
+      "id": "archon_tech_report",
+      "path": "prototypes/archon_tech_report.html",
+      "title": "Archon — An Agentic System for Formalizing Research-Level Mathematics",
+      "project": "Archon",
+      "source_path": "Archon/docs/tech-report.md",
+      "date": "2026-03-13",
+      "type": "Tech Report",
+      "type_icon": "●",
+      "tags": ["agentic-system", "formalization", "claude-code", "mathlib", "research"],
+      "deck": "Closing the gap between competition benchmarks and repository-scale formalization — by treating frontier models not as code generators, but as strategic collaborators with planning, reflection, and library awareness.",
+      "highlights": ["2 problems formalized", "< $2K total", "~5 min review/problem"]
+    }
+  ]
+}

@@ -1,0 +1,189 @@
+/* Report Hub — reusable components observed in ≥2 reports.
+ * Depends on tokens.css. Pick what you need; you don't pay for what you don't use. */
+
+/* ---------- Hero (title block) ----------
+ * Used in all reports. Patterns:
+ *   <header class="hero">
+ *     <div class="eyebrow">Section · Date</div>
+ *     <h1>Report title</h1>
+ *     <p class="deck">One- or two-sentence lede.</p>
+ *   </header>
+ * For homepage-style longer headlines use .lede instead of .deck. */
+.hero { margin-bottom: 3rem; max-width: 70ch; }
+.hero .eyebrow {
+  font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 0.75rem; font-weight: 600;
+}
+.hero h1 {
+  font-family: var(--font-serif); font-weight: 500;
+  font-size: 2.75rem; line-height: 1.12;
+  margin: 0 0 1rem; letter-spacing: -0.015em;
+}
+@media (max-width: 720px) { .hero h1 { font-size: 2.2rem; } }
+.hero .deck {
+  font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.5;
+  color: var(--text-muted); margin: 0 0 2rem; max-width: 60ch;
+}
+.hero .lede {
+  font-family: var(--font-serif); font-size: 1.35rem; line-height: 1.5;
+  color: var(--text-muted); margin: 0; max-width: 60ch;
+}
+
+/* ---------- Section heading ----------
+ * Pattern:
+ *   <section class="sec">
+ *     <div class="sec-head">
+ *       <h2><span class="num">01</span>Section title</h2>
+ *       <span class="sub">Optional subtitle</span>
+ *     </div>
+ *     ...content...
+ *   </section> */
+.sec { margin: 4rem 0; scroll-margin-top: 4rem; }
+.sec-head { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.sec h2 {
+  font-family: var(--font-serif); font-weight: 500;
+  font-size: 1.875rem; margin: 0; letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.sec h2 .num {
+  color: var(--text-faint); font-family: var(--font-mono);
+  font-size: 0.55em; font-weight: 400;
+  margin-right: 0.65rem; letter-spacing: 0.04em;
+}
+.sec-head .sub { font-size: 0.85rem; color: var(--text-muted); }
+.sec > .sec-deck {
+  font-family: var(--font-serif); font-size: 1.05rem;
+  color: var(--text-muted); margin: 0 0 2rem; max-width: 64ch;
+}
+
+/* ---------- Chip (filter/toggle button) ----------
+ * Pattern:
+ *   <button class="chip" aria-pressed="false">Label <span class="ct">12</span></button>
+ * Toggling aria-pressed via JS flips state. */
+.chip {
+  font-family: inherit; font-size: 0.85rem;
+  background: none; color: var(--text-muted);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 0.25rem 0.75rem; cursor: pointer;
+  transition: all 0.15s ease;
+}
+.chip:hover { border-color: var(--border-strong); color: var(--text); }
+.chip[aria-pressed="true"] {
+  background: var(--accent); color: white; border-color: var(--accent);
+}
+.chip .ct {
+  font-family: var(--font-mono); font-size: 0.85em;
+  margin-left: 0.25rem; opacity: 0.75;
+}
+
+/* ---------- Callout (accent-bordered info block) ----------
+ * Pattern:
+ *   <div class="callout">
+ *     <strong>Label.</strong> Body text...
+ *   </div> */
+.callout {
+  background: var(--accent-muted);
+  border-left: 3px solid var(--accent);
+  padding: 1rem 1.25rem;
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin: 0 0 3rem;
+  font-size: 0.95rem; line-height: 1.6;
+}
+.callout strong { color: var(--accent); }
+
+/* ---------- Code block (terminal-dark) ----------
+ * Pattern:
+ *   <pre class="code-block"><span class="comment">-- comment</span>
+ *   <span class="kw">def</span> foo := <span class="lit">42</span>
+ *   <span class="label">LABEL:</span>  <span class="err">highlighted error span</span>
+ *   <span class="str">"string"</span></pre>
+ * Always renders dark regardless of theme — it's a code "screenshot". */
+.code-block {
+  background: var(--bg-code); color: #F5F1E8;
+  font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.55;
+  padding: 1rem 1.25rem; border-radius: var(--radius-md);
+  overflow-x: auto; white-space: pre; margin: 0;
+}
+.code-block .label   { color: #E48060; font-weight: 600; letter-spacing: 0.04em; }
+.code-block .comment { color: #A8A095; }
+.code-block .kw      { color: #C4A580; }
+.code-block .str     { color: #A4B98C; }
+.code-block .lit     { color: #E48060; }
+.code-block .err     { background: rgba(228, 128, 96, .22); border-bottom: 1px dotted #E48060; }
+
+/* ---------- Inline code ----------
+ * Within prose: bg-subtle pill, mono, accent color. Works in any context. */
+:where(p, li, td, dd, .deck, .lede, .sub, h3) > code,
+.inline-code {
+  font-family: var(--font-mono); font-size: 0.88em;
+  background: var(--bg-subtle); padding: 0 0.35rem; border-radius: 3px;
+  color: var(--accent);
+}
+
+/* ---------- Embedded data table ----------
+ * For inline tabular content. Pattern:
+ *   <div class="tbl-wrap">
+ *     <table class="embed"><thead><tr><th>...</th></tr></thead><tbody>...</tbody></table>
+ *   </div> */
+.tbl-wrap {
+  margin: 2rem 0; overflow-x: auto;
+  border-radius: var(--radius-md); border: 1px solid var(--border);
+}
+table.embed {
+  width: 100%; border-collapse: collapse;
+  font-family: var(--font-sans); font-size: 0.9rem; line-height: 1.5;
+  background: var(--bg-elevated);
+}
+table.embed th {
+  text-align: left; font-weight: 600;
+  padding: 0.75rem 1rem; background: var(--bg-subtle);
+  color: var(--text); font-size: 0.8rem;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+table.embed td {
+  padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
+  vertical-align: top; color: var(--text-muted);
+}
+table.embed tr:last-child td { border-bottom: none; }
+table.embed tr:hover td { background: var(--bg-subtle); color: var(--text); }
+
+/* ---------- KPI / metric card ----------
+ * Pattern (grid container is yours):
+ *   <div class="metric"><div class="l">Label</div><div class="v">42<span class="sub">/100</span></div></div>
+ * Variants: .featured (accent fill), .good, .warn, .alert (color the value). */
+.metric {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 1.25rem;
+}
+.metric .l {
+  font-size: 0.7rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-faint);
+  margin-bottom: 0.35rem;
+}
+.metric .v {
+  font-family: var(--font-serif); font-size: 2.1rem;
+  line-height: 1; font-weight: 500; letter-spacing: -0.02em;
+}
+.metric .v .sub {
+  font-family: var(--font-mono); font-size: 0.85rem;
+  color: var(--text-faint); margin-left: 0.25rem;
+}
+.metric .s { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem; }
+.metric.featured { background: var(--accent-muted); border-color: var(--accent); }
+.metric.featured .v { color: var(--accent); }
+.metric.good  .v { color: var(--success); }
+.metric.warn  .v { color: var(--warn); }
+.metric.alert .v { color: var(--danger); }
+
+/* ---------- Footer ---------- */
+.footer {
+  margin-top: 6rem; padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem; color: var(--text-faint);
+  display: flex; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+}
+.footer a { color: var(--accent); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+.footer code { font-family: var(--font-mono); font-size: 0.9em; }

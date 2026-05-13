@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FormalRx Case Study Analysis — Report Hub</title>
+<style>
+/* ---------- design tokens (inlined for self-containment) ---------- */
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Apple Garamond", "Baskerville", "Source Serif Pro", Georgia, serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  --bg: #FAF7F2; --bg-elevated: #FFFFFF; --bg-subtle: #F0EDE6; --bg-code: #1C1A17;
+  --text: #1A1815; --text-muted: #6B6557; --text-faint: #9C957F;
+  --border: #E8E2D5; --border-strong: #C9C2B0;
+  --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12);
+  --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F;
+  --shadow-sm: 0 1px 2px rgba(26,18,0,.04);
+  --shadow-md: 0 4px 16px rgba(26,18,0,.06);
+  --shadow-lg: 0 12px 40px rgba(26,18,0,.10);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0F0E0C; --bg-elevated: #1A1815; --bg-subtle: #252320; --bg-code: #0A0908;
+    --text: #F0EDE6; --text-muted: #9C957F; --text-faint: #6B6557;
+    --border: #2D2A25; --border-strong: #45403A;
+    --accent: #E48060; --accent-muted: rgba(228,128,96,.16);
+    --success: #82B374; --warn: #D9A847; --danger: #D87268;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.4);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,.5);
+  }
+}
+[data-theme="light"] {
+  --bg: #FAF7F2; --bg-elevated: #FFFFFF; --bg-subtle: #F0EDE6; --bg-code: #1C1A17;
+  --text: #1A1815; --text-muted: #6B6557; --text-faint: #9C957F;
+  --border: #E8E2D5; --border-strong: #C9C2B0;
+  --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12);
+  --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F;
+  --shadow-sm: 0 1px 2px rgba(26,18,0,.04);
+  --shadow-md: 0 4px 16px rgba(26,18,0,.06);
+  --shadow-lg: 0 12px 40px rgba(26,18,0,.10);
+}
+[data-theme="dark"] {
+  --bg: #0F0E0C; --bg-elevated: #1A1815; --bg-subtle: #252320; --bg-code: #0A0908;
+  --text: #F0EDE6; --text-muted: #9C957F; --text-faint: #6B6557;
+  --border: #2D2A25; --border-strong: #45403A;
+  --accent: #E48060; --accent-muted: rgba(228,128,96,.16);
+  --success: #82B374; --warn: #D9A847; --danger: #D87268;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.4);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.5);
+}
+
+/* ---------- base ---------- */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.page { max-width: 1100px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+@media (max-width: 720px) { .page { padding: 2rem 1rem 4rem; } }
+
+/* ---------- header ---------- */
+.hdr-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 3rem;
+  font-size: var(--text-xs); color: var(--text-faint);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.hdr-bar a { color: var(--text-faint); text-decoration: none; }
+.hdr-bar a:hover { color: var(--accent); }
+.theme-toggle {
+  background: none; border: 1px solid var(--border); border-radius: 999px;
+  color: var(--text-muted); cursor: pointer;
+  font-size: var(--text-xs); padding: 0.25rem 0.75rem;
+  font-family: inherit; letter-spacing: 0.04em;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+.hero h1 {
+  font-family: var(--font-serif); font-weight: 500;
+  font-size: 2.75rem; line-height: 1.15;
+  margin: 0 0 1rem; letter-spacing: -0.01em;
+}
+@media (max-width: 720px) { .hero h1 { font-size: 2rem; } }
+.hero .deck {
+  font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.5;
+  color: var(--text-muted); margin: 0 0 2rem; max-width: 60ch;
+}
+.hero .meta {
+  display: flex; flex-wrap: wrap; gap: 0 2rem;
+  font-size: var(--text-sm); color: var(--text-muted);
+  border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+  padding: 1rem 0; margin-bottom: 2rem;
+}
+.hero .meta dt { font-weight: 600; color: var(--text); margin-right: 0.5rem; display: inline; }
+.hero .meta dd { display: inline; margin: 0 1.5rem 0 0; }
+.hero .meta div { margin: 0.25rem 0; }
+.hero .meta code { font-family: var(--font-mono); font-size: 0.85em; color: var(--accent); }
+
+.callout {
+  background: var(--accent-muted); border-left: 3px solid var(--accent);
+  padding: 1rem 1.25rem; border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  margin: 0 0 3rem; font-size: var(--text-sm); line-height: 1.6;
+}
+.callout strong { color: var(--accent); }
+
+/* ---------- difficulty summary strip ---------- */
+.summary { margin: 0 0 3rem; }
+.summary h2 {
+  font-family: var(--font-sans); font-weight: 600;
+  font-size: var(--text-xs); letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-faint); margin: 0 0 1rem;
+}
+.diff-strip {
+  display: flex; gap: 2px; border-radius: var(--radius-md); overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.diff-strip > div {
+  flex: 1; padding: 1.25rem 1rem; cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+}
+.diff-strip > div:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); z-index: 1; }
+.diff-strip > div[data-d="easy"]   { background: rgba(92, 138, 79, 0.18); }
+.diff-strip > div[data-d="medium"] { background: rgba(199, 144, 44, 0.20); }
+.diff-strip > div[data-d="hard"]   { background: rgba(177, 75, 63, 0.20); }
+@media (prefers-color-scheme: dark) {
+  .diff-strip > div[data-d="easy"]   { background: rgba(130, 179, 116, 0.18); }
+  .diff-strip > div[data-d="medium"] { background: rgba(217, 168, 71, 0.20); }
+  .diff-strip > div[data-d="hard"]   { background: rgba(216, 114, 104, 0.20); }
+}
+[data-theme="dark"] .diff-strip > div[data-d="easy"]   { background: rgba(130, 179, 116, 0.18); }
+[data-theme="dark"] .diff-strip > div[data-d="medium"] { background: rgba(217, 168, 71, 0.20); }
+[data-theme="dark"] .diff-strip > div[data-d="hard"]   { background: rgba(216, 114, 104, 0.20); }
+.diff-strip .d-label {
+  font-size: var(--text-xs); letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 0.5rem;
+}
+.diff-strip .d-cases {
+  font-family: var(--font-serif); font-size: 1.5rem; font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+.diff-strip .d-pattern { font-size: var(--text-sm); color: var(--text-muted); }
+.diff-strip .d-llm {
+  position: absolute; right: 0.75rem; bottom: 0.5rem;
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  color: var(--text-faint);
+}
+
+/* ---------- toolbar ---------- */
+.toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 0.75rem 1rem;
+  margin-bottom: 2rem;
+  position: sticky; top: 1rem; z-index: 10;
+  backdrop-filter: blur(8px);
+}
+.toolbar .group {
+  display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+}
+.toolbar .group-label {
+  font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-faint); margin-right: 0.25rem;
+}
+.chip {
+  font-family: inherit; font-size: var(--text-sm);
+  background: none; color: var(--text-muted);
+  border: 1px solid var(--border); border-radius: 999px;
+  padding: 0.25rem 0.75rem; cursor: pointer;
+  transition: all 0.15s ease;
+}
+.chip:hover { border-color: var(--border-strong); color: var(--text); }
+.chip[aria-pressed="true"] {
+  background: var(--accent); color: white; border-color: var(--accent);
+}
+.chip .count { font-family: var(--font-mono); font-size: 0.85em; margin-left: 0.25rem; opacity: 0.75; }
+
+/* ---------- case cards ---------- */
+.cases { display: flex; flex-direction: column; gap: 1rem; }
+.case {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  transition: border-color 0.15s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+.case[data-tag="pin"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.case[data-tag="discuss"] { border-left: 4px solid var(--warn); }
+.case[data-tag="hide"] { opacity: 0.35; }
+.case[hidden] { display: none; }
+
+.case-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 1rem; padding: 1.25rem 1.5rem; cursor: pointer;
+  user-select: none;
+}
+.case-head:hover { background: var(--bg-subtle); }
+.case-head .left { flex: 1; min-width: 0; }
+.case-head h3 {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-serif); font-weight: 500;
+  font-size: var(--text-xl); letter-spacing: -0.005em;
+}
+.case-head h3 .case-num {
+  color: var(--text-faint); font-family: var(--font-mono);
+  font-size: 0.7em; font-weight: 400; margin-right: 0.5rem;
+  letter-spacing: 0.02em;
+}
+.case-head h3 .case-id {
+  color: var(--text-muted); font-family: var(--font-mono);
+  font-size: 0.6em; font-weight: 400; margin-left: 0.5rem;
+}
+.case-head .verdict-row {
+  display: flex; gap: 0.5rem; flex-wrap: wrap; font-size: var(--text-sm);
+}
+.badge {
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  padding: 0.125rem 0.5rem; border-radius: var(--radius-sm);
+  letter-spacing: 0.04em;
+}
+.badge.aligned    { background: rgba(92,138,79,.15); color: var(--success); }
+.badge.misaligned { background: rgba(177,75,63,.12); color: var(--danger); }
+.badge.diff-easy   { background: rgba(92,138,79,.15);  color: var(--success); }
+.badge.diff-medium { background: rgba(199,144,44,.18); color: var(--warn); }
+.badge.diff-hard   { background: rgba(177,75,63,.15);  color: var(--danger); }
+.badge.cat {
+  background: var(--bg-subtle); color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.case-head .actions { display: flex; gap: 0.25rem; align-items: center; }
+.tag-btn {
+  background: none; border: 1px solid var(--border);
+  width: 28px; height: 28px; border-radius: 6px;
+  font-size: 14px; cursor: pointer; color: var(--text-faint);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: all 0.12s ease; font-family: inherit;
+}
+.tag-btn:hover { border-color: var(--border-strong); color: var(--text); }
+.tag-btn[aria-pressed="true"][data-tag="pin"]     { background: var(--accent); border-color: var(--accent); color: white; }
+.tag-btn[aria-pressed="true"][data-tag="discuss"] { background: var(--warn); border-color: var(--warn); color: white; }
+.tag-btn[aria-pressed="true"][data-tag="hide"]    { background: var(--text-faint); border-color: var(--text-faint); color: white; }
+.case-head .chevron {
+  width: 24px; height: 24px; display: inline-flex;
+  align-items: center; justify-content: center;
+  color: var(--text-faint); transition: transform 0.2s ease;
+}
+.case[data-open="true"] .chevron { transform: rotate(90deg); }
+
+.case-body {
+  padding: 0 1.5rem 1.5rem; display: none;
+  border-top: 1px solid var(--border); margin-top: 0;
+}
+.case[data-open="true"] .case-body { display: block; }
+.case-body .section-label {
+  font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--text-faint); margin: 1.5rem 0 0.5rem;
+}
+
+.code-block {
+  background: var(--bg-code); color: #F5F1E8;
+  font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.55;
+  padding: 1rem 1.25rem; border-radius: var(--radius-md);
+  overflow-x: auto; white-space: pre;
+  margin: 0;
+}
+.code-block .label {
+  color: #E48060; font-weight: 600; letter-spacing: 0.04em;
+}
+.code-block .comment { color: #A8A095; }
+.code-block .kw { color: #C4A580; }
+.code-block .err { background: rgba(228, 128, 96, .22); border-bottom: 1px dotted #E48060; }
+
+.diag {
+  display: grid; grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.25rem; margin: 0;
+  font-size: var(--text-sm); line-height: 1.55;
+}
+.diag dt {
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-faint); padding-top: 0.1rem;
+}
+.diag dd { margin: 0; }
+.diag dd code, .insight code {
+  font-family: var(--font-mono); font-size: 0.88em;
+  background: var(--bg-subtle); padding: 0.05rem 0.35rem; border-radius: 3px;
+  color: var(--accent);
+}
+
+.insight {
+  background: var(--bg-subtle); border-radius: var(--radius-md);
+  padding: 1rem 1.25rem; margin-top: 1.25rem;
+  font-size: var(--text-sm); line-height: 1.65;
+  border-left: 3px solid var(--accent);
+}
+.insight strong { color: var(--accent); }
+
+/* ---------- implications ---------- */
+.implications {
+  margin: 5rem 0 3rem;
+}
+.implications h2 {
+  font-family: var(--font-serif); font-weight: 500;
+  font-size: var(--text-2xl); margin: 0 0 1.5rem;
+}
+.imp-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+.imp-card {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius-md); padding: 1.25rem;
+  position: relative;
+}
+.imp-card .num {
+  font-family: var(--font-mono); font-size: var(--text-xs);
+  color: var(--accent); letter-spacing: 0.08em;
+  margin-bottom: 0.5rem;
+}
+.imp-card h4 {
+  margin: 0 0 0.5rem; font-size: var(--text-base);
+  font-weight: 600; font-family: var(--font-sans);
+}
+.imp-card p { margin: 0; font-size: var(--text-sm); color: var(--text-muted); line-height: 1.6; }
+.imp-card code {
+  font-family: var(--font-mono); font-size: 0.85em;
+  color: var(--accent); background: var(--accent-muted);
+  padding: 0 0.3rem; border-radius: 3px;
+}
+
+/* ---------- open questions ---------- */
+.open-q { margin: 4rem 0; padding: 1.5rem; background: var(--bg-subtle); border-radius: var(--radius-md); }
+.open-q h2 {
+  font-family: var(--font-sans); font-weight: 600;
+  font-size: var(--text-xs); letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-faint); margin: 0 0 1rem;
+}
+.open-q ul { margin: 0; padding-left: 1.25rem; }
+.open-q li { margin-bottom: 0.5rem; color: var(--text-muted); font-size: var(--text-sm); line-height: 1.6; }
+.open-q li code {
+  font-family: var(--font-mono); font-size: 0.88em;
+  background: var(--bg); padding: 0 0.3rem; border-radius: 3px;
+  color: var(--accent);
+}
+
+/* ---------- footer ---------- */
+.footer {
+  margin-top: 6rem; padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  font-size: var(--text-sm); color: var(--text-muted);
+}
+.footer h3 {
+  font-family: var(--font-sans); font-weight: 600;
+  font-size: var(--text-xs); letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--text-faint); margin: 0 0 0.75rem;
+}
+.footer a { color: var(--accent); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+.footer ul { padding-left: 1.25rem; margin: 0 0 1.5rem; }
+.footer ul li code {
+  font-family: var(--font-mono); font-size: 0.88em;
+  background: var(--bg-subtle); padding: 0 0.3rem; border-radius: 3px;
+}
+
+/* ---------- a11y ---------- */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.sr { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr-bar">
+  <a href="../index.html">← The Book</a>
+  <span>Challenge-AI4M2026 / track1 / case study</span>
+  <button class="theme-toggle" id="themeToggle" aria-label="toggle theme">auto</button>
+</div>
+
+<header class="hero">
+  <h1>FormalRx Case Study Analysis</h1>
+  <p class="deck">Eight hand-diagnosed misalignments between informal mathematical statements and their Lean formalizations — plus one aligned control — drawn from a stratified sample of <code>FormalRx_Test.jsonl</code>.</p>
+  <dl class="meta">
+    <div><dt>Sample</dt><dd><code>case_study_samples.jsonl</code> · 20 stratified from 7,030 · seed=42</dd></div>
+    <div><dt>Strata</dt><dd>8 short (&lt;120c) · 8 medium · 4 long (≥250c)</dd></div>
+    <div><dt>Analyzed</dt><dd>8 representative · 7 error patterns + 1 aligned control</dd></div>
+  </dl>
+  <div class="callout">
+    <strong>Disclaimer on category names.</strong>
+    The FormalRx paper is not yet on arXiv, so the official 28-class SCI taxonomy strings are unknown. Category labels below are <em>plausible guesses</em> based on common autoformalization error types. When the paper drops, names must be replaced with the official taxonomy strings — exact-match is required for scoring.
+  </div>
+</header>
+
+<section class="summary">
+  <h2>Difficulty map across the 8 cases</h2>
+  <div class="diff-strip">
+    <div data-d="easy">
+      <div class="d-label">Easy</div>
+      <div class="d-cases">Cases 1 · 2 · 4</div>
+      <div class="d-pattern">Single-point substitution</div>
+      <div class="d-llm">90%+</div>
+    </div>
+    <div data-d="medium">
+      <div class="d-label">Medium</div>
+      <div class="d-cases">Cases 3 · 6</div>
+      <div class="d-pattern">Numeric / typeclass omission</div>
+      <div class="d-llm">60–80% CoT</div>
+    </div>
+    <div data-d="hard">
+      <div class="d-label">Hard</div>
+      <div class="d-cases">Cases 5 · 7 · 8</div>
+      <div class="d-pattern">Quantifier inversion · coercion · paraphrase</div>
+      <div class="d-llm">30–70%</div>
+    </div>
+  </div>
+</section>
+
+<div class="toolbar" role="toolbar" aria-label="filter cases">
+  <div class="group">
+    <span class="group-label">Difficulty</span>
+    <button class="chip" data-filter="diff" data-value="easy"   aria-pressed="false">Easy <span class="count">3</span></button>
+    <button class="chip" data-filter="diff" data-value="medium" aria-pressed="false">Medium <span class="count">2</span></button>
+    <button class="chip" data-filter="diff" data-value="hard"   aria-pressed="false">Hard <span class="count">3</span></button>
+  </div>
+  <div class="group">
+    <span class="group-label">Triage</span>
+    <button class="chip" data-filter="tag" data-value="pin"     aria-pressed="false">📌 Pinned</button>
+    <button class="chip" data-filter="tag" data-value="discuss" aria-pressed="false">💬 To discuss</button>
+    <button class="chip" data-filter="tag" data-value="hide"    aria-pressed="false">👁 Show hidden</button>
+    <button class="chip" id="resetTags" aria-label="reset all triage">↺ reset</button>
+  </div>
+</div>
+
+<section class="cases" id="cases">
+
+  <!-- Case 1 -->
+  <article class="case" data-id="c1" data-diff="easy" data-verdict="misaligned">
+    <header class="case-head" tabindex="0" role="button" aria-expanded="false">
+      <div class="left">
+        <h3><span class="case-num">Case 1</span>Operator Substitution (sum → product, + → ×)<span class="case-id">formalrx_5236</span></h3>
+        <div class="verdict-row">
+          <span class="badge diff-easy">easy</span>
+          <span class="badge misaligned">misaligned</span>
+          <span class="badge cat">Operator Substitution · Semantic</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="tag-btn" data-tag="pin"     aria-pressed="false" title="Pin">📌</button>
+        <button class="tag-btn" data-tag="discuss" aria-pressed="false" title="Discuss">💬</button>
+        <button class="tag-btn" data-tag="hide"    aria-pressed="false" title="Hide">👁</button>
+        <span class="chevron" aria-hidden="true">›</span>
+      </div>
+    </header>
+    <div class="case-body">
+      <div class="section-label">Informal / Formal</div>
+      <pre class="code-block"><span class="label">INFORMAL:</span> Given a finite set s, the sum of f i + g i over i in s equals
+          the sum of f i over i in s plus the sum of g i over i in s.
+
+<span class="label">FORMAL:  </span> <span class="kw">theorem</span> finprod_mem_mul_distrib :
+            ∏ i in s, f i <span class="err">*</span> g i = (∏ i in s, f i) <span class="err">*</span> ∏ i in s, g i
+          <span class="comment">-- aggregator sum→prod, inner op +→*</span></pre>
+      <div class="section-label">Diagnosis</div>
+      <dl class="diag">
+        <dt>verdict</dt><dd>Misaligned</dd>
+        <dt>category</dt><dd>Operator Substitution (Semantic)</dd>
+        <dt>segment</dt><dd>the whole RHS expression with <code>prod</code>/<code>*</code></dd>
+        <dt>corrected</dt><dd><code>theorem ... : ∑ i in s, (f i + g i) = (∑ i in s, f i) + ∑ i in s, g i := sorry</code></dd>
+      </dl>
+      <div class="insight"><strong>Insight.</strong> Structure intact but both the aggregator (sum→product) and the inner operator (+→*) are swapped. A frontier LLM should one-shot this. Typical "easy" sample.</div>
+    </div>
+  </article>
+
+  <!-- Case 2 -->
+  <article class="case" data-id="c2" data-diff="easy" data-verdict="misaligned">
+    <header class="case-head" tabindex="0" role="button" aria-expanded="false">
+      <div class="left">
+        <h3><span class="case-num">Case 2</span>Universal weakened to Existential<span class="case-id">formalrx_1918</span></h3>
+        <div class="verdict-row">
+          <span class="badge diff-easy">easy</span>
+          <span class="badge misaligned">misaligned</span>
+          <span class="badge cat">Quantifier Weakening · Semantic</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="tag-btn" data-tag="pin"     aria-pressed="false" title="Pin">📌</button>
+        <button class="tag-btn" data-tag="discuss" aria-pressed="false" title="Discuss">💬</button>
+        <button class="tag-btn" data-tag="hide"    aria-pressed="false" title="Hide">👁</button>
+        <span class="chevron" aria-hidden="true">›</span>
+      </div>
+    </header>
+    <div class="case-body">
+      <div class="section-label">Informal / Formal</div>
+      <pre class="code-block"><span class="label">INFORMAL:</span> The character of isomorphic representations is the same.
+
+<span class="label">FORMAL:  </span> <span class="kw">theorem</span> char_iso {V W : FDRep k G} (i : V ≅ W) :
+            <span class="err">∃</span> g : G, V.character g = W.character g</pre>
+      <div class="section-label">Diagnosis</div>
+      <dl class="diag">
+        <dt>verdict</dt><dd>Misaligned</dd>
+        <dt>category</dt><dd>Quantifier Weakening (Semantic)</dd>
+        <dt>segment</dt><dd><code>∃ g : G,</code></dd>
+        <dt>corrected</dt><dd><code>theorem char_iso ... : ∀ g : G, V.character g = W.character g := sorry</code></dd>
+      </dl>
+      <div class="insight"><strong>Insight.</strong> Textbook ∀→∃ weakening. LLMs catch this easily; the risk is naming the category wrong (Weakening vs Strengthening direction).</div>
+    </div>
+  </article>
+
+  <!-- Case 3 -->
+  <article class="case" data-id="c3" data-diff="medium" data-verdict="misaligned">
+    <header class="case-head" tabindex="0" role="button" aria-expanded="false">
+      <div class="left">
+        <h3><span class="case-num">Case 3</span>Numeric Constant Substitution — L¹ written as L²<span class="case-id">formalrx_1464</span></h3>
+        <div class="verdict-row">
+          <span class="badge diff-medium">medium</span>
+          <span class="badge misaligned">misaligned</span>
+          <span class="badge cat">Numeric Substitution · Implementation</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="tag-btn" data-tag="pin"     aria-pressed="false" title="Pin">📌</button>
+        <button class="tag-btn" data-tag="discuss" aria-pressed="false" title="Discuss">💬</button>
+        <button class="tag-btn" data-tag="hide"    aria-pressed="false" title="Hide">👁</button>
+        <span class="chevron" aria-hidden="true">›</span>
+      </div>
+    </header>
+    <div class="case-body">
+      <div class="section-label">Informal / Formal</div>
+      <pre class="code-block"><span class="label">INFORMAL:</span> ...the martingale defined by E[g | ℱ n] converges in L¹ to g.
+
+<span class="label">FORMAL:  </span> Tendsto (fun n => eLpNorm (μ[g|ℱ n] - g) <span class="err">2</span> μ) atTop (𝓝 0)
+                                                       <span class="comment">^ should be 1</span></pre>
+      <div class="section-label">Diagnosis</div>
+      <dl class="diag">
+        <dt>verdict</dt><dd>Misaligned</dd>
+        <dt>category</dt><dd>Numeric Constant Substitution / Implementation Index Error</dd>
+        <dt>segment</dt><dd><code>eLpNorm (μ[g|ℱ n] - g) 2 μ</code></dd>
+        <dt>corrected</dt><dd><code>Tendsto (fun n => eLpNorm (μ[g|ℱ n] - g) 1 μ) atTop (𝓝 0)</code></dd>
+      </dl>
+      <div class="insight"><strong>Insight.</strong> One-character error (<code>2</code> instead of <code>1</code>). Hardest for human reviewers, medium for LLMs — solvable if the prompt explicitly asks for token-level constant checking.</div>
+    </div>
+  </article>
+
+  <!-- Case 4 -->
+  <article class="case" data-id="c4" data-diff="easy" data-verdict="misaligned">
+    <header class="case-head" tabindex="0" role="button" aria-expanded="false">
+      <div class="left">
+        <h3><span class="case-num">Case 4</span>Predicate Substitution — injective vs surjective<span class="case-id">formalrx_6333</span></h3>
+        <div class="verdict-row">
+          <span class="badge diff-easy">easy</span>
+          <span class="badge misaligned">misaligned</span>
+          <span class="badge cat">Predicate Substitution · Semantic</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="tag-btn" data-tag="pin"     aria-pressed="false" title="Pin">📌</button>
+        <button class="tag-btn" data-tag="discuss" aria-pressed="false" title="Discuss">💬</button>
+        <button class="tag-btn" data-tag="hide"    aria-pressed="false" title="Hide">👁</button>
+        <span class="chevron" aria-hidden="true">›</span>
+      </div>
+    </header>
+    <div class="case-body">
+      <div class="section-label">Informal / Formal</div>
+      <pre class="code-block"><span class="label">INFORMAL:</span> Let s be a discrete subset of a topological space. Then the
+          preimage of s by a continuous <span class="kw">INJECTIVE</span> map is also discrete.
+
+<span class="label">FORMAL:  </span> <span class="kw">theorem</span> DiscreteTopology.preimage_of_continuous_injective ...
+            (hc : Continuous f) (<span class="err">hsurj : Function.SURJECTIVE f</span>) : ...</pre>
+      <div class="section-label">Diagnosis</div>
+      <dl class="diag">
+        <dt>verdict</dt><dd>Misaligned</dd>
+        <dt>category</dt><dd>Predicate Substitution (Semantic)</dd>
+        <dt>segment</dt><dd><code>Function.Surjective f</code></dd>
+        <dt>corrected</dt><dd>replace <code>(hsurj : Function.Surjective f)</code> with <code>(hinj : Function.Injective f)</code></dd>
+      </dl>
+      <div class="insight"><strong>Insight.</strong> The theorem <em>name itself</em> says <code>..._injective</code>, but the hypothesis is <code>Surjective</code> — an internal inconsistency. Strong LLMs should weigh the lemma name as a cross-check signal during diagnosis.</div>
+    </div>
+  </article>
+
+  <!-- Case 5 -->
+  <article class="case" data-id="c5" data-diff="hard" data-verdict="misaligned">
+    <header class="case-head" tabindex="0" role="button" aria-expanded="false">
+      <div class="left">
+        <h3><span class="case-num">Case 5</span>Conclusion Quantifier Inversion — ∃→∀<span class="case-id">formalrx_2537</span></h3>
+        <div class="verdict-row">
+          <span class="badge diff-hard">hard</span>
+          <span class="badge misaligned">misaligned</span>
+          <span class="badge cat">Quantifier Inversion · Severe</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="tag-btn" data-tag="pin"     aria-pressed="false" title="Pin">📌</button>
+        <button class="tag-btn" data-tag="discuss" aria-pressed="false" title="Discuss">💬</button>
+        <button class="tag-btn" data-tag="hide"    aria-pressed="false" title="Hide">👁</button>
+        <span class="chevron" aria-hidden="true">›</span>
+      </div>
+    </header>
+    <div class="case-body">
+      <div class="section-label">Informal / Formal</div>
+      <pre class="code-block"><span class="label">INFORMAL:</span> ...Is it NECESSARY that sum_digits(ab) = sum_digits(a) * sum_digits(b)?
+          Prove that the answer is: <span class="kw">No</span>
+
+<span class="label">FORMAL:  </span> <span class="kw">theorem</span> omni_theorem_4388 {a b : ℕ} (ha : isPedestrian a)
+          (hb : isPedestrian b) (hc : isPedestrian (a * b)) :
+            <span class="err">(digits 10 (a*b)).sum ≠ (digits 10 a).sum * (digits 10 b).sum</span></pre>
+      <div class="section-label">Diagnosis</div>
+      <dl class="diag">
+        <dt>verdict</dt><dd>Misaligned</dd>
+        <dt>category</dt><dd>Conclusion Quantifier Inversion (Semantic, severe)</dd>
+        <dt>segment</dt><dd>the universal conclusion (asserting <code>≠</code> for all pedestrian a, b)</dd>
+        <dt>corrected</dt><dd><code>∃ a b : ℕ, isPedestrian a ∧ isPedestrian b ∧ isPedestrian (a*b) ∧ (digits 10 (a*b)).sum ≠ (digits 10 a).sum * (digits 10 b).sum</code></dd>
+      </dl>
+      <div class="insight"><strong>Insight.</strong> "Answer is No" to "is it necessary?" means <em>a counterexample exists</em>, not "the equation fails for all inputs". The formal as written is actually a <em>false proposition</em> (take a=b=1: both sides equal 1). Pattern — <em>"Find / Prove that the answer is X"</em> — is a high-frequency trap throughout the dataset.</div>
+    </div>
+  </article>
+
+  <!-- Case 6 -->
+  <article class="case" data-id="c6" data-diff="medium" data-verdict="misaligned">
+    <header class="case-head" tabindex="0" role="button" aria-expanded="false">
+      <div class="left">
+        <h3><span class="case-num">Case 6</span>Missing Typeclass Hypothesis<span class="case-id">formalrx_0187</span></h3>
+        <div class="verdict-row">
+          <span class="badge diff-medium">medium</span>
+          <span class="badge misaligned">misaligned</span>
+          <span class="badge cat">Hypothesis Omission · Constraint</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="tag-btn" data-tag="pin"     aria-pressed="false" title="Pin">📌</button>
+        <button class="tag-btn" data-tag="discuss" aria-pressed="false" title="Discuss">💬</button>
+        <button class="tag-btn" data-tag="hide"    aria-pressed="false" title="Hide">👁</button>
+        <span class="chevron" aria-hidden="true">›</span>
+      </div>
+    </header>
+    <div class="case-body">
+      <div class="section-label">Informal / Formal</div>
+      <pre class="code-block"><span class="label">INFORMAL:</span> If R is a ring <span class="kw">WITH A CONTINUOUS MULTIPLICATION</span>, then negation
+          is continuous ... since it is just multiplication with -1.
+
+<span class="label">FORMAL:  </span> <span class="kw">theorem</span> IsTopologicalSemiring.continuousNeg_of_mul
+            [TopologicalSpace R] [NonAssocRing R] <span class="err">/* missing [ContinuousMul R] */</span> : ContinuousNeg R</pre>
+      <div class="section-label">Diagnosis</div>
+      <dl class="diag">
+        <dt>verdict</dt><dd>Misaligned</dd>
+        <dt>category</dt><dd>Missing Premise / Hypothesis Omission (Constraint)</dd>
+        <dt>segment</dt><dd>the <code>[TopologicalSpace R] [NonAssocRing R]</code> instance bracket block</dd>
+        <dt>corrected</dt><dd>add <code>[ContinuousMul R]</code> to the instance bracket</dd>
+      </dl>
+      <div class="insight"><strong>Insight.</strong> Typeclass omissions are Lean-specific. Informal explicitly says "with continuous multiplication" but formal drops <code>[ContinuousMul R]</code>. LLMs often miss bracket-style instance args because they look syntactically different from <code>(h : ...)</code> hypotheses.</div>
+    </div>
+  </article>
+
+  <!-- Case 7 -->
+  <article class="case" data-id="c7" data-diff="hard" data-verdict="misaligned">
+    <header class="case-head" tabindex="0" role="button" aria-expanded="false">
+      <div class="left">
+        <h3><span class="case-num">Case 7</span>Implicit Coercion — Nat.sqrt vs Real.sqrt<span class="case-id">formalrx_3248</span></h3>
+        <div class="verdict-row">
+          <span class="badge diff-hard">hard</span>
+          <span class="badge misaligned">misaligned</span>
+          <span class="badge cat">Implicit Coercion · Implementation</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="tag-btn" data-tag="pin"     aria-pressed="false" title="Pin">📌</button>
+        <button class="tag-btn" data-tag="discuss" aria-pressed="false" title="Discuss">💬</button>
+        <button class="tag-btn" data-tag="hide"    aria-pressed="false" title="Hide">👁</button>
+        <span class="chevron" aria-hidden="true">›</span>
+      </div>
+    </header>
+    <div class="case-body">
+      <div class="section-label">Informal / Formal</div>
+      <pre class="code-block"><span class="label">INFORMAL:</span> ...0 &lt; a - b &lt; sqrt(5 + 4·sqrt(4m + 1))    <span class="comment">(real-valued sqrt)</span>
+
+<span class="label">FORMAL:  </span> Set.ncard {x : ℕ × ℕ | ... x.1 - x.2 &lt; <span class="err">sqrt (5 + 4 * sqrt (4*m + 1))</span>}
+                                                     <span class="comment">^^^^ resolves to Nat.sqrt (integer floor)</span></pre>
+      <div class="section-label">Diagnosis</div>
+      <dl class="diag">
+        <dt>verdict</dt><dd>Misaligned</dd>
+        <dt>category</dt><dd>Implicit Coercion / Type-driven Operator Selection (Implementation)</dd>
+        <dt>segment</dt><dd><code>sqrt (5 + 4 * sqrt (4 * m + 1))</code></dd>
+        <dt>corrected</dt><dd>coerce both sides to ℝ and use <code>Real.sqrt</code>. Also: <code>x.1 - x.2</code> uses truncating Nat subtraction; the comparison should be over integers.</dd>
+      </dl>
+      <div class="insight"><strong>Insight.</strong> Argument types make Lean elaborate <code>sqrt</code> as <code>Nat.sqrt</code> (integer floor) rather than <code>Real.sqrt</code>. The values differ enormously (e.g. <code>Nat.sqrt 12 = 3</code> vs <code>Real.sqrt 12 ≈ 3.46</code>). <em>You cannot see this from informal text alone</em> — you must mentally elaborate the formal statement. This is where strong LLMs commonly fail.</div>
+    </div>
+  </article>
+
+  <!-- Case 8 -->
+  <article class="case" data-id="c8" data-diff="hard" data-verdict="aligned">
+    <header class="case-head" tabindex="0" role="button" aria-expanded="false">
+      <div class="left">
+        <h3><span class="case-num">Case 8</span>ALIGNED control — paraphrase via Mathlib idiom<span class="case-id">formalrx_6123</span></h3>
+        <div class="verdict-row">
+          <span class="badge diff-hard">hard</span>
+          <span class="badge aligned">aligned</span>
+          <span class="badge cat">Control · Paraphrase</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="tag-btn" data-tag="pin"     aria-pressed="false" title="Pin">📌</button>
+        <button class="tag-btn" data-tag="discuss" aria-pressed="false" title="Discuss">💬</button>
+        <button class="tag-btn" data-tag="hide"    aria-pressed="false" title="Hide">👁</button>
+        <span class="chevron" aria-hidden="true">›</span>
+      </div>
+    </header>
+    <div class="case-body">
+      <div class="section-label">Informal / Formal</div>
+      <pre class="code-block"><span class="label">INFORMAL:</span> The Jordan decomposition of a signed measure is <span class="kw">unique</span>.
+
+<span class="label">FORMAL:  </span> <span class="kw">theorem</span> toSignedMeasure_injective :
+            <span class="kw">Injective</span> <| @JordanDecomposition.toSignedMeasure α _</pre>
+      <div class="section-label">Diagnosis</div>
+      <dl class="diag">
+        <dt>verdict</dt><dd>Aligned</dd>
+        <dt>category</dt><dd>null</dd>
+        <dt>segment</dt><dd>null</dd>
+        <dt>corrected</dt><dd>null</dd>
+      </dl>
+      <div class="insight"><strong>Insight.</strong> "X is unique" ⇔ "the map X → ... is injective" is a Mathlib idiom. LLMs commonly <em>misclassify these as misaligned</em> because the formal lacks the literal word "unique". The 1,791 aligned samples (25.5% of the test set) likely contain many such paraphrase-style restatements — this is the dominant Verdict F1 failure mode.</div>
+    </div>
+  </article>
+
+</section>
+
+<section class="implications">
+  <h2>Practical implications for prompt design</h2>
+  <div class="imp-grid">
+    <div class="imp-card">
+      <div class="num">01</div>
+      <h4>Always include the <code>header</code> field</h4>
+      <p>Case 7 cannot be diagnosed without knowing the inferred types from the imports/variables block — informal + formal alone is not enough.</p>
+    </div>
+    <div class="imp-card">
+      <div class="num">02</div>
+      <h4>Add a paraphrase-aware aligned check</h4>
+      <p>Prompt the model to enumerate Mathlib idioms ("X is unique" ⇔ "map injective", "X is the same" ⇔ "∀ point equal"). Without this, aligned samples are systematically rejected.</p>
+    </div>
+    <div class="imp-card">
+      <div class="num">03</div>
+      <h4>Handle answer-type questions separately</h4>
+      <p>"Prove that the answer is …" / "Find the value …" carry an implicit existential quantifier (counterexample for "No", witness for "Yes"). Naive ∀ translations are wrong.</p>
+    </div>
+    <div class="imp-card">
+      <div class="num">04</div>
+      <h4>Bidirectional self-check at verdict stage</h4>
+      <p>Have the model argue both <code>aligned</code> and <code>misaligned</code>, then pick the better-supported side. Cuts false positives on paraphrased aligned cases.</p>
+    </div>
+    <div class="imp-card">
+      <div class="num">05</div>
+      <h4>Constant- and predicate-level token diff</h4>
+      <p>Many errors (Cases 3, 4) are one-token substitutions. A pass that enumerates predicates, constants, quantifiers, operators and verifies each pairwise is cheap and high-yield.</p>
+    </div>
+  </div>
+</section>
+
+<section class="open-q">
+  <h2>Open questions for development</h2>
+  <ul>
+    <li>Distribution of <code>Prove that the answer is:</code>-style questions in the 7,030 set — likely large (math olympiad subset).</li>
+    <li>Whether <code>header</code>-only differences (e.g. a constraint silently encoded in the variable block) account for any aligned/misaligned splits.</li>
+    <li>How forgiving the DeepSeek judge is on Localization — does it accept any superset of the buggy span, or only a minimal segment?</li>
+  </ul>
+</section>
+
+<footer class="footer">
+  <h3>References</h3>
+  <ul>
+    <li>Original test inputs: <code>FormalRx_Test.jsonl</code> (7,030 rows)</li>
+    <li>20 stratified samples used: <code>case_study_samples.jsonl</code></li>
+    <li>Competition page: <a href="https://www.codabench.org/competitions/16104/">codabench.org/competitions/16104</a></li>
+    <li>Workshop CFP (5/24 AoE): <a href="https://ai4math2026.github.io/#cfp">ai4math2026.github.io/#cfp</a></li>
+  </ul>
+</footer>
+
+</div>
+
+<script>
+(() => {
+  const STORAGE_KEY = 'report-hub:case_study_analysis';
+  const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"tags":{}, "filters":{"diff":[], "tag":[]}, "theme":"auto"}');
+  const cases = document.querySelectorAll('.case');
+
+  // ---- theme ----
+  const themeBtn = document.getElementById('themeToggle');
+  const cycleTheme = () => {
+    const order = ['auto', 'light', 'dark'];
+    const next = order[(order.indexOf(state.theme) + 1) % order.length];
+    state.theme = next;
+    applyTheme();
+    persist();
+  };
+  const applyTheme = () => {
+    if (state.theme === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', state.theme);
+    themeBtn.textContent = state.theme;
+  };
+  themeBtn.addEventListener('click', cycleTheme);
+  applyTheme();
+
+  // ---- expand/collapse ----
+  cases.forEach(c => {
+    const head = c.querySelector('.case-head');
+    head.addEventListener('click', e => {
+      if (e.target.closest('.tag-btn')) return;
+      toggle(c);
+    });
+    head.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(c); }
+    });
+  });
+  function toggle(c) {
+    const open = c.getAttribute('data-open') === 'true';
+    c.setAttribute('data-open', open ? 'false' : 'true');
+    c.querySelector('.case-head').setAttribute('aria-expanded', open ? 'false' : 'true');
+  }
+
+  // ---- tags ----
+  function applyTagsFromState() {
+    cases.forEach(c => {
+      const id = c.dataset.id;
+      const tag = state.tags[id] || null;
+      if (tag) c.setAttribute('data-tag', tag);
+      else c.removeAttribute('data-tag');
+      c.querySelectorAll('.tag-btn').forEach(b => {
+        b.setAttribute('aria-pressed', b.dataset.tag === tag ? 'true' : 'false');
+      });
+    });
+  }
+  cases.forEach(c => {
+    c.querySelectorAll('.tag-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        const id = c.dataset.id;
+        const tag = btn.dataset.tag;
+        state.tags[id] = (state.tags[id] === tag) ? null : tag;
+        applyTagsFromState();
+        applyFilters();
+        persist();
+      });
+    });
+  });
+  document.getElementById('resetTags').addEventListener('click', () => {
+    state.tags = {};
+    applyTagsFromState();
+    applyFilters();
+    persist();
+  });
+
+  // ---- filters ----
+  const chips = document.querySelectorAll('.chip[data-filter]');
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const kind = chip.dataset.filter;
+      const val = chip.dataset.value;
+      const arr = state.filters[kind];
+      const i = arr.indexOf(val);
+      if (i >= 0) arr.splice(i, 1); else arr.push(val);
+      chip.setAttribute('aria-pressed', arr.includes(val) ? 'true' : 'false');
+      applyFilters();
+      persist();
+    });
+  });
+  function applyChipsFromState() {
+    chips.forEach(chip => {
+      chip.setAttribute('aria-pressed',
+        state.filters[chip.dataset.filter].includes(chip.dataset.value) ? 'true' : 'false');
+    });
+  }
+  function applyFilters() {
+    const dF = state.filters.diff;
+    const tF = state.filters.tag;
+    const showHidden = tF.includes('hide');
+    cases.forEach(c => {
+      const tag = state.tags[c.dataset.id] || null;
+      let show = true;
+      if (dF.length > 0 && !dF.includes(c.dataset.diff)) show = false;
+      // tag filter: if any of pin/discuss active, show only those.
+      const tagFilters = tF.filter(t => t !== 'hide');
+      if (tagFilters.length > 0 && !tagFilters.includes(tag)) show = false;
+      // hidden cards: only show if "show hidden" pressed
+      if (tag === 'hide' && !showHidden && tagFilters.length === 0) show = false;
+      c.hidden = !show;
+    });
+  }
+
+  // ---- init ----
+  applyTagsFromState();
+  applyChipsFromState();
+  applyFilters();
+  function persist() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+})();
+</script>
+</body>
+</html>

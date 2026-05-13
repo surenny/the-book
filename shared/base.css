@@ -1,0 +1,60 @@
+/* Report Hub — base layout primitives.
+ * Depends on tokens.css. Provides: body reset, .page wrapper, .hdr-bar with
+ * brand/breadcrumb/theme-toggle, focus ring. Most reports want this. */
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 4rem 2rem 8rem;
+}
+@media (max-width: 720px) {
+  .page { padding: 2rem 1.25rem 4rem; }
+}
+
+/* Top breadcrumb / theme toggle bar. Pattern:
+ *   <div class="hdr-bar">
+ *     <a href="../index.html">← AI4M Field Notes</a>
+ *     <span>project / path / report</span>
+ *     <button class="theme-toggle" id="themeToggle">auto</button>
+ *   </div>
+ * Or with brand left side (hub homepage):
+ *   <div class="brand"><span class="glyph"></span><span>AI4M Field Notes</span></div> */
+.hdr-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 3rem;
+  font-size: 0.75rem; color: var(--text-faint);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+.hdr-bar a { color: var(--text-faint); text-decoration: none; }
+.hdr-bar a:hover { color: var(--accent); }
+.hdr-bar .brand { display: flex; align-items: center; gap: 0.5rem; }
+.hdr-bar .brand .glyph {
+  display: inline-block; width: 14px; height: 14px;
+  background: var(--accent); border-radius: 3px;
+  transform: rotate(45deg);
+}
+
+.theme-toggle {
+  background: none; border: 1px solid var(--border); border-radius: 999px;
+  color: var(--text-muted); cursor: pointer;
+  font-size: 0.75rem; padding: 0.25rem 0.75rem;
+  font-family: inherit; letter-spacing: 0.04em;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

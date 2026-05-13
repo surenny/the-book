@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Book — Field Notes about AI4M</title>
+<link rel="stylesheet" href="shared/tokens.css">
+<link rel="stylesheet" href="shared/base.css">
+<link rel="stylesheet" href="shared/components.css">
+<style>
+/* index-specific: hero meta strip, filter bar, card grid, empty/contribute */
+.hero { max-width: 70ch; margin-bottom: 4rem; }
+.hero h1 { font-size: 4.25rem; line-height: 1.0; letter-spacing: -0.03em; margin-bottom: 1.5rem; }
+@media (max-width: 720px) { .hero h1 { font-size: 3rem; } }
+.hero .eyebrow { letter-spacing: 0.14em; margin-bottom: 1rem; }
+.hero .epigraph {
+  font-family: var(--font-serif); font-style: italic;
+  font-size: 1.05rem; line-height: 1.5;
+  color: var(--text-muted); margin: 0 0 1.5rem;
+  padding-left: 1.25rem; border-left: 2px solid var(--accent);
+  max-width: 56ch;
+}
+.hero .epigraph cite {
+  display: block; font-style: normal;
+  font-size: 0.78rem; letter-spacing: 0.04em;
+  color: var(--text-faint); margin-top: 0.5rem;
+  text-transform: uppercase;
+}
+
+.meta-strip {
+  display: flex; gap: 2rem; flex-wrap: wrap;
+  margin-top: 2.5rem; padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.82rem; color: var(--text-muted);
+}
+.meta-strip .stat { display: flex; flex-direction: column; gap: 0.15rem; }
+.meta-strip .stat .v {
+  font-family: var(--font-serif); font-size: 1.5rem; color: var(--text); line-height: 1;
+}
+.meta-strip .stat .l {
+  font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-faint); margin-top: 0.2rem;
+}
+
+.filter-bar {
+  display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 12px; padding: 0.85rem 1.1rem;
+  margin-bottom: 2rem;
+  position: sticky; top: 1rem; z-index: 10;
+  backdrop-filter: blur(8px); box-shadow: var(--shadow-sm);
+}
+.search {
+  flex: 1; min-width: 220px;
+  display: flex; align-items: center; gap: 0.5rem;
+  background: var(--bg-subtle); border: 1px solid transparent;
+  border-radius: 8px; padding: 0.35rem 0.7rem;
+  transition: border-color 0.12s ease;
+}
+.search:focus-within { border-color: var(--accent); background: var(--bg); }
+.search svg { color: var(--text-faint); flex-shrink: 0; }
+.search input {
+  background: none; border: none; outline: none;
+  flex: 1; font-family: inherit; font-size: 0.9rem; color: var(--text);
+}
+.search input::placeholder { color: var(--text-faint); }
+.filter-group { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+.filter-group .lbl {
+  font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--text-faint); margin-right: 0.25rem;
+}
+
+.result-line { font-size: 0.8rem; color: var(--text-faint); margin: 0 0 1rem; letter-spacing: 0.02em; }
+.result-line strong { color: var(--text); font-weight: 600; }
+
+.cards {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+  gap: 1.25rem;
+}
+@media (max-width: 720px) { .cards { grid-template-columns: 1fr; } }
+.card {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: 14px; padding: 1.5rem 1.5rem 1.25rem;
+  display: flex; flex-direction: column; gap: 0.75rem;
+  text-decoration: none; color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px; background: var(--accent);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.25s ease;
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--border-strong); }
+.card:hover::before { transform: scaleX(1); }
+.card[hidden] { display: none; }
+
+.card-top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; font-size: 0.75rem; color: var(--text-faint);
+}
+.card-top .breadcrumb { display: flex; align-items: center; gap: 0.4rem; letter-spacing: 0.04em; }
+.card-top .breadcrumb code { font-family: var(--font-mono); font-size: 0.88em; }
+.card-top .date { font-family: var(--font-mono); font-size: 0.85em; color: var(--text-faint); }
+
+.card-type {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent); font-weight: 600;
+}
+.card-type .ico { font-size: 0.85em; }
+
+.card h2 {
+  font-family: var(--font-serif); font-weight: 500;
+  font-size: 1.4rem; line-height: 1.25;
+  margin: 0.15rem 0; letter-spacing: -0.005em; color: var(--text);
+}
+.card .deck { font-size: 0.9rem; line-height: 1.55; color: var(--text-muted); margin: 0; }
+
+.card-highlights { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.25rem; }
+.card-highlights .hi {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  padding: 0.2rem 0.55rem; border-radius: 4px;
+  background: var(--accent-muted); color: var(--accent);
+  letter-spacing: 0.02em;
+}
+
+.card-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 1rem; margin-top: auto; padding-top: 0.85rem;
+  border-top: 1px solid var(--border);
+}
+.card-tags { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+.card-tags .tag { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-faint); }
+.card-tags .tag::before { content: "#"; opacity: 0.55; }
+.card-arrow {
+  color: var(--text-faint); font-size: 1.2rem;
+  transition: transform 0.15s ease, color 0.15s ease; flex-shrink: 0;
+}
+.card:hover .card-arrow { transform: translateX(3px); color: var(--accent); }
+
+.empty { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+.empty .lbl { font-size: 2.5rem; margin-bottom: 1rem; color: var(--text-faint); }
+.empty h3 {
+  font-family: var(--font-serif); font-weight: 500;
+  font-size: 1.4rem; margin: 0 0 0.5rem; color: var(--text);
+}
+.empty p { font-size: 0.9rem; margin: 0; }
+.empty button {
+  margin-top: 1rem; background: none; border: 1px solid var(--border);
+  color: var(--text-muted); border-radius: 999px;
+  padding: 0.35rem 1rem; cursor: pointer; font-family: inherit; font-size: 0.85rem;
+}
+.empty button:hover { border-color: var(--accent); color: var(--accent); }
+
+.contribute {
+  margin-top: 4rem; padding: 1.75rem;
+  border: 1px dashed var(--border-strong); border-radius: 12px;
+  background: var(--bg-subtle);
+}
+.contribute h3 {
+  font-family: var(--font-serif); font-weight: 500;
+  font-size: 1.2rem; margin: 0 0 0.5rem; color: var(--text);
+}
+.contribute p {
+  font-size: 0.9rem; color: var(--text-muted);
+  margin: 0 0 1rem; line-height: 1.6; max-width: 70ch;
+}
+.contribute pre {
+  font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.55;
+  background: var(--bg-code); color: #F5F1E8;
+  padding: 1rem 1.25rem; border-radius: 8px; overflow-x: auto; margin: 0;
+}
+.contribute pre .key { color: #C4A580; }
+.contribute pre .str { color: #A4B98C; }
+.contribute .modes {
+  display: flex; gap: 1.5rem; flex-wrap: wrap;
+  margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);
+}
+.contribute .modes code { font-family: var(--font-mono); font-size: 0.88em; color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr-bar">
+  <div class="brand"><span class="glyph"></span><span>The Book</span></div>
+  <button class="theme-toggle" id="themeToggle">auto</button>
+</div>
+
+<header class="hero">
+  <div class="eyebrow">Field notes about AI for Mathematics</div>
+  <h1>The Book</h1>
+  <blockquote class="epigraph">"You don't have to believe in God, but you should believe in The Book." <cite>— Paul Erdős</cite></blockquote>
+  <p class="lede">Erdős imagined a book in which God keeps the most elegant proof of every theorem. This is its humbler cousin — formalization case studies, evaluation postmortems, system tech-reports, dashboards from AI4M work, rendered as interactive HTML so 200-line markdown stops being where ideas go to die.</p>
+  <div class="meta-strip">
+    <div class="stat"><div class="v" id="statReports">—</div><div class="l">Reports</div></div>
+    <div class="stat"><div class="v" id="statProjects">—</div><div class="l">Projects</div></div>
+    <div class="stat"><div class="v" id="statLatest">—</div><div class="l">Latest</div></div>
+  </div>
+</header>
+
+<div class="filter-bar" role="toolbar" aria-label="filter reports">
+  <div class="search">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/>
+    </svg>
+    <input id="searchInput" type="text" placeholder="Search title, deck, tag…" aria-label="search">
+  </div>
+  <div class="filter-group" id="projectFilter"><span class="lbl">Project</span></div>
+  <div class="filter-group" id="typeFilter"><span class="lbl">Type</span></div>
+</div>
+
+<p class="result-line" id="resultLine"></p>
+
+<main class="cards" id="cards"></main>
+
+<section class="contribute" aria-labelledby="contribH">
+  <h3 id="contribH">Add a new report</h3>
+  <p>每个 report 是一个独立 HTML 文件。放进 <code>prototypes/</code>，然后在 <code>reports.json</code> 的 <code>reports</code> 数组里追加一条：</p>
+<pre><span class="key">{</span>
+  <span class="str">"id"</span>: <span class="str">"your_report_id"</span>,
+  <span class="str">"path"</span>: <span class="str">"prototypes/your_report.html"</span>,
+  <span class="str">"title"</span>: <span class="str">"…"</span>,
+  <span class="str">"project"</span>: <span class="str">"FormalQualBench"</span>,
+  <span class="str">"date"</span>: <span class="str">"2026-05-13"</span>,
+  <span class="str">"type"</span>: <span class="str">"Case Study | Postmortem | Tech Report | Dashboard | …"</span>,
+  <span class="str">"type_icon"</span>: <span class="str">"◆"</span>,
+  <span class="str">"tags"</span>: [<span class="str">"…"</span>],
+  <span class="str">"deck"</span>: <span class="str">"一两句话总结"</span>,
+  <span class="str">"highlights"</span>: [<span class="str">"3-4 个关键数字"</span>]
+<span class="key">}</span></pre>
+  <div class="modes">
+    <span>↘ 拷贝模板：<code>shared/starter.html</code></span>
+    <span>↘ 用 shared：<code>tokens.css</code> · <code>base.css</code> · <code>components.css</code> · <code>hub.js</code></span>
+    <span>↘ 完全自包含：把 shared/* 内容内联进单文件</span>
+  </div>
+</section>
+
+<footer class="footer">
+  <span>The Book · 2026 · <a href="mailto:surenny233@sjtu.edu.cn">surenny233@sjtu.edu.cn</a></span>
+  <span>Source <code>reports.json</code> · 单文件 HTML 报告</span>
+</footer>
+
+</div>
+
+<script src="shared/hub.js"></script>
+<script>
+(() => {
+  const STORAGE_KEY = 'report-hub:index';
+  const state = loadState(STORAGE_KEY, { filters: { project: [], type: [] }, search: '' });
+  state.filters = state.filters || { project: [], type: [] };
+  state.filters.project = state.filters.project || [];
+  state.filters.type = state.filters.type || [];
+
+  setupTheme('themeToggle', STORAGE_KEY);
+  // setupTheme writes its own theme key into the same storage — re-load to merge.
+  const merged = loadState(STORAGE_KEY, state);
+  Object.assign(state, merged);
+
+  // ---- load reports ----
+  fetch('reports.json').then(r => r.json()).then(data => render(data.reports || []))
+    .catch(err => {
+      document.getElementById('cards').innerHTML = `<div class="empty"><div class="lbl">⚠</div><h3>Could not load reports.json</h3><p>${escapeHtml(err.message)}</p></div>`;
+    });
+
+  function render(reports) {
+    reports.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
+    const projects = [...new Set(reports.map(r => r.project))].sort();
+    const types = [...new Set(reports.map(r => r.type))].sort();
+    buildChips('projectFilter', 'project', projects, reports);
+    buildChips('typeFilter', 'type', types, reports);
+
+    document.getElementById('statReports').textContent = reports.length;
+    document.getElementById('statProjects').textContent = projects.length;
+    document.getElementById('statLatest').textContent = reports[0]?.date || '—';
+
+    const searchInput = document.getElementById('searchInput');
+    searchInput.value = state.search;
+    searchInput.addEventListener('input', e => {
+      state.search = e.target.value;
+      renderCards(reports);
+      persistState(STORAGE_KEY, state);
+    });
+
+    renderCards(reports);
+  }
+
+  function buildChips(containerId, kind, values, reports) {
+    const container = document.getElementById(containerId);
+    values.forEach(v => {
+      const ct = reports.filter(r => r[kind] === v).length;
+      const btn = document.createElement('button');
+      btn.className = 'chip';
+      btn.dataset.kind = kind;
+      btn.dataset.value = v;
+      btn.setAttribute('aria-pressed', state.filters[kind].includes(v) ? 'true' : 'false');
+      btn.innerHTML = `${escapeHtml(v)}<span class="ct">${ct}</span>`;
+      btn.addEventListener('click', () => {
+        const arr = state.filters[kind];
+        const i = arr.indexOf(v);
+        if (i >= 0) arr.splice(i, 1); else arr.push(v);
+        btn.setAttribute('aria-pressed', arr.includes(v) ? 'true' : 'false');
+        renderCards(reports);
+        persistState(STORAGE_KEY, state);
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  function renderCards(reports) {
+    const cardsEl = document.getElementById('cards');
+    const q = (state.search || '').trim().toLowerCase();
+    const pF = state.filters.project;
+    const tF = state.filters.type;
+
+    const filtered = reports.filter(r => {
+      if (pF.length > 0 && !pF.includes(r.project)) return false;
+      if (tF.length > 0 && !tF.includes(r.type)) return false;
+      if (q) {
+        const hay = [r.title, r.deck, r.project, ...(r.tags || []), ...(r.highlights || [])].join(' ').toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
+    document.getElementById('resultLine').innerHTML = filtered.length === reports.length
+      ? `<strong>${reports.length}</strong> reports · sorted by date`
+      : `<strong>${filtered.length}</strong> of ${reports.length} reports`;
+
+    if (filtered.length === 0) {
+      cardsEl.innerHTML = `<div class="empty" style="grid-column:1/-1;"><div class="lbl">∅</div><h3>No reports match your filters</h3><p>Try clearing them.</p><button id="clearBtn">Clear filters</button></div>`;
+      document.getElementById('clearBtn').addEventListener('click', () => {
+        state.filters = { project: [], type: [] };
+        state.search = '';
+        document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+        document.getElementById('searchInput').value = '';
+        renderCards(reports);
+        persistState(STORAGE_KEY, state);
+      });
+      return;
+    }
+
+    cardsEl.innerHTML = filtered.map(r => `
+      <a class="card" href="${escapeHtml(r.path)}">
+        <div class="card-top">
+          <span class="breadcrumb"><code>${escapeHtml(r.project)}</code></span>
+          <span class="date">${escapeHtml(r.date)}</span>
+        </div>
+        <div class="card-type"><span class="ico">${escapeHtml(r.type_icon || '·')}</span><span>${escapeHtml(r.type)}</span></div>
+        <h2>${escapeHtml(r.title)}</h2>
+        <p class="deck">${escapeHtml(r.deck)}</p>
+        ${(r.highlights || []).length > 0 ? `<div class="card-highlights">${r.highlights.map(h => `<span class="hi">${escapeHtml(h)}</span>`).join('')}</div>` : ''}
+        <div class="card-footer">
+          <div class="card-tags">${(r.tags || []).slice(0, 5).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+    `).join('');
+  }
+})();
+</script>
+</body>
+</html>
