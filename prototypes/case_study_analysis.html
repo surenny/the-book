@@ -69,7 +69,14 @@ body {
 /* ---------- header ---------- */
 .hdr-bar {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 3rem;
+  position: sticky; top: 0; z-index: 50;
+  margin: 0 0 2.5rem;
+  padding: 0.85rem 0;
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
   font-size: var(--text-xs); color: var(--text-faint);
   letter-spacing: 0.08em; text-transform: uppercase;
 }
