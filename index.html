@@ -105,11 +105,23 @@
 .card-top .date { font-family: var(--font-mono); font-size: 0.85em; color: var(--text-faint); }
 
 .card-type {
-  display: inline-flex; align-items: center; gap: 0.35rem;
+  display: inline-flex; align-items: center; gap: 0.5rem;
   font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--accent); font-weight: 600;
 }
 .card-type .ico { font-size: 0.85em; }
+.card-type .local-pill {
+  font-family: var(--font-mono);
+  font-size: 0.62rem; letter-spacing: 0.08em;
+  color: var(--text-faint);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  padding: 0.05rem 0.4rem;
+  border-radius: 3px;
+  text-transform: lowercase; font-weight: 500;
+}
+.card.card-local { border-style: dashed; }
+.card.card-local::before { background: var(--text-faint); }
 
 .card h2 {
   font-family: var(--font-serif); font-weight: 500;
@@ -174,6 +186,7 @@
 }
 .contribute pre .key { color: #C4A580; }
 .contribute pre .str { color: #A4B98C; }
+.contribute pre .comment { color: #A8A095; font-style: italic; }
 .contribute .modes {
   display: flex; gap: 1.5rem; flex-wrap: wrap;
   margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);
@@ -218,14 +231,22 @@
 
 <section class="contribute" aria-labelledby="contribH">
   <h3 id="contribH">Add a new report</h3>
-  <p>每个 report 是一个独立 HTML 文件。放进 <code>prototypes/</code>，然后在 <code>reports.json</code> 的 <code>reports</code> 数组里追加一条：</p>
-<pre><span class="key">{</span>
+  <p>每个 report 是一个独立 HTML 文件。两条公开度路径：</p>
+<pre><span class="comment">// 公开 — committed to git, deployed to GitHub Pages</span>
+<span class="comment">//   file:     prototypes/your_report.html</span>
+<span class="comment">//   registry: reports.json</span>
+
+<span class="comment">// 本地 — gitignored, never leaves this machine</span>
+<span class="comment">//   file:     private/your_report.html</span>
+<span class="comment">//   registry: reports.local.json</span>
+
+<span class="key">{</span>
   <span class="str">"id"</span>: <span class="str">"your_report_id"</span>,
-  <span class="str">"path"</span>: <span class="str">"prototypes/your_report.html"</span>,
+  <span class="str">"path"</span>: <span class="str">"prototypes/your_report.html"</span>,  <span class="comment">// or "private/..."</span>
   <span class="str">"title"</span>: <span class="str">"…"</span>,
   <span class="str">"project"</span>: <span class="str">"FormalQualBench"</span>,
   <span class="str">"date"</span>: <span class="str">"2026-05-13"</span>,
-  <span class="str">"type"</span>: <span class="str">"Case Study | Postmortem | Tech Report | Dashboard | …"</span>,
+  <span class="str">"type"</span>: <span class="str">"Case Study | Postmortem | Tech Report | Dashboard | Essay"</span>,
   <span class="str">"type_icon"</span>: <span class="str">"◆"</span>,
   <span class="str">"tags"</span>: [<span class="str">"…"</span>],
   <span class="str">"deck"</span>: <span class="str">"一两句话总结"</span>,
@@ -233,8 +254,8 @@
 <span class="key">}</span></pre>
   <div class="modes">
     <span>↘ 拷贝模板：<code>shared/starter.html</code></span>
-    <span>↘ 用 shared：<code>tokens.css</code> · <code>base.css</code> · <code>components.css</code> · <code>hub.js</code></span>
-    <span>↘ 完全自包含：把 shared/* 内容内联进单文件</span>
+    <span>↘ 想公开：把文件从 <code>private/</code> 挪到 <code>prototypes/</code>，条目从 <code>reports.local.json</code> 挪到 <code>reports.json</code></span>
+    <span>↘ 完全自包含：把 <code>shared/*</code> 内容内联进单文件</span>
   </div>
 </section>
 
@@ -260,10 +281,23 @@
   Object.assign(state, merged);
 
   // ---- load reports ----
-  fetch('reports.json').then(r => r.json()).then(data => render(data.reports || []))
-    .catch(err => {
-      document.getElementById('cards').innerHTML = `<div class="empty"><div class="lbl">⚠</div><h3>Could not load reports.json</h3><p>${escapeHtml(err.message)}</p></div>`;
-    });
+  // Two registries:
+  //   reports.json        — public, committed to git, deployed to GitHub Pages
+  //   reports.local.json  — local-only, gitignored. Optional; 404 is silently ignored.
+  // Local-only entries get `local: true` and a "local" badge on the card.
+  Promise.all([
+    fetch('reports.json').then(r => r.ok ? r.json() : { reports: [] }).catch(() => ({ reports: [] })),
+    fetch('reports.local.json').then(r => r.ok ? r.json() : { reports: [] }).catch(() => ({ reports: [] }))
+  ]).then(([pub, loc]) => {
+    const publicReports = (pub.reports || []);
+    const localReports = (loc.reports || []).map(r => ({ ...r, local: true }));
+    const all = [...publicReports, ...localReports];
+    if (all.length === 0) {
+      document.getElementById('cards').innerHTML = `<div class="empty"><div class="lbl">⚠</div><h3>Could not load reports.json</h3><p>Make sure reports.json exists at the hub root.</p></div>`;
+      return;
+    }
+    render(all);
+  });
 
   function render(reports) {
     reports.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
@@ -344,12 +378,16 @@
     }
 
     cardsEl.innerHTML = filtered.map(r => `
-      <a class="card" href="${escapeHtml(r.path)}">
+      <a class="card${r.local ? ' card-local' : ''}" href="${escapeHtml(r.path)}">
         <div class="card-top">
           <span class="breadcrumb"><code>${escapeHtml(r.project)}</code></span>
           <span class="date">${escapeHtml(r.date)}</span>
         </div>
-        <div class="card-type"><span class="ico">${escapeHtml(r.type_icon || '·')}</span><span>${escapeHtml(r.type)}</span></div>
+        <div class="card-type">
+          <span class="ico">${escapeHtml(r.type_icon || '·')}</span>
+          <span>${escapeHtml(r.type)}</span>
+          ${r.local ? '<span class="local-pill" title="Local-only — not published">local</span>' : ''}
+        </div>
         <h2>${escapeHtml(r.title)}</h2>
         <p class="deck">${escapeHtml(r.deck)}</p>
         ${(r.highlights || []).length > 0 ? `<div class="card-highlights">${r.highlights.map(h => `<span class="hi">${escapeHtml(h)}</span>`).join('')}</div>` : ''}

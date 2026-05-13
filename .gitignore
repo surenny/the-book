@@ -13,3 +13,9 @@ Thumbs.db
 node_modules/
 .cache/
 *.log
+
+# Local-only reports (half-public hub):
+#   files in private/ and reports.local.json are local-only,
+#   never pushed to git, never deployed to GitHub Pages.
+/private/
+/reports.local.json
