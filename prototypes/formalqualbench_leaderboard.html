@@ -212,19 +212,19 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
   <h1>FormalQualBench Leaderboard</h1>
   <!-- BEGIN AUTO:deck -->
 <p class="deck">23 research-level Lean theorems · 10 main runs · solve rates, wall time, and token usage compared side by side.</p>
-  <div class="gen">Auto-generated 2026-05-14T09:18Z · <code>harness/aggregate.py</code></div>
+  <div class="gen">Auto-generated 2026-05-14T09:42Z · <code>harness/aggregate.py</code></div>
   <!-- END AUTO:deck -->
 </header>
 
 <section class="kpis">
   <!-- BEGIN AUTO:kpis -->
   <div class="kpi featured">
-    <div class="l">Best solved rate</div>
+    <div class="l">Best clean rate</div>
     <div class="v">26%<span class="sub">6/23</span></div>
     <div class="s">gpt-5.5-xhigh · <code>codex-gpt-5.5</code></div>
   </div>
   <div class="kpi">
-    <div class="l">Highest solved rate on 8-subset</div>
+    <div class="l">Highest clean rate on 8-subset</div>
     <div class="v">38%<span class="sub">3/8</span></div>
     <div class="s">deepseek-v4-pro[1m]</div>
   </div>
@@ -251,9 +251,9 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
           <th>Run</th>
           <th>Config / Model</th>
           <th class="right">Effort</th>
-          <th class="right" id="hdrScore">Solved</th>
-          <th class="right" id="hdrMid">Sorry</th>
-          <th class="right" id="hdrRight">Err</th>
+          <th class="right">Clean</th>
+          <th class="right">Cheat</th>
+          <th class="right">Fail</th>
           <th class="right">Wall</th>
         </tr>
       </thead>
@@ -276,11 +276,10 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
       <button class="chip" id="onlySolved" aria-pressed="false">Only solved-by-someone</button>
     </div>
     <div class="legend">
-      <span class="l-item"><span class="sw solved"></span>solved / clean</span>
-      <span class="l-item"><span class="sw sorry"></span>sorry</span>
+      <span class="l-item"><span class="sw solved"></span>clean</span>
       <span class="l-item"><span class="sw cheat"></span>cheat (M/D/A)</span>
-      <span class="l-item"><span class="sw error"></span>build_fail / timeout / err</span>
-      <span class="l-item"><span class="sw absent"></span>not in run</span>
+      <span class="l-item"><span class="sw error"></span>build_fail / timeout</span>
+      <span class="l-item"><span class="sw absent"></span>not in run / missing</span>
     </div>
   </div>
   <div class="mx-wrap"><div class="mx-scroll"><div class="mx" id="mx"></div></div></div>
@@ -321,113 +320,104 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 const RUNS = [
   { id: "run-20260513-011039-baseline-23-clean", short: "baseline-23-clean", config: "codex-gpt-5.5", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 6, sorry: 17, err: 0, wall: "1h34m", n: 23, walltime_total_solved: "3h17m", token_total: 0.0, token_solved: 0.0 },
   { id: "run-20260430-151426-5th_try_opus_4_7_lean_tools", short: "5th_try_opus_4_7_lean_tools", config: "claude-code-lean-tools", model: "claude-opus-4-7", effort: "xhigh", solved: 6, sorry: 17, err: 0, wall: "4h", n: 23, walltime_total_solved: "4h59m", token_total: 1969.6, token_solved: 146.9 },
+  { id: "run-20260514-170057-lean-tools-fails17", short: "lean-tools-fails17", config: "codex-gpt-5.5-lean-tools", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 0, sorry: 8, err: 0, wall: "37m", n: 17, walltime_total_solved: "\u2014", token_total: 0.0, token_solved: 0.0 },
   { id: "run-20260513-113030-strict-17", short: "strict-17", config: "codex-gpt-5.5-strict", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 2, sorry: 11, err: 4, wall: "1h24m", n: 17, walltime_total_solved: "1h40m", token_total: 0.0, token_solved: 0.0 },
   { id: "run-20260501-163348-deepseek_opus8", short: "deepseek_opus8", config: "claude-code-deepseek", model: "deepseek-v4-pro[1m]", effort: "max", solved: 3, sorry: 3, err: 2, wall: "4h", n: 8, walltime_total_solved: "3h38m", token_total: 153.1, token_solved: 85.0 },
   { id: "run-20260428-172408-4th_try_opus_4_7", short: "4th_try_opus_4_7", config: "?", model: "claude-opus-4-7", effort: "xhigh", solved: 4, sorry: 18, err: 1, wall: "42m", n: 23, walltime_total_solved: "1h27m", token_total: 96.5, token_solved: 24.7 },
   { id: "run-20260508-095234-claude-sonnet-4-6", short: "claude-sonnet-4-6", config: "claude-code-sonnet", model: "claude-sonnet-4-6", effort: "xhigh", solved: 3, sorry: 20, err: 0, wall: "2h51m", n: 23, walltime_total_solved: "1h15m", token_total: 201.0, token_solved: 11.8 },
   { id: "run-20260512-201959-baseline-23", short: "baseline-23", config: "codex-gpt-5.5", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 4, sorry: 15, err: 4, wall: "34m", n: 23, walltime_total_solved: "1h11m", token_total: 0.0, token_solved: 0.0 },
   { id: "run-20260507-171416-mimo_opus8", short: "mimo_opus8", config: "claude-code-mimo", model: "mimo-v2.5-pro", effort: "xhigh", solved: 1, sorry: 4, err: 3, wall: "4h", n: 8, walltime_total_solved: "47m", token_total: 26.2, token_solved: 4.0 },
-  { id: "run-20260512-181402-baseline-23-v2", short: "baseline-23-v2", config: "gemini-3.1-pro", model: "gemini-3.1-pro-preview-thinking", effort: "xhigh", solved: 0, sorry: 22, err: 1, wall: "17m", n: 23, walltime_total_solved: "\u2014", token_total: 0.0, token_solved: 0.0 },
-  { id: "run-20260514-162104-smoke-codex-lt", short: "smoke-codex-lt", config: "codex-gpt-5.5-lean-tools", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 0, sorry: 0, err: 0, wall: "\u2014", n: 1, walltime_total_solved: "\u2014", token_total: 0.0, token_solved: 0.0 }
+  { id: "run-20260512-181402-baseline-23-v2", short: "baseline-23-v2", config: "gemini-3.1-pro", model: "gemini-3.1-pro-preview-thinking", effort: "xhigh", solved: 0, sorry: 22, err: 1, wall: "17m", n: 23, walltime_total_solved: "\u2014", token_total: 0.0, token_solved: 0.0 }
 ];
 const PROBLEMS = [
-  { name: "BanachStoneTheorem", v: ["M", "M", "M", "\u00b7", "A", "A", "A", "\u00b7", "F", "\u00b7"] },
-  { name: "BorsukUlamTheorem", v: ["M", "A", "A", "\u00b7", "A", "A", "F", "\u00b7", "A", "\u00b7"] },
-  { name: "BurnsidePrimeDegreeTheorem", v: ["M", "A", "F", "\u00b7", "A", "A", "M", "\u00b7", "A", "\u00b7"] },
-  { name: "CollatzMapAlmostBoundedValues", v: ["D", "A", "D", "\u00b7", "A", "A", "F", "\u00b7", "A", "\u00b7"] },
-  { name: "ColorfulCaratheodoryTheorem", v: ["\u2713", "\u2713", "\u00b7", "F", "\u2713", "A", "\u2713", "A", "A", "\u00b7"] },
-  { name: "DLOQuantifierElimination", v: ["\u2713", "\u2713", "\u00b7", "F", "A", "\u2713", "\u2713", "F", "A", "\u00b7"] },
-  { name: "DeBruijnErdos", v: ["\u2713", "\u2713", "\u00b7", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "A", "\u00b7"] },
-  { name: "ErdosDiscrepancyProblem", v: ["M", "A", "A", "\u00b7", "A", "A", "F", "\u00b7", "A", "\u00b7"] },
-  { name: "GleasonKahaneZelazkoTheorem", v: ["\u2713", "A", "\u00b7", "\u00b7", "A", "A", "F", "\u00b7", "A", "\u00b7"] },
-  { name: "GreenTaoTheorem", v: ["M", "M", "A", "A", "A", "A", "A", "A", "A", "\u00b7"] },
-  { name: "Hilbert17thProblem", v: ["M", "A", "A", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
-  { name: "JordanCycleTheorem", v: ["M", "A", "M", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
-  { name: "JordanDerangementTheorem", v: ["\u2713", "\u2713", "\u00b7", "\u2713", "\u2713", "\u2713", "\u2713", "A", "A", "?"] },
-  { name: "KakeyaTheorem3D", v: ["M", "A", "A", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
-  { name: "MaynardTaoBoundedPrimeGaps", v: ["M", "A", "A", "A", "A", "A", "A", "A", "A", "\u00b7"] },
-  { name: "ParisHarringtonPrinciple", v: ["\u2713", "\u2713", "\u00b7", "\u2713", "\u2713", "A", "A", "F", "A", "\u00b7"] },
-  { name: "PontryaginDuality", v: ["M", "A", "F", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
-  { name: "QuillenSuslinTheorem", v: ["M", "A", "F", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
-  { name: "RungeTheorem", v: ["M", "A", "A", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
-  { name: "SchauderFixedPointTheorem", v: ["M", "A", "\u2713", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
-  { name: "SkolemMahlerLechTheorem", v: ["M", "A", "F", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
-  { name: "TernaryGoldbachTheorem", v: ["M", "A", "M", "\u00b7", "F", "A", "A", "\u00b7", "A", "\u00b7"] },
-  { name: "VonNeumannDoubleCommutantTheorem", v: ["M", "\u2713", "\u2713", "A", "A", "A", "A", "F", "A", "\u00b7"] }
+  { name: "BanachStoneTheorem", v: ["M", "M", "?", "M", "\u00b7", "A", "A", "A", "\u00b7", "F"] },
+  { name: "BorsukUlamTheorem", v: ["M", "A", "?", "A", "\u00b7", "A", "A", "F", "\u00b7", "A"] },
+  { name: "BurnsidePrimeDegreeTheorem", v: ["M", "A", "M", "F", "\u00b7", "A", "A", "M", "\u00b7", "A"] },
+  { name: "CollatzMapAlmostBoundedValues", v: ["D", "A", "D", "D", "\u00b7", "A", "A", "F", "\u00b7", "A"] },
+  { name: "ColorfulCaratheodoryTheorem", v: ["\u2713", "\u2713", "\u00b7", "\u00b7", "F", "\u2713", "A", "\u2713", "A", "A"] },
+  { name: "DLOQuantifierElimination", v: ["\u2713", "\u2713", "\u00b7", "\u00b7", "F", "A", "\u2713", "\u2713", "F", "A"] },
+  { name: "DeBruijnErdos", v: ["\u2713", "\u2713", "\u00b7", "\u00b7", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "A"] },
+  { name: "ErdosDiscrepancyProblem", v: ["M", "A", "D", "A", "\u00b7", "A", "A", "F", "\u00b7", "A"] },
+  { name: "GleasonKahaneZelazkoTheorem", v: ["\u2713", "A", "\u00b7", "\u00b7", "\u00b7", "A", "A", "F", "\u00b7", "A"] },
+  { name: "GreenTaoTheorem", v: ["M", "M", "M", "A", "A", "A", "A", "A", "A", "A"] },
+  { name: "Hilbert17thProblem", v: ["M", "A", "M", "A", "\u00b7", "A", "A", "A", "\u00b7", "A"] },
+  { name: "JordanCycleTheorem", v: ["M", "A", "M", "M", "\u00b7", "A", "A", "A", "\u00b7", "A"] },
+  { name: "JordanDerangementTheorem", v: ["\u2713", "\u2713", "\u00b7", "\u00b7", "\u2713", "\u2713", "\u2713", "\u2713", "A", "A"] },
+  { name: "KakeyaTheorem3D", v: ["M", "A", "M", "A", "\u00b7", "A", "A", "A", "\u00b7", "A"] },
+  { name: "MaynardTaoBoundedPrimeGaps", v: ["M", "A", "M", "A", "A", "A", "A", "A", "A", "A"] },
+  { name: "ParisHarringtonPrinciple", v: ["\u2713", "\u2713", "\u00b7", "\u00b7", "\u2713", "\u2713", "A", "A", "F", "A"] },
+  { name: "PontryaginDuality", v: ["M", "A", "?", "F", "\u00b7", "A", "A", "A", "\u00b7", "A"] },
+  { name: "QuillenSuslinTheorem", v: ["M", "A", "?", "F", "\u00b7", "A", "A", "A", "\u00b7", "A"] },
+  { name: "RungeTheorem", v: ["M", "A", "?", "A", "\u00b7", "A", "A", "A", "\u00b7", "A"] },
+  { name: "SchauderFixedPointTheorem", v: ["M", "A", "?", "\u2713", "\u00b7", "A", "A", "A", "\u00b7", "A"] },
+  { name: "SkolemMahlerLechTheorem", v: ["M", "A", "?", "F", "\u00b7", "A", "A", "A", "\u00b7", "A"] },
+  { name: "TernaryGoldbachTheorem", v: ["M", "A", "?", "M", "\u00b7", "F", "A", "A", "\u00b7", "A"] },
+  { name: "VonNeumannDoubleCommutantTheorem", v: ["M", "\u2713", "?", "\u2713", "A", "A", "A", "A", "F", "A"] }
 ];
 const WALL = {
   "ColorfulCaratheodoryTheorem:0": "26m",
   "ColorfulCaratheodoryTheorem:1": "1h39m",
-  "ColorfulCaratheodoryTheorem:4": "42m",
-  "ColorfulCaratheodoryTheorem:6": "26m",
+  "ColorfulCaratheodoryTheorem:5": "42m",
+  "ColorfulCaratheodoryTheorem:7": "26m",
   "DLOQuantifierElimination:0": "34m",
   "DLOQuantifierElimination:1": "1h30m",
-  "DLOQuantifierElimination:5": "33m",
-  "DLOQuantifierElimination:6": "34m",
+  "DLOQuantifierElimination:6": "33m",
+  "DLOQuantifierElimination:7": "34m",
   "DeBruijnErdos:0": "11m",
   "DeBruijnErdos:1": "7m",
-  "DeBruijnErdos:3": "55m",
-  "DeBruijnErdos:4": "9m",
-  "DeBruijnErdos:5": "14m",
-  "DeBruijnErdos:6": "11m",
-  "DeBruijnErdos:7": "47m",
+  "DeBruijnErdos:4": "55m",
+  "DeBruijnErdos:5": "9m",
+  "DeBruijnErdos:6": "14m",
+  "DeBruijnErdos:7": "11m",
+  "DeBruijnErdos:8": "47m",
   "GleasonKahaneZelazkoTheorem:0": "1h34m",
   "JordanDerangementTheorem:0": "4m",
   "JordanDerangementTheorem:1": "6m",
-  "JordanDerangementTheorem:3": "31m",
-  "JordanDerangementTheorem:4": "7m",
-  "JordanDerangementTheorem:5": "27m",
-  "JordanDerangementTheorem:6": "12s",
+  "JordanDerangementTheorem:4": "31m",
+  "JordanDerangementTheorem:5": "7m",
+  "JordanDerangementTheorem:6": "27m",
+  "JordanDerangementTheorem:7": "12s",
   "ParisHarringtonPrinciple:0": "26m",
   "ParisHarringtonPrinciple:1": "37m",
-  "ParisHarringtonPrinciple:3": "2h12m",
-  "ParisHarringtonPrinciple:4": "28m",
-  "SchauderFixedPointTheorem:2": "1h14m",
+  "ParisHarringtonPrinciple:4": "2h12m",
+  "ParisHarringtonPrinciple:5": "28m",
+  "SchauderFixedPointTheorem:3": "1h14m",
   "VonNeumannDoubleCommutantTheorem:1": "59m",
-  "VonNeumannDoubleCommutantTheorem:2": "25m"
+  "VonNeumannDoubleCommutantTheorem:3": "25m"
 };
 const TOKENS = {
   "ColorfulCaratheodoryTheorem:1": "32.6M",
-  "ColorfulCaratheodoryTheorem:4": "11.9M",
+  "ColorfulCaratheodoryTheorem:5": "11.9M",
   "DLOQuantifierElimination:1": "61.0M",
-  "DLOQuantifierElimination:5": "3.8M",
+  "DLOQuantifierElimination:6": "3.8M",
   "DeBruijnErdos:1": "3.1M",
-  "DeBruijnErdos:3": "4.6M",
-  "DeBruijnErdos:4": "3.3M",
-  "DeBruijnErdos:5": "2.9M",
-  "DeBruijnErdos:7": "4.0M",
+  "DeBruijnErdos:4": "4.6M",
+  "DeBruijnErdos:5": "3.3M",
+  "DeBruijnErdos:6": "2.9M",
+  "DeBruijnErdos:8": "4.0M",
   "JordanDerangementTheorem:1": "2.1M",
-  "JordanDerangementTheorem:3": "6.2M",
-  "JordanDerangementTheorem:4": "3.1M",
-  "JordanDerangementTheorem:5": "5.1M",
+  "JordanDerangementTheorem:4": "6.2M",
+  "JordanDerangementTheorem:5": "3.1M",
+  "JordanDerangementTheorem:6": "5.1M",
   "ParisHarringtonPrinciple:1": "6.5M",
-  "ParisHarringtonPrinciple:3": "74.2M",
-  "ParisHarringtonPrinciple:4": "6.4M",
+  "ParisHarringtonPrinciple:4": "74.2M",
+  "ParisHarringtonPrinciple:5": "6.4M",
   "VonNeumannDoubleCommutantTheorem:1": "41.7M"
 };
-const MODE = "verify";
 // END AUTO:data
-(function applyHeaderMode() {
-  const hdr = MODE === 'comparator'
-    ? { score: 'Clean', mid: 'Cheat', right: 'Fail' }
-    : { score: 'Solved', mid: 'Sorry', right: 'Err' };
-  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-  set('hdrScore', hdr.score); set('hdrMid', hdr.mid); set('hdrRight', hdr.right);
-})();
 
+// Comparator glyphs only — HTML is comparator-as-truth.
 const VERDICT_TO_CLASS = {
   '✓': 'solved',
-  's': 'sorry', 'a': 'sorry',
   'M': 'cheat', 'D': 'cheat', 'A': 'cheat',
-  'F': 'error', 'T': 'error', 'e': 'error',
+  'F': 'error', 'T': 'error',
   '?': 'absent', '·': 'absent'
 };
 const VERDICT_LABEL = {
   '✓': 'clean (kernel-accepted)',
-  's': 'sorry remaining', 'a': 'axiom remaining',
   'M': 'statement_mismatch (cheat)', 'D': 'dep_mismatch (cheat)', 'A': 'illegal_axiom (cheat)',
-  'F': 'build_fail', 'T': 'timeout', 'e': 'error',
-  '?': 'theorem missing / not in run', '·': 'not in run'
+  'F': 'build_fail', 'T': 'timeout',
+  '?': 'theorem missing', '·': 'not in run / no submission'
 };
 const STORAGE_KEY = 'report-hub:formalqualbench_leaderboard';
 const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"mode":"verdict","sortBy":null,"onlySolved":false,"theme":"auto"}');
