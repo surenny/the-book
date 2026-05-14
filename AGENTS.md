@@ -11,7 +11,16 @@
 
 Each report is **one HTML file**. Reports either link to `shared/*.css + hub.js` or inline those assets — see *Inline vs linked* below.
 
-## The 3-step workflow
+## Two authoring tracks
+
+Pick a track based on the report's shape:
+
+- **Renderable track** — long-form prose: Essay, Postmortem, Case Study, Tech Report. Source of truth is a markdown file (typically in another project repo); `scripts/render.mjs` produces the HTML and upserts the registry entry. See *From-MD authoring* below.
+- **Custom-HTML track** — Dashboards or anything with bespoke layout / interactive JS (clickable matrices, anchor nav, custom charts). Hand-write the HTML; use `scripts/new-report.mjs` to scaffold from `shared/starter.html` and append a registry entry.
+
+The four existing `prototypes/*.html` are all custom-HTML. The renderable track is for new long-form reports going forward.
+
+## The 3-step workflow (custom-HTML track)
 
 ```bash
 # 1. Scaffold a new report from the starter template + append a registry entry.
@@ -80,7 +89,9 @@ Two valid modes; pick one per report and stick to it.
 
 **Default to inline** for `prototypes/*` (all four current public reports use inline mode — they're meant to be distributable). Use linked for quick local drafts in `private/`.
 
-`new-report.mjs` scaffolds in **linked mode** so you can prototype fast; before publishing, run `node scripts/new-report.mjs --inline-existing prototypes/foo.html` to inline the shared assets (TODO: this flag is not yet implemented — for now, copy from another `prototypes/*.html`).
+`new-report.mjs` scaffolds in **linked mode** so you can prototype fast; before publishing, copy from an existing `prototypes/*.html` to inline the shared assets (`--inline-existing` is not yet implemented).
+
+`render.mjs` defaults to linked mode too; pass `--inline` to embed `shared/*.css` and `hub.js` directly into the output.
 
 ## Component catalog
 
@@ -103,6 +114,91 @@ All utility classes live in `shared/components.css` and the file's inline commen
 `shared/tokens.css` defines all colors, spacing, fonts, shadows as CSS variables. Use them; never hard-code hex.
 
 `shared/hub.js` exports: `setupTheme(btnId, storageKey)`, `persistState`, `loadState`, `escapeHtml`, `setupAnchorNav`, `setupReadingProgress`.
+
+## From-MD authoring (renderable track)
+
+For long-form reports the source of truth is a markdown file with YAML-ish frontmatter; HTML is generated. Re-run the renderer to regenerate after edits — never hand-edit the produced HTML.
+
+```bash
+node scripts/render.mjs path/to/source.md            # renders to prototypes/<id>.html or private/<id>.html (per visibility), upserts registry
+node scripts/render.mjs path/to/source.md --out preview.html  # preview to an arbitrary path, no registry write
+node scripts/render.mjs path/to/source.md --inline   # embed shared/*.css + hub.js into the output
+node scripts/render.mjs path/to/source.md --dry-run  # print the plan, no writes
+```
+
+### Frontmatter schema
+
+```markdown
+---
+id:           foo_bar               # [a-z0-9_]+, unique across both registries
+title:        "Human title"
+project:      ProjectName
+type:         Postmortem             # one of the type/icon table above
+date:         2026-05-14             # YYYY-MM-DD
+deck:         "One-sentence lede."
+tags:         [a, b, c]
+highlights:   [a, b, c]
+visibility:   public                 # optional; public | private; default public
+source_path:  ProjectName/notes.md   # optional; defaults to the input MD's path relative to repo root
+metrics:                              # optional; renders a grid under the deck
+  - label: "best solve rate"
+    value: "35"
+    suffix: "%"                       # optional
+    style: good                       # optional; featured | good | warn | alert
+---
+
+# (H1 here is discarded — title comes from frontmatter)
+
+## First section
+
+Prose, **bold**, *italic*, `inline code`, [links](https://example.com).
+
+- bullet
+- list
+
+:::callout
+**Key insight.** Body of a callout.
+:::
+
+| col A | col B |
+|---|---|
+| 1 | 2 |
+
+```lean
+theorem foo : 1 + 1 = 2 := by rfl
+```
+
+> Blockquote.
+```
+
+### Supported Markdown subset
+
+| feature             | syntax                                  | renders to                                  |
+| ------------------- | --------------------------------------- | ------------------------------------------- |
+| Section heading     | `## Title`                              | numbered `.sec` (auto-numbered 01, 02, …)   |
+| Subheading          | `### Title`                             | `<h3>`                                      |
+| Paragraph           | regular text                            | `<p>`                                       |
+| Unordered list      | `- item` (flat, no nesting)             | `<ul><li>`                                  |
+| Ordered list        | `1. item` (flat)                        | `<ol><li>`                                  |
+| Table               | pipe-style with `|---|` separator       | `.tbl-wrap > table.embed`                   |
+| Fenced code         | <code>```lang ... ```</code>            | `.code-block` (plain text; add `<span class="kw">` etc. manually) |
+| Blockquote          | `> text`                                | `<blockquote>`                              |
+| Horizontal rule     | `---`                                   | `<hr>`                                      |
+| Bold / italic       | `**x**` / `*x*`                         | `<strong>` / `<em>`                         |
+| Inline code         | `` `x` ``                               | `<code>` (mono pill via base styles)        |
+| Link                | `[label](url)`                          | `<a>`                                       |
+| Callout block       | `:::callout` … `:::`                    | `.callout`                                  |
+
+The renderer is intentionally minimal (~250 lines, zero deps). When you need something it doesn't support — interactive JS, custom CSS, a chart — drop down to the custom-HTML track instead. Don't bolt features onto `render.mjs` to handle one-off layouts.
+
+### When to use which track
+
+| symptom                                                       | track        |
+| ------------------------------------------------------------- | ------------ |
+| "It's an essay / postmortem / case study / write-up."         | renderable   |
+| "I want the canonical source to be MD I can also read in vim." | renderable  |
+| "There's a clickable matrix / chart / anchor nav / custom JS." | custom-HTML |
+| "Layout deviates significantly from hero + sections + tables." | custom-HTML |
 
 ## Half-public rule
 
