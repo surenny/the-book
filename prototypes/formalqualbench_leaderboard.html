@@ -112,6 +112,7 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 .legend .sw { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
 .sw.solved { background: var(--success); }
 .sw.sorry  { background: var(--warn); }
+.sw.cheat  { background: var(--danger); opacity: .8; }
 .sw.error  { background: var(--danger); }
 .sw.absent { background: var(--bg-subtle); border: 1px solid var(--border); }
 
@@ -132,15 +133,18 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 .mx-cell.verdict:hover { transform: scale(1.1); z-index: 5; box-shadow: var(--shadow-md); }
 .mx-cell.verdict.solved { background: rgba(92,138,79,.32); color: var(--success); font-weight: 600; }
 .mx-cell.verdict.sorry  { background: rgba(199,144,44,.18); color: var(--warn); }
+.mx-cell.verdict.cheat  { background: rgba(177,75,63,.30); color: var(--danger); font-weight: 600; }
 .mx-cell.verdict.error  { background: rgba(177,75,63,.18); color: var(--danger); }
 .mx-cell.verdict.absent { background: var(--bg-elevated); color: var(--text-faint); }
 @media (prefers-color-scheme: dark) {
   .mx-cell.verdict.solved { background: rgba(130,179,116,.28); color: var(--success); }
   .mx-cell.verdict.sorry  { background: rgba(217,168,71,.22); color: var(--warn); }
+  .mx-cell.verdict.cheat  { background: rgba(216,114,104,.34); color: var(--danger); }
   .mx-cell.verdict.error  { background: rgba(216,114,104,.22); color: var(--danger); }
 }
 [data-theme="dark"] .mx-cell.verdict.solved { background: rgba(130,179,116,.28); }
 [data-theme="dark"] .mx-cell.verdict.sorry  { background: rgba(217,168,71,.22); }
+[data-theme="dark"] .mx-cell.verdict.cheat  { background: rgba(216,114,104,.34); }
 [data-theme="dark"] .mx-cell.verdict.error  { background: rgba(216,114,104,.22); }
 
 /* heat cells (for wall/token mode) */
@@ -206,31 +210,35 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 <header class="hero">
   <div class="eyebrow">Benchmark Dashboard</div>
   <h1>FormalQualBench Leaderboard</h1>
-  <p class="deck">23 research-level Lean theorems · 5 main runs · solve rates, wall time, and token usage compared side by side.</p>
-  <div class="gen">Auto-generated 2026-05-11T06:48Z · <code>harness/aggregate.py</code></div>
+  <!-- BEGIN AUTO:deck -->
+<p class="deck">23 research-level Lean theorems · 10 main runs · solve rates, wall time, and token usage compared side by side.</p>
+  <div class="gen">Auto-generated 2026-05-14T09:18Z · <code>harness/aggregate.py</code></div>
+  <!-- END AUTO:deck -->
 </header>
 
 <section class="kpis">
+  <!-- BEGIN AUTO:kpis -->
   <div class="kpi featured">
-    <div class="l">Best solve rate</div>
-    <div class="v">35%<span class="sub">8/23</span></div>
-    <div class="s">claude-opus-4-7 · <code>lean-tools</code></div>
+    <div class="l">Best solved rate</div>
+    <div class="v">26%<span class="sub">6/23</span></div>
+    <div class="s">gpt-5.5-xhigh · <code>codex-gpt-5.5</code></div>
   </div>
   <div class="kpi">
-    <div class="l">Highest solve rate on 8-subset</div>
-    <div class="v">62%<span class="sub">5/8</span></div>
+    <div class="l">Highest solved rate on 8-subset</div>
+    <div class="v">38%<span class="sub">3/8</span></div>
     <div class="s">deepseek-v4-pro[1m]</div>
   </div>
   <div class="kpi">
     <div class="l">Main runs</div>
-    <div class="v">5</div>
-    <div class="s">2 models on full 23, 3 on subset</div>
+    <div class="v">10</div>
+    <div class="s">6 on full 23, 4 on subsets</div>
   </div>
   <div class="kpi">
     <div class="l">Problems</div>
     <div class="v">23</div>
     <div class="s">research-level Lean theorems</div>
   </div>
+  <!-- END AUTO:kpis -->
 </section>
 
 <section class="sec" id="leaderboard">
@@ -243,9 +251,9 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
           <th>Run</th>
           <th>Config / Model</th>
           <th class="right">Effort</th>
-          <th class="right">Solved</th>
-          <th class="right">Sorry</th>
-          <th class="right">Err</th>
+          <th class="right" id="hdrScore">Solved</th>
+          <th class="right" id="hdrMid">Sorry</th>
+          <th class="right" id="hdrRight">Err</th>
           <th class="right">Wall</th>
         </tr>
       </thead>
@@ -268,9 +276,10 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
       <button class="chip" id="onlySolved" aria-pressed="false">Only solved-by-someone</button>
     </div>
     <div class="legend">
-      <span class="l-item"><span class="sw solved"></span>solved</span>
+      <span class="l-item"><span class="sw solved"></span>solved / clean</span>
       <span class="l-item"><span class="sw sorry"></span>sorry</span>
-      <span class="l-item"><span class="sw error"></span>error</span>
+      <span class="l-item"><span class="sw cheat"></span>cheat (M/D/A)</span>
+      <span class="l-item"><span class="sw error"></span>build_fail / timeout / err</span>
       <span class="l-item"><span class="sw absent"></span>not in run</span>
     </div>
   </div>
@@ -297,8 +306,10 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 </section>
 
 <footer class="footer">
-  <span>Source · <code>FormalQualBench/runs/{LEADERBOARD,MATRIX}.md</code></span>
-  <span>Snapshot · 2026-05-11</span>
+  <!-- BEGIN AUTO:footer -->
+<span>Source · <code>FormalQualBench/runs/{LEADERBOARD,MATRIX}.md</code></span>
+  <span>Snapshot · 2026-05-14</span>
+  <!-- END AUTO:footer -->
 </footer>
 
 <div class="mx-tip" id="mxTip" aria-hidden="true"></div>
@@ -306,65 +317,118 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 </div>
 
 <script>
+// BEGIN AUTO:data
 const RUNS = [
-  { id: '5th_try_opus_4_7_lean_tools', short: '5th_try_opus_4_7_lean_tools', config: 'claude-code-lean-tools', model: 'claude-opus-4-7', effort: 'xhigh', solved: 8, sorry: 15, err: 0, wall: '4h', n: 23, walltime_total_solved: '5h41m', token_total: 1992.5 /* M, summed across models */, token_solved: 159.2 },
-  { id: 'deepseek_opus8',            short: 'deepseek_opus8',            config: 'claude-code-deepseek',   model: 'deepseek-v4-pro[1m]', effort: 'max',   solved: 5, sorry: 1, err: 2, wall: '4h', n: 8, walltime_total_solved: '5h43m', token_total: 153.1, token_solved: 107.5 },
-  { id: '4th_try_opus_4_7',          short: '4th_try_opus_4_7',          config: '?',                       model: 'claude-opus-4-7',     effort: 'xhigh', solved: 4, sorry: 18, err: 1, wall: '42m', n: 23, walltime_total_solved: '1h27m', token_total: 96.5, token_solved: 24.7 },
-  { id: 'claude-sonnet-4-6',         short: 'claude-sonnet-4-6',         config: 'claude-code-sonnet',     model: 'claude-sonnet-4-6',   effort: 'xhigh', solved: 3, sorry: 20, err: 0, wall: '2h51m', n: 23, walltime_total_solved: '1h15m', token_total: 201.1, token_solved: 11.8 },
-  { id: 'mimo_opus8',                short: 'mimo_opus8',                config: 'claude-code-mimo',       model: 'mimo-v2.5-pro',       effort: 'xhigh', solved: 2, sorry: 3, err: 3, wall: '4h', n: 8, walltime_total_solved: '1h54m', token_total: 26.2, token_solved: 14.0 }
+  { id: "run-20260513-011039-baseline-23-clean", short: "baseline-23-clean", config: "codex-gpt-5.5", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 6, sorry: 17, err: 0, wall: "1h34m", n: 23, walltime_total_solved: "3h17m", token_total: 0.0, token_solved: 0.0 },
+  { id: "run-20260430-151426-5th_try_opus_4_7_lean_tools", short: "5th_try_opus_4_7_lean_tools", config: "claude-code-lean-tools", model: "claude-opus-4-7", effort: "xhigh", solved: 6, sorry: 17, err: 0, wall: "4h", n: 23, walltime_total_solved: "4h59m", token_total: 1969.6, token_solved: 146.9 },
+  { id: "run-20260513-113030-strict-17", short: "strict-17", config: "codex-gpt-5.5-strict", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 2, sorry: 11, err: 4, wall: "1h24m", n: 17, walltime_total_solved: "1h40m", token_total: 0.0, token_solved: 0.0 },
+  { id: "run-20260501-163348-deepseek_opus8", short: "deepseek_opus8", config: "claude-code-deepseek", model: "deepseek-v4-pro[1m]", effort: "max", solved: 3, sorry: 3, err: 2, wall: "4h", n: 8, walltime_total_solved: "3h38m", token_total: 153.1, token_solved: 85.0 },
+  { id: "run-20260428-172408-4th_try_opus_4_7", short: "4th_try_opus_4_7", config: "?", model: "claude-opus-4-7", effort: "xhigh", solved: 4, sorry: 18, err: 1, wall: "42m", n: 23, walltime_total_solved: "1h27m", token_total: 96.5, token_solved: 24.7 },
+  { id: "run-20260508-095234-claude-sonnet-4-6", short: "claude-sonnet-4-6", config: "claude-code-sonnet", model: "claude-sonnet-4-6", effort: "xhigh", solved: 3, sorry: 20, err: 0, wall: "2h51m", n: 23, walltime_total_solved: "1h15m", token_total: 201.0, token_solved: 11.8 },
+  { id: "run-20260512-201959-baseline-23", short: "baseline-23", config: "codex-gpt-5.5", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 4, sorry: 15, err: 4, wall: "34m", n: 23, walltime_total_solved: "1h11m", token_total: 0.0, token_solved: 0.0 },
+  { id: "run-20260507-171416-mimo_opus8", short: "mimo_opus8", config: "claude-code-mimo", model: "mimo-v2.5-pro", effort: "xhigh", solved: 1, sorry: 4, err: 3, wall: "4h", n: 8, walltime_total_solved: "47m", token_total: 26.2, token_solved: 4.0 },
+  { id: "run-20260512-181402-baseline-23-v2", short: "baseline-23-v2", config: "gemini-3.1-pro", model: "gemini-3.1-pro-preview-thinking", effort: "xhigh", solved: 0, sorry: 22, err: 1, wall: "17m", n: 23, walltime_total_solved: "\u2014", token_total: 0.0, token_solved: 0.0 },
+  { id: "run-20260514-162104-smoke-codex-lt", short: "smoke-codex-lt", config: "codex-gpt-5.5-lean-tools", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 0, sorry: 0, err: 0, wall: "\u2014", n: 1, walltime_total_solved: "\u2014", token_total: 0.0, token_solved: 0.0 }
 ];
-
-// problems × runs verdicts
 const PROBLEMS = [
-  { name: 'BanachStoneTheorem',                v: ['s', '·', 's', 's', '·'] },
-  { name: 'BorsukUlamTheorem',                 v: ['s', '·', 's', 's', '·'] },
-  { name: 'BurnsidePrimeDegreeTheorem',        v: ['s', '·', 's', 's', '·'] },
-  { name: 'CollatzMapAlmostBoundedValues',     v: ['s', '·', 's', 's', '·'] },
-  { name: 'ColorfulCaratheodoryTheorem',       v: ['✓', 'e', '✓', 's', 's'] },
-  { name: 'DLOQuantifierElimination',          v: ['✓', 'e', 's', '✓', 'e'] },
-  { name: 'DeBruijnErdos',                     v: ['✓', '✓', '✓', '✓', '✓'] },
-  { name: 'ErdosDiscrepancyProblem',           v: ['s', '·', 's', 's', '·'] },
-  { name: 'GleasonKahaneZelazkoTheorem',       v: ['s', '·', 's', 's', '·'] },
-  { name: 'GreenTaoTheorem',                   v: ['✓', '✓', 's', 's', 's'] },
-  { name: 'Hilbert17thProblem',                v: ['s', '·', 's', 's', '·'] },
-  { name: 'JordanCycleTheorem',                v: ['s', '·', 's', 's', '·'] },
-  { name: 'JordanDerangementTheorem',          v: ['✓', '✓', '✓', '✓', 's'] },
-  { name: 'KakeyaTheorem3D',                   v: ['s', '·', 's', 's', '·'] },
-  { name: 'MaynardTaoBoundedPrimeGaps',        v: ['✓', '✓', 's', 's', '✓'] },
-  { name: 'ParisHarringtonPrinciple',          v: ['✓', '✓', '✓', 's', 'e'] },
-  { name: 'PontryaginDuality',                 v: ['s', '·', 's', 's', '·'] },
-  { name: 'QuillenSuslinTheorem',              v: ['s', '·', 's', 's', '·'] },
-  { name: 'RungeTheorem',                      v: ['s', '·', 's', 's', '·'] },
-  { name: 'SchauderFixedPointTheorem',         v: ['s', '·', 's', 's', '·'] },
-  { name: 'SkolemMahlerLechTheorem',           v: ['s', '·', 's', 's', '·'] },
-  { name: 'TernaryGoldbachTheorem',            v: ['s', '·', 'e', 's', '·'] },
-  { name: 'VonNeumannDoubleCommutantTheorem',  v: ['✓', 's', 's', 's', 'e'] }
+  { name: "BanachStoneTheorem", v: ["M", "M", "M", "\u00b7", "A", "A", "A", "\u00b7", "F", "\u00b7"] },
+  { name: "BorsukUlamTheorem", v: ["M", "A", "A", "\u00b7", "A", "A", "F", "\u00b7", "A", "\u00b7"] },
+  { name: "BurnsidePrimeDegreeTheorem", v: ["M", "A", "F", "\u00b7", "A", "A", "M", "\u00b7", "A", "\u00b7"] },
+  { name: "CollatzMapAlmostBoundedValues", v: ["D", "A", "D", "\u00b7", "A", "A", "F", "\u00b7", "A", "\u00b7"] },
+  { name: "ColorfulCaratheodoryTheorem", v: ["\u2713", "\u2713", "\u00b7", "F", "\u2713", "A", "\u2713", "A", "A", "\u00b7"] },
+  { name: "DLOQuantifierElimination", v: ["\u2713", "\u2713", "\u00b7", "F", "A", "\u2713", "\u2713", "F", "A", "\u00b7"] },
+  { name: "DeBruijnErdos", v: ["\u2713", "\u2713", "\u00b7", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "A", "\u00b7"] },
+  { name: "ErdosDiscrepancyProblem", v: ["M", "A", "A", "\u00b7", "A", "A", "F", "\u00b7", "A", "\u00b7"] },
+  { name: "GleasonKahaneZelazkoTheorem", v: ["\u2713", "A", "\u00b7", "\u00b7", "A", "A", "F", "\u00b7", "A", "\u00b7"] },
+  { name: "GreenTaoTheorem", v: ["M", "M", "A", "A", "A", "A", "A", "A", "A", "\u00b7"] },
+  { name: "Hilbert17thProblem", v: ["M", "A", "A", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
+  { name: "JordanCycleTheorem", v: ["M", "A", "M", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
+  { name: "JordanDerangementTheorem", v: ["\u2713", "\u2713", "\u00b7", "\u2713", "\u2713", "\u2713", "\u2713", "A", "A", "?"] },
+  { name: "KakeyaTheorem3D", v: ["M", "A", "A", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
+  { name: "MaynardTaoBoundedPrimeGaps", v: ["M", "A", "A", "A", "A", "A", "A", "A", "A", "\u00b7"] },
+  { name: "ParisHarringtonPrinciple", v: ["\u2713", "\u2713", "\u00b7", "\u2713", "\u2713", "A", "A", "F", "A", "\u00b7"] },
+  { name: "PontryaginDuality", v: ["M", "A", "F", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
+  { name: "QuillenSuslinTheorem", v: ["M", "A", "F", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
+  { name: "RungeTheorem", v: ["M", "A", "A", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
+  { name: "SchauderFixedPointTheorem", v: ["M", "A", "\u2713", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
+  { name: "SkolemMahlerLechTheorem", v: ["M", "A", "F", "\u00b7", "A", "A", "A", "\u00b7", "A", "\u00b7"] },
+  { name: "TernaryGoldbachTheorem", v: ["M", "A", "M", "\u00b7", "F", "A", "A", "\u00b7", "A", "\u00b7"] },
+  { name: "VonNeumannDoubleCommutantTheorem", v: ["M", "\u2713", "\u2713", "A", "A", "A", "A", "F", "A", "\u00b7"] }
 ];
-
-// wall time / tokens per solved cell (column index = run index)
-// keys: <problem>:<runIdx>
 const WALL = {
-  'ColorfulCaratheodoryTheorem:0': '1h39m', 'ColorfulCaratheodoryTheorem:2': '42m',
-  'DLOQuantifierElimination:0': '1h30m', 'DLOQuantifierElimination:3': '33m',
-  'DeBruijnErdos:0': '7m', 'DeBruijnErdos:1': '55m', 'DeBruijnErdos:2': '9m', 'DeBruijnErdos:3': '14m', 'DeBruijnErdos:4': '47m',
-  'GreenTaoTheorem:0': '21m', 'GreenTaoTheorem:1': '1h09m',
-  'JordanDerangementTheorem:0': '6m', 'JordanDerangementTheorem:1': '31m', 'JordanDerangementTheorem:2': '7m', 'JordanDerangementTheorem:3': '27m',
-  'MaynardTaoBoundedPrimeGaps:0': '20m', 'MaynardTaoBoundedPrimeGaps:1': '55m', 'MaynardTaoBoundedPrimeGaps:4': '1h07m',
-  'ParisHarringtonPrinciple:0': '37m', 'ParisHarringtonPrinciple:1': '2h12m', 'ParisHarringtonPrinciple:2': '28m',
-  'VonNeumannDoubleCommutantTheorem:0': '59m'
+  "ColorfulCaratheodoryTheorem:0": "26m",
+  "ColorfulCaratheodoryTheorem:1": "1h39m",
+  "ColorfulCaratheodoryTheorem:4": "42m",
+  "ColorfulCaratheodoryTheorem:6": "26m",
+  "DLOQuantifierElimination:0": "34m",
+  "DLOQuantifierElimination:1": "1h30m",
+  "DLOQuantifierElimination:5": "33m",
+  "DLOQuantifierElimination:6": "34m",
+  "DeBruijnErdos:0": "11m",
+  "DeBruijnErdos:1": "7m",
+  "DeBruijnErdos:3": "55m",
+  "DeBruijnErdos:4": "9m",
+  "DeBruijnErdos:5": "14m",
+  "DeBruijnErdos:6": "11m",
+  "DeBruijnErdos:7": "47m",
+  "GleasonKahaneZelazkoTheorem:0": "1h34m",
+  "JordanDerangementTheorem:0": "4m",
+  "JordanDerangementTheorem:1": "6m",
+  "JordanDerangementTheorem:3": "31m",
+  "JordanDerangementTheorem:4": "7m",
+  "JordanDerangementTheorem:5": "27m",
+  "JordanDerangementTheorem:6": "12s",
+  "ParisHarringtonPrinciple:0": "26m",
+  "ParisHarringtonPrinciple:1": "37m",
+  "ParisHarringtonPrinciple:3": "2h12m",
+  "ParisHarringtonPrinciple:4": "28m",
+  "SchauderFixedPointTheorem:2": "1h14m",
+  "VonNeumannDoubleCommutantTheorem:1": "59m",
+  "VonNeumannDoubleCommutantTheorem:2": "25m"
 };
 const TOKENS = {
-  'ColorfulCaratheodoryTheorem:0': '32.6M', 'ColorfulCaratheodoryTheorem:2': '11.9M',
-  'DLOQuantifierElimination:0': '61.0M', 'DLOQuantifierElimination:3': '3.8M',
-  'DeBruijnErdos:0': '3.1M', 'DeBruijnErdos:1': '4.6M', 'DeBruijnErdos:2': '3.3M', 'DeBruijnErdos:3': '2.9M', 'DeBruijnErdos:4': '4.0M',
-  'GreenTaoTheorem:0': '5.8M', 'GreenTaoTheorem:1': '11.7M',
-  'JordanDerangementTheorem:0': '2.1M', 'JordanDerangementTheorem:1': '6.2M', 'JordanDerangementTheorem:2': '3.1M', 'JordanDerangementTheorem:3': '5.1M',
-  'MaynardTaoBoundedPrimeGaps:0': '6.5M', 'MaynardTaoBoundedPrimeGaps:1': '10.8M', 'MaynardTaoBoundedPrimeGaps:4': '10.0M',
-  'ParisHarringtonPrinciple:0': '6.5M', 'ParisHarringtonPrinciple:1': '74.2M', 'ParisHarringtonPrinciple:2': '6.4M',
-  'VonNeumannDoubleCommutantTheorem:0': '41.7M'
+  "ColorfulCaratheodoryTheorem:1": "32.6M",
+  "ColorfulCaratheodoryTheorem:4": "11.9M",
+  "DLOQuantifierElimination:1": "61.0M",
+  "DLOQuantifierElimination:5": "3.8M",
+  "DeBruijnErdos:1": "3.1M",
+  "DeBruijnErdos:3": "4.6M",
+  "DeBruijnErdos:4": "3.3M",
+  "DeBruijnErdos:5": "2.9M",
+  "DeBruijnErdos:7": "4.0M",
+  "JordanDerangementTheorem:1": "2.1M",
+  "JordanDerangementTheorem:3": "6.2M",
+  "JordanDerangementTheorem:4": "3.1M",
+  "JordanDerangementTheorem:5": "5.1M",
+  "ParisHarringtonPrinciple:1": "6.5M",
+  "ParisHarringtonPrinciple:3": "74.2M",
+  "ParisHarringtonPrinciple:4": "6.4M",
+  "VonNeumannDoubleCommutantTheorem:1": "41.7M"
 };
+const MODE = "verify";
+// END AUTO:data
+(function applyHeaderMode() {
+  const hdr = MODE === 'comparator'
+    ? { score: 'Clean', mid: 'Cheat', right: 'Fail' }
+    : { score: 'Solved', mid: 'Sorry', right: 'Err' };
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set('hdrScore', hdr.score); set('hdrMid', hdr.mid); set('hdrRight', hdr.right);
+})();
 
-const VERDICT_TO_CLASS = { '✓': 'solved', 's': 'sorry', 'e': 'error', '·': 'absent', '?': 'absent', 'a': 'sorry' };
+const VERDICT_TO_CLASS = {
+  '✓': 'solved',
+  's': 'sorry', 'a': 'sorry',
+  'M': 'cheat', 'D': 'cheat', 'A': 'cheat',
+  'F': 'error', 'T': 'error', 'e': 'error',
+  '?': 'absent', '·': 'absent'
+};
+const VERDICT_LABEL = {
+  '✓': 'clean (kernel-accepted)',
+  's': 'sorry remaining', 'a': 'axiom remaining',
+  'M': 'statement_mismatch (cheat)', 'D': 'dep_mismatch (cheat)', 'A': 'illegal_axiom (cheat)',
+  'F': 'build_fail', 'T': 'timeout', 'e': 'error',
+  '?': 'theorem missing / not in run', '·': 'not in run'
+};
 const STORAGE_KEY = 'report-hub:formalqualbench_leaderboard';
 const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"mode":"verdict","sortBy":null,"onlySolved":false,"theme":"auto"}');
 
@@ -461,7 +525,7 @@ function renderMatrix() {
     c.addEventListener('mouseenter', e => {
       const p = c.dataset.prob; const i = parseInt(c.dataset.run); const r = RUNS[i];
       const v = c.dataset.verdict;
-      const verdictLbl = { '✓': 'solved', 's': 'sorry', 'e': 'error', '·': 'not in run' }[v] || v;
+      const verdictLbl = VERDICT_LABEL[v] || v;
       const wall = WALL[`${p}:${i}`] || '—';
       const toks = TOKENS[`${p}:${i}`] || '—';
       tip.innerHTML = `<div class="t-title">${p}</div>
