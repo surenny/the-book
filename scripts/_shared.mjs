@@ -1,5 +1,5 @@
-// Shared helpers for new-report.mjs and validate.mjs.
-// Single source of truth for type/icon pairs and registry locations.
+// Shared helpers for new-report.mjs, render.mjs, validate.mjs.
+// Registry paths and the open-vocabulary type-icon defaults.
 
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -12,14 +12,17 @@ export const PROTOTYPES_DIR   = resolve(REPO_ROOT, 'prototypes');
 export const PRIVATE_DIR      = resolve(REPO_ROOT, 'private');
 export const STARTER          = resolve(REPO_ROOT, 'shared/starter.html');
 
-// Authoritative type → icon mapping. Keep in sync with AGENTS.md.
-export const TYPE_ICONS = {
+// Default icon for common types. Open vocabulary — `type` may be any string;
+// this map only saves you from passing --type-icon for the common cases.
+// Authors can override with an explicit type_icon at any time.
+export const DEFAULT_TYPE_ICONS = {
   'Dashboard':                 '▦',
   'Postmortem':                '▲',
   'Case Study':                '◆',
   'Essay':                     '✎',
   'Tech Report':               '●',
   'Tech Report (reference)':   '●',
+  'Design Note':               '◇',
 };
 
 export const REQUIRED_FIELDS = [

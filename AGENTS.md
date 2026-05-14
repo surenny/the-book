@@ -57,26 +57,29 @@ Every registry entry has these fields. `new-report.mjs` writes them for you; thi
 | `project`       | yes      | `FormalQualBench`                                | groups reports in the project filter                                  |
 | `source_path`   | yes      | `FormalQualBench/runs/LEADERBOARD.md`            | path to the source markdown/notes; shown in footer + card             |
 | `date`          | yes      | `2026-05-11`                                     | ISO-8601 `YYYY-MM-DD`; cards sort by this                             |
-| `type`          | yes      | `Postmortem`                                     | one of the table below                                                |
-| `type_icon`     | yes      | `▲`                                              | must pair with `type` per the table below                             |
+| `type`          | yes      | `Postmortem`                                     | free-form string; common values listed below; coin new ones as needed |
+| `type_icon`     | yes      | `▲`                                              | any glyph; auto-defaults from the table below when `type` is common   |
 | `tags`          | yes      | `["benchmark","lean4"]`                          | string array; lowercased; shown as chips                              |
 | `deck`          | yes      | `One- or two-sentence lede.`                     | the card subtitle and the in-report `.deck`                           |
 | `highlights`    | yes      | `["6/23 solved","12 patterns"]`                  | 1–3 short bullets shown under the deck on the card                    |
 
-### type ↔ type_icon
+### type — open vocabulary; default icons for common values
 
-Add a new pair here if you need to extend.
+`type` is a free-form string. `index.html` just renders whatever you put there as the card label. Coin new ones when a genuinely new shape of report shows up.
 
-| type                    | icon |
-| ----------------------- | ---- |
-| `Dashboard`             | `▦`  |
-| `Postmortem`            | `▲`  |
-| `Case Study`            | `◆`  |
-| `Essay`                 | `✎`  |
-| `Tech Report`           | `●`  |
-| `Tech Report (reference)` | `●` |
+For convenience, `new-report.mjs` and `render.mjs` auto-fill `type_icon` from this table when `type` matches. Pass `--type-icon` (CLI) or set `type_icon:` (frontmatter) to override or to pick an icon for a new type.
 
-`validate.mjs` rejects unknown type/icon pairs.
+| type                      | default icon |
+| ------------------------- | ------------ |
+| `Dashboard`               | `▦`          |
+| `Postmortem`              | `▲`          |
+| `Case Study`              | `◆`          |
+| `Essay`                   | `✎`          |
+| `Tech Report`             | `●`          |
+| `Tech Report (reference)` | `●`          |
+| `Design Note`             | `◇`          |
+
+`validate.mjs` requires both `type` and `type_icon` to be set, but accepts any value. It emits a soft warning (not an error) if you use a common `type` with a non-default icon — that's fine if intentional, but it'll flag a likely typo. Extend `DEFAULT_TYPE_ICONS` in `scripts/_shared.mjs` and this table together when a new type becomes common.
 
 ## Inline vs linked
 
@@ -133,7 +136,8 @@ node scripts/render.mjs path/to/source.md --dry-run  # print the plan, no writes
 id:           foo_bar               # [a-z0-9_]+, unique across both registries
 title:        "Human title"
 project:      ProjectName
-type:         Postmortem             # one of the type/icon table above
+type:         Postmortem             # free-form; common defaults in the type table above
+type_icon:    "▲"                    # optional if `type` is in the defaults table; required otherwise
 date:         2026-05-14             # YYYY-MM-DD
 deck:         "One-sentence lede."
 tags:         [a, b, c]
@@ -216,9 +220,11 @@ Validator checks every entry in both registries:
 - JSON parses
 - `id` unique across both files
 - required fields present, `date` is ISO-8601, `tags`/`highlights` are arrays
-- `type` and `type_icon` are a known pair
+- `type` and `type_icon` are both present (any string accepted — open vocabulary)
 - `path` exists on disk and matches the registry (public entries must be under `prototypes/`, private under `private/`)
 - `id` matches the HTML filename basename
+
+Soft warnings (don't fail the build): using a common `type` with a non-default icon. Fine if intentional; the warning exists to catch typos.
 
 The validator is also expected to run in CI eventually; keep it green.
 
@@ -226,5 +232,4 @@ The validator is also expected to run in CI eventually; keep it green.
 
 - Don't hand-edit `reports.json` if you can call `new-report.mjs` instead — JSON commas are easy to break.
 - Don't put a public report in `private/` or vice versa — the path/registry must match.
-- Don't add a new `type` without updating the table here and in `validate.mjs`.
 - Don't introduce new colors/spacing; use the tokens.

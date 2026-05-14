@@ -6,7 +6,7 @@
 //   - id is unique across both registries and matches [a-z0-9_]+
 //   - date is YYYY-MM-DD
 //   - tags / highlights are non-empty arrays
-//   - type / type_icon are a known pair
+//   - type and type_icon are both present (open vocabulary — any string accepted)
 //   - path exists on disk and matches registry side (public → prototypes/, private → private/)
 //   - HTML filename basename matches id
 //
@@ -16,7 +16,7 @@ import { existsSync } from 'node:fs';
 import { resolve, basename, extname } from 'node:path';
 import {
   REPO_ROOT, PUBLIC_REGISTRY, PRIVATE_REGISTRY,
-  TYPE_ICONS, REQUIRED_FIELDS, ID_RE, DATE_RE,
+  DEFAULT_TYPE_ICONS, REQUIRED_FIELDS, ID_RE, DATE_RE,
   readJSON,
 } from './_shared.mjs';
 
@@ -64,10 +64,10 @@ for (const { r, i, side, reg } of entries) {
   if (r.highlights && (!Array.isArray(r.highlights) || r.highlights.length === 0))
     errors.push(`${tag} highlights must be a non-empty array`);
 
-  if (r.type && !(r.type in TYPE_ICONS)) {
-    errors.push(`${tag} unknown type "${r.type}". Known: ${Object.keys(TYPE_ICONS).join(', ')}`);
-  } else if (r.type && r.type_icon && TYPE_ICONS[r.type] !== r.type_icon) {
-    errors.push(`${tag} type/icon mismatch: type="${r.type}" expects icon "${TYPE_ICONS[r.type]}" but got "${r.type_icon}"`);
+  // Type is open vocabulary; both fields must be present but any string is fine.
+  // Soft hint: if `type` is a known default but the icon differs, warn (don't reject).
+  if (r.type && r.type_icon && (r.type in DEFAULT_TYPE_ICONS) && DEFAULT_TYPE_ICONS[r.type] !== r.type_icon) {
+    warnings.push(`${tag} type "${r.type}" usually pairs with "${DEFAULT_TYPE_ICONS[r.type]}", got "${r.type_icon}" (fine if intentional)`);
   }
 
   if (r.path) {

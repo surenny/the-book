@@ -14,7 +14,8 @@
 //   id:           foo_bar         (kebab-or-snake, [a-z0-9_]+)
 //   title:        "Human title"
 //   project:      ProjectName
-//   type:         Postmortem      (one of TYPE_ICONS keys)
+//   type:         Postmortem      (free-form; common: Postmortem, Essay, Case Study, Dashboard, Tech Report, Design Note)
+//   type_icon:    "▲"             (optional if `type` is in DEFAULT_TYPE_ICONS; required otherwise)
 //   date:         2026-05-14      (ISO-8601)
 //   deck:         "One-sentence lede."
 //   tags:         [a, b, c]
@@ -31,7 +32,7 @@ import { resolve, relative, dirname } from 'node:path';
 import {
   REPO_ROOT, PUBLIC_REGISTRY, PRIVATE_REGISTRY,
   PROTOTYPES_DIR, PRIVATE_DIR,
-  TYPE_ICONS, ID_RE, DATE_RE,
+  DEFAULT_TYPE_ICONS, ID_RE, DATE_RE,
   readJSON, stringifyRegistry,
 } from './_shared.mjs';
 
@@ -449,7 +450,8 @@ function main() {
   }
   if (!ID_RE.test(meta.id))                die(`id must match ${ID_RE}`);
   if (!DATE_RE.test(meta.date))            die(`date must be YYYY-MM-DD`);
-  if (!(meta.type in TYPE_ICONS))          die(`unknown type "${meta.type}" — known: ${Object.keys(TYPE_ICONS).join(', ')}`);
+  const typeIcon = meta.type_icon || DEFAULT_TYPE_ICONS[meta.type];
+  if (!typeIcon) die(`type "${meta.type}" has no default icon — add a \`type_icon: <glyph>\` line to the frontmatter. Known defaults: ${Object.keys(DEFAULT_TYPE_ICONS).join(', ')}`);
   if (!Array.isArray(meta.tags) || meta.tags.length === 0)             die('tags must be non-empty array');
   if (!Array.isArray(meta.highlights) || meta.highlights.length === 0) die('highlights must be non-empty array');
   const visibility = meta.visibility || 'public';
@@ -466,7 +468,7 @@ function main() {
     source_path: meta.source_path || sourcePathRel,
     date:        meta.date,
     type:        meta.type,
-    type_icon:   TYPE_ICONS[meta.type],
+    type_icon:   typeIcon,
     tags:        meta.tags,
     deck:        meta.deck,
     highlights:  meta.highlights,

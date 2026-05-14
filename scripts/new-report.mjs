@@ -15,7 +15,7 @@ import { resolve, relative } from 'node:path';
 import {
   REPO_ROOT, PUBLIC_REGISTRY, PRIVATE_REGISTRY,
   PROTOTYPES_DIR, PRIVATE_DIR, STARTER,
-  TYPE_ICONS, ID_RE, DATE_RE,
+  DEFAULT_TYPE_ICONS, ID_RE, DATE_RE,
   readJSON, stringifyRegistry,
 } from './_shared.mjs';
 
@@ -29,6 +29,7 @@ function parseArgs(argv) {
       case '--title':      out.title = take(); break;
       case '--project':    out.project = take(); break;
       case '--type':       out.type = take(); break;
+      case '--type-icon':  out.type_icon = take(); break;
       case '--source':     out.source_path = take(); break;
       case '--date':       out.date = take(); break;
       case '--deck':       out.deck = take(); break;
@@ -48,7 +49,8 @@ const USAGE = `Usage: node scripts/new-report.mjs \\
   --id <slug>                  unique [a-z0-9_]+
   --title "<text>"             human title
   --project "<name>"           project grouping
-  --type <Type>                one of: ${Object.keys(TYPE_ICONS).join(' | ')}
+  --type <Type>                free-form; common: ${Object.keys(DEFAULT_TYPE_ICONS).join(' | ')}
+ [--type-icon <glyph>]         override icon (required if --type is not in the defaults table)
   --source <path>              source markdown/notes path
   --date <YYYY-MM-DD>          defaults to today
   --deck "<text>"              one-sentence lede
@@ -76,7 +78,7 @@ function buildEntry(args) {
     source_path: args.source_path,
     date: args.date,
     type: args.type,
-    type_icon: TYPE_ICONS[args.type],
+    type_icon: args.type_icon,
     tags: args.tags,
     deck: args.deck,
     highlights: args.highlights,
@@ -112,8 +114,9 @@ function main() {
   if (!args.title)    die('--title is required');
   if (!args.project)  die('--project is required');
   if (!args.type)     die('--type is required');
-  if (!(args.type in TYPE_ICONS))
-    die(`--type must be one of: ${Object.keys(TYPE_ICONS).join(', ')}`);
+  args.type_icon ||= DEFAULT_TYPE_ICONS[args.type];
+  if (!args.type_icon)
+    die(`type "${args.type}" has no default icon — pass --type-icon <glyph>. Known defaults: ${Object.keys(DEFAULT_TYPE_ICONS).join(', ')}`);
   if (!args.source_path) die('--source is required');
   if (!args.deck)     die('--deck is required');
   args.date ||= todayISO();
