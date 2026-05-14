@@ -112,9 +112,24 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 .legend .sw { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
 .sw.solved { background: var(--success); }
 .sw.sorry  { background: var(--warn); }
-.sw.cheat  { background: var(--danger); opacity: .8; }
+.sw.cheat  { background: rgba(199,144,44,.22); }
 .sw.error  { background: var(--danger); }
 .sw.absent { background: var(--bg-subtle); border: 1px solid var(--border); }
+/* legend glyph: a miniature cheat matrix cell, lets us show M/D/A inline */
+.legend .lg { width: 22px; height: 18px; border-radius: 3px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: .72rem; font-weight: 600; background: rgba(199,144,44,.22); }
+.legend .lg[data-g="M"] { color: #7B4A1A; }
+.legend .lg[data-g="D"] { color: #6B3FA0; }
+.legend .lg[data-g="A"] { color: var(--danger); }
+@media (prefers-color-scheme: dark) {
+  .legend .lg { background: rgba(217,168,71,.22); }
+  .legend .lg[data-g="M"] { color: #E5B568; }
+  .legend .lg[data-g="D"] { color: #B894E0; }
+  .legend .lg[data-g="A"] { color: var(--danger); }
+}
+[data-theme="dark"] .legend .lg { background: rgba(217,168,71,.22); }
+[data-theme="dark"] .legend .lg[data-g="M"] { color: #E5B568; }
+[data-theme="dark"] .legend .lg[data-g="D"] { color: #B894E0; }
+[data-theme="dark"] .legend .lg[data-g="A"] { color: var(--danger); }
 
 /* ---- matrix ---- */
 .mx-wrap { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
@@ -133,18 +148,29 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 .mx-cell.verdict:hover { transform: scale(1.1); z-index: 5; box-shadow: var(--shadow-md); }
 .mx-cell.verdict.solved { background: rgba(92,138,79,.32); color: var(--success); font-weight: 600; }
 .mx-cell.verdict.sorry  { background: rgba(199,144,44,.18); color: var(--warn); }
-.mx-cell.verdict.cheat  { background: rgba(177,75,63,.30); color: var(--danger); font-weight: 600; }
+/* cheat: orange-yellow background — distinct from error red; M/D/A get different
+   text colors via [data-verdict] so the specific cheat mode is readable at a glance */
+.mx-cell.verdict.cheat                    { background: rgba(199,144,44,.22); font-weight: 600; }
+.mx-cell.verdict.cheat[data-verdict="M"]  { color: #7B4A1A; }
+.mx-cell.verdict.cheat[data-verdict="D"]  { color: #6B3FA0; }
+.mx-cell.verdict.cheat[data-verdict="A"]  { color: var(--danger); }
 .mx-cell.verdict.error  { background: rgba(177,75,63,.18); color: var(--danger); }
 .mx-cell.verdict.absent { background: var(--bg-elevated); color: var(--text-faint); }
 @media (prefers-color-scheme: dark) {
   .mx-cell.verdict.solved { background: rgba(130,179,116,.28); color: var(--success); }
   .mx-cell.verdict.sorry  { background: rgba(217,168,71,.22); color: var(--warn); }
-  .mx-cell.verdict.cheat  { background: rgba(216,114,104,.34); color: var(--danger); }
+  .mx-cell.verdict.cheat                    { background: rgba(217,168,71,.22); }
+  .mx-cell.verdict.cheat[data-verdict="M"]  { color: #E5B568; }
+  .mx-cell.verdict.cheat[data-verdict="D"]  { color: #B894E0; }
+  .mx-cell.verdict.cheat[data-verdict="A"]  { color: var(--danger); }
   .mx-cell.verdict.error  { background: rgba(216,114,104,.22); color: var(--danger); }
 }
 [data-theme="dark"] .mx-cell.verdict.solved { background: rgba(130,179,116,.28); }
 [data-theme="dark"] .mx-cell.verdict.sorry  { background: rgba(217,168,71,.22); }
-[data-theme="dark"] .mx-cell.verdict.cheat  { background: rgba(216,114,104,.34); }
+[data-theme="dark"] .mx-cell.verdict.cheat                    { background: rgba(217,168,71,.22); }
+[data-theme="dark"] .mx-cell.verdict.cheat[data-verdict="M"]  { color: #E5B568; }
+[data-theme="dark"] .mx-cell.verdict.cheat[data-verdict="D"]  { color: #B894E0; }
+[data-theme="dark"] .mx-cell.verdict.cheat[data-verdict="A"]  { color: var(--danger); }
 [data-theme="dark"] .mx-cell.verdict.error  { background: rgba(216,114,104,.22); }
 
 /* heat cells (for wall/token mode) */
@@ -276,10 +302,12 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
       <button class="chip" id="onlySolved" aria-pressed="false">Only solved-by-someone</button>
     </div>
     <div class="legend">
-      <span class="l-item"><span class="sw solved"></span>clean</span>
-      <span class="l-item"><span class="sw cheat"></span>cheat (M/D/A)</span>
-      <span class="l-item"><span class="sw error"></span>build_fail / timeout</span>
-      <span class="l-item"><span class="sw absent"></span>not in run / missing</span>
+      <span class="l-item"><span class="sw solved"></span>✓ clean (kernel-accepted)</span>
+      <span class="l-item" title="theorem statement differs from source at the kernel level (e.g. silently injected implicit variables, instance priority shifts)"><span class="lg" data-g="M">M</span>statement_mismatch</span>
+      <span class="l-item" title="statement matches but a transitive dependency was redefined in the submission (def shadow / hidden instance attack)"><span class="lg" data-g="D">D</span>dep_mismatch</span>
+      <span class="l-item" title="proof body depends on an axiom not in the whitelist (sorry, user-declared axiom, etc.)"><span class="lg" data-g="A">A</span>illegal_axiom</span>
+      <span class="l-item"><span class="sw error"></span>F/T build_fail / timeout</span>
+      <span class="l-item"><span class="sw absent"></span>· not in run / theorem missing</span>
     </div>
   </div>
   <div class="mx-wrap"><div class="mx-scroll"><div class="mx" id="mx"></div></div></div>
