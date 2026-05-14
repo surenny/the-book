@@ -18,7 +18,7 @@ Pick a track based on the report's shape:
 - **Renderable track** — long-form prose: Essay, Postmortem, Case Study, Tech Report. Source of truth is a markdown file (typically in another project repo); `scripts/render.mjs` produces the HTML and upserts the registry entry. See *From-MD authoring* below.
 - **Custom-HTML track** — Dashboards or anything with bespoke layout / interactive JS (clickable matrices, anchor nav, custom charts). Hand-write the HTML; use `scripts/new-report.mjs` to scaffold from `shared/starter.html` and append a registry entry.
 
-The four existing `prototypes/*.html` are all custom-HTML. The renderable track is for new long-form reports going forward.
+The three existing `prototypes/*.html` are all custom-HTML. The renderable track is for new long-form reports going forward.
 
 ## The 3-step workflow (custom-HTML track)
 
@@ -90,7 +90,7 @@ Two valid modes; pick one per report and stick to it.
 | inline  | report will be emailed, pasted into a message, or hosted elsewhere    | paste `tokens.css + base.css + components.css` into `<style>`, paste `hub.js` into `<script>` |
 | linked  | report only ever lives in this hub                                     | `<link rel="stylesheet" href="../shared/tokens.css">` (× 3 files) + `<script src="../shared/hub.js"></script>` |
 
-**Default to inline** for `prototypes/*` (all four current public reports use inline mode — they're meant to be distributable). Use linked for quick local drafts in `private/`.
+**Default to inline** for `prototypes/*` (all three current public reports use inline mode — they're meant to be distributable). Use linked for quick local drafts in `private/`.
 
 `new-report.mjs` scaffolds in **linked mode** so you can prototype fast; before publishing, copy from an existing `prototypes/*.html` to inline the shared assets (`--inline-existing` is not yet implemented).
 

@@ -47,8 +47,13 @@ const entries = [
 const seenIds = new Map();
 for (const { r, i, side, reg } of entries) {
   const tag = `[${side} #${i} ${r.id ?? '<no id>'}]`;
+  // Required scalar fields: must be a non-empty string. Required array fields
+  // (tags, highlights) get their own non-empty check below.
   for (const f of REQUIRED_FIELDS) {
-    if (!(f in r)) errors.push(`${tag} missing required field: ${f}`);
+    if (!(f in r)) { errors.push(`${tag} missing required field: ${f}`); continue; }
+    if (f === 'tags' || f === 'highlights') continue;
+    if (typeof r[f] !== 'string' || r[f].trim() === '')
+      errors.push(`${tag} required field ${f} must be a non-empty string (got ${JSON.stringify(r[f])})`);
   }
   if (r.id) {
     if (!ID_RE.test(r.id)) errors.push(`${tag} id must match ${ID_RE}`);

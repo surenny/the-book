@@ -10,8 +10,8 @@
 //
 // --dry-run prints what would change without touching disk.
 
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { resolve, relative } from 'node:path';
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { resolve, relative, dirname } from 'node:path';
 import {
   REPO_ROOT, PUBLIC_REGISTRY, PRIVATE_REGISTRY,
   PROTOTYPES_DIR, PRIVATE_DIR, STARTER,
@@ -125,8 +125,10 @@ function main() {
   if (args.highlights.length === 0) die('--highlights must list at least one item');
 
   const registryPath = args.private ? PRIVATE_REGISTRY : PUBLIC_REGISTRY;
-  if (!existsSync(registryPath)) die(`registry not found: ${registryPath}`);
-  const registry = readJSON(registryPath);
+  // Public registry must exist (tracked in git); private one we bootstrap on
+  // demand since `private/` is gitignored and absent on a clean checkout.
+  if (!args.private && !existsSync(registryPath)) die(`registry not found: ${registryPath}`);
+  const registry = existsSync(registryPath) ? readJSON(registryPath) : { reports: [] };
 
   // Uniqueness check across BOTH registries (private may not exist on this checkout).
   const publicReg  = existsSync(PUBLIC_REGISTRY)  ? readJSON(PUBLIC_REGISTRY)  : { reports: [] };
@@ -153,8 +155,10 @@ function main() {
     return;
   }
 
-  writeFileSync(targetHtml, html);
+  mkdirSync(dirname(registryPath), { recursive: true });
   writeFileSync(registryPath, registryOut);
+  mkdirSync(dirname(targetHtml), { recursive: true });
+  writeFileSync(targetHtml, html);
   console.log(`created ${relative(REPO_ROOT, targetHtml)}`);
   console.log(`updated ${relative(REPO_ROOT, registryPath)}`);
   console.log('next: edit the HTML, then run `node scripts/validate.mjs`.');
