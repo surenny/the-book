@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KIP 形式化课程 — The Book</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .page { max-width: 880px; }
+
+  .toc-group { margin: 2.5rem 0; }
+  .toc-group h3 {
+    font-family: var(--font-sans); font-weight: 600;
+    font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--text-faint); margin: 0 0 0.5rem;
+    padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+  }
+  .toc-group .group-deck {
+    font-family: var(--font-serif); color: var(--text-muted);
+    font-size: 0.95rem; margin: 0 0 1rem; max-width: 60ch;
+  }
+
+  .toc-item {
+    display: grid;
+    grid-template-columns: 3rem 1fr auto;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.95rem 0.25rem;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none; color: var(--text);
+    transition: padding 0.12s ease, color 0.12s ease;
+  }
+  .toc-item:last-child { border-bottom: none; }
+  .toc-item:not(.disabled):hover { color: var(--accent); padding-left: 0.6rem; }
+  .toc-item.disabled { color: var(--text-faint); cursor: default; }
+  .toc-item .n {
+    font-family: var(--font-mono); color: var(--text-faint);
+    font-size: 0.85rem; font-weight: 500;
+  }
+  .toc-item .t {
+    font-family: var(--font-serif); font-size: 1.15rem;
+    line-height: 1.35;
+  }
+  .toc-item .d {
+    display: block; margin-top: 0.35rem;
+    font-family: var(--font-serif); font-size: 0.92rem;
+    color: var(--text-muted); line-height: 1.5;
+  }
+  .toc-item.disabled .t { color: var(--text-faint); }
+  .toc-item.disabled .d { color: var(--text-faint); opacity: 0.85; }
+
+  .pill {
+    font-family: var(--font-mono); font-size: 0.68rem;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 3px 9px; border-radius: 999px;
+    background: var(--bg-subtle); color: var(--text-faint);
+    align-self: center;
+  }
+  .pill.ready {
+    background: color-mix(in srgb, var(--success) 16%, transparent);
+    color: var(--success);
+  }
+  .pill.draft {
+    background: color-mix(in srgb, var(--warn) 16%, transparent);
+    color: var(--warn);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hdr-bar">
+    <a href="../index.html">← The Book</a>
+    <span>KIP / public course</span>
+    <button class="theme-toggle" id="themeToggle">auto</button>
+  </div>
+
+  <header class="hero">
+    <div class="eyebrow">Public course · 起 2026-05-21</div>
+    <h1>KIP 形式化课程</h1>
+    <p class="deck">写给项目负责人的私房辅导：从只懂高代 / 抽代的起点出发，一节一节理解 Kervaire 不变量问题的形式化。每课只走一个小台阶，可手算的练习贯穿全程。</p>
+  </header>
+
+  <div class="callout">
+    <strong>这是怎么读的。</strong> 课程按 Part A（纯代数）→ Part B（从代数到拓扑）→ Part C（KIP 本身）三段展开。每节课结尾都有作业；做不动、或想加速 / 放慢，告诉我，下一课就调整。已开放的课点击进入；计划中的课随写随开。
+  </div>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">A</span>纯代数预备</h2>
+      <span class="sub">把谱序列的引擎拆到只剩齿轮</span>
+    </div>
+
+    <div class="toc-group">
+      <a class="toc-item" href="kip_course_01.html">
+        <span class="n">1.</span>
+        <div>
+          <span class="t">链复形与同调</span>
+          <span class="d">从短正合列出发；$d^2=0$ 的意义；同调 $H_n = \ker / \mathrm{im}$；三个手算的小例子；为下一课"分层链复形"埋好引子。</span>
+        </div>
+        <span class="pill ready">已开放</span>
+      </a>
+      <a class="toc-item" href="kip_course_02.html">
+        <span class="n">2.</span>
+        <div>
+          <span class="t">过滤、关联分次、动机问题</span>
+          <span class="d">从 cone-of-identity 反例出发看清楚 $H_*(\mathrm{gr}) \neq H_*(C)$；定义过滤、关联分次；把 gr 丢的两类信息（伪 cycle / 隐藏 boundary）讲清楚。</span>
+        </div>
+        <span class="pill ready">已开放</span>
+      </a>
+      <a class="toc-item" href="kip_course_03.html">
+        <span class="n">3.</span>
+        <div>
+          <span class="t">谱序列：迭代逼近的引擎</span>
+          <span class="d">$r$-cycle / $r$-boundary 的嵌套结构；$E_r = Z_r/B_r$、微分 $d_r$、核心定理 $E_{r+1} = H(E_r, d_r)$；手算 2-列双复形的完整谱序列；对接 <code>SSData</code>。</span>
+        </div>
+        <span class="pill ready">已开放</span>
+      </a>
+      <div class="toc-item disabled">
+        <span class="n">4.</span>
+        <div>
+          <span class="t">收敛、$E_\infty$、扩展问题</span>
+          <span class="d">"收敛到 $H$" 是什么意思；为什么 $E_\infty$ 只给你"关联分次"，不直接给你 $H$；扩展问题。</span>
+        </div>
+        <span class="pill">计划中</span>
+      </div>
+      <div class="toc-item disabled">
+        <span class="n">5.</span>
+        <div>
+          <span class="t">范畴论重述 · 对接 <code>SSData</code></span>
+          <span class="d">阿贝尔范畴、子对象、kernel / cokernel；把第 3 课所讲翻译成项目里 <code>KIP/SpectralSequence/Basic.lean</code> 的 <code>SSData</code>。</span>
+        </div>
+        <span class="pill">计划中</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">B</span>从代数到拓扑</h2>
+      <span class="sub">让"谱序列"长出几何与拓扑意义</span>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-item disabled">
+        <span class="n">6.</span>
+        <div>
+          <span class="t">球面、同伦群、悬挂</span>
+          <span class="d">$\pi_n(X)$ 是什么、为什么难算、悬挂 $\Sigma$ 做了什么。</span>
+        </div>
+        <span class="pill">计划中</span>
+      </div>
+      <div class="toc-item disabled">
+        <span class="n">7.</span>
+        <div>
+          <span class="t">稳定化与球谱</span>
+          <span class="d">$\pi_n^s(X)$、谱（spectrum）、稳定同伦范畴 $\mathcal{S}$ 的公理；对接 <code>StableHomotopyCategory</code>。</span>
+        </div>
+        <span class="pill">计划中</span>
+      </div>
+      <div class="toc-item disabled">
+        <span class="n">8.</span>
+        <div>
+          <span class="t">Adams 谱序列</span>
+          <span class="d">Steenrod 代数、Ext 群、$E_2^{s,t} = \mathrm{Ext}_A^{s,t}(H^*X, \mathbb{F}_2) \Rightarrow \pi_{t-s}(X)$；对接 <code>AdamsSS</code>。</span>
+        </div>
+        <span class="pill">计划中</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">C</span>KIP 本身</h2>
+      <span class="sub">把问题翻译成你能在 Lean 里写下的等式</span>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-item disabled">
+        <span class="n">9.</span>
+        <div>
+          <span class="t">Kervaire 不变量是什么</span>
+          <span class="d">framed 流形、Kervaire 不变量的几何定义、为什么"哪些维数有 KI=1 的流形"等价于 Adams 谱序列里某个具体元素是否幸存。</span>
+        </div>
+        <span class="pill">计划中</span>
+      </div>
+      <div class="toc-item disabled">
+        <span class="n">10.</span>
+        <div>
+          <span class="t">合成谱与 BHS 策略</span>
+          <span class="d">$\mathrm{Syn}$ 范畴、$\lambda$ 形变、$\nu$ 函子；为什么用合成谱能把"无穷个微分都为零"换成"一个同伦类等于零"。</span>
+        </div>
+        <span class="pill">计划中</span>
+      </div>
+      <div class="toc-item disabled">
+        <span class="n">11.</span>
+        <div>
+          <span class="t">主定理 · $h_6^2$ 与 $\lambda \eta \theta_5^2 = 0$</span>
+          <span class="d">从 Axiom <code>thm:bjmbx</code> 出发，把"$h_6^2$ 是 permanent cycle"翻译成可证明的合成同伦群等式，回望整个形式化的位置。</span>
+        </div>
+        <span class="pill">计划中</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>位置 · <code>report-hub/prototypes/kip_course.html</code></span>
+    <span><a href="mailto:surenny233@sjtu.edu.cn">surenny233@sjtu.edu.cn</a></span>
+  </footer>
+
+</div>
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true, tags: 'none'
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  chtml: { scale: 1.0 }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script src="../shared/hub.js"></script>
+<script>
+  const state = setupTheme('themeToggle', 'report-hub:kip_course');
+</script>
+</body>
+</html>

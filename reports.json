@@ -1,6 +1,30 @@
 {
   "reports": [
     {
+      "id": "kip_course",
+      "path": "prototypes/kip_course.html",
+      "title": "KIP 形式化课程",
+      "project": "KIP",
+      "source_path": "prototypes/kip_course*.html",
+      "date": "2026-05-21",
+      "type": "Course",
+      "type_icon": "✎",
+      "tags": [
+        "kip",
+        "course",
+        "teaching",
+        "spectral-sequence",
+        "stable-homotopy",
+        "ongoing"
+      ],
+      "deck": "从只懂高代/抽代的起点出发，一节一节通向 Kervaire 不变量问题主定理的形式化。每课只走一个小台阶，可手算的练习贯穿全程。",
+      "highlights": [
+        "11 节课规划",
+        "3/11 已开放",
+        "Part A → B → C"
+      ]
+    },
+    {
       "id": "formalqualbench_leaderboard",
       "path": "prototypes/formalqualbench_leaderboard.html",
       "title": "FormalQualBench Leaderboard",

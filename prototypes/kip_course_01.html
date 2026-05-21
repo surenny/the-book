@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 1 课 链复形与同调 — KIP 形式化课程</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  /* Lesson-specific overrides for comfortable long-form reading. */
+  .page { max-width: 880px; }
+
+  .sec { margin: 3rem 0; }
+  .sec h2 { font-size: 1.55rem; }
+  .sec h3 {
+    font-family: var(--font-serif); font-weight: 500;
+    font-size: 1.15rem; margin: 2rem 0 0.7rem;
+    color: var(--text);
+  }
+  .sec p, .sec ul, .sec ol {
+    max-width: 68ch; font-family: var(--font-serif);
+    font-size: 1.02rem; line-height: 1.75;
+  }
+  .sec li { margin: 0.35rem 0; }
+  .sec li > p { margin: 0.4rem 0; }
+
+  /* Box variants: extend .callout with semantic flavors. */
+  .box {
+    padding: 1rem 1.25rem;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    margin: 1.5rem 0;
+    max-width: 78ch;
+    border-left: 3px solid var(--border-strong);
+    background: var(--bg-subtle);
+    font-family: var(--font-serif);
+    font-size: 0.97rem; line-height: 1.7;
+  }
+  .box .label {
+    display: inline-block; font-family: var(--font-sans);
+    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+    font-weight: 600; color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+  .box.def { border-left-color: var(--accent); background: var(--accent-muted); }
+  .box.def .label { color: var(--accent); }
+  .box.ex  { border-left-color: var(--success); background: color-mix(in srgb, var(--success) 8%, transparent); }
+  .box.ex  .label { color: var(--success); }
+  .box.work { border-left-color: var(--warn); background: color-mix(in srgb, var(--warn) 9%, transparent); }
+  .box.work .label { color: var(--warn); }
+  .box.note { border-left-color: var(--border-strong); }
+  .box p:first-child { margin-top: 0; }
+  .box p:last-child  { margin-bottom: 0; }
+
+  /* Math display: a touch of breathing room. */
+  mjx-container[display="true"] { margin: 1.25rem 0 !important; }
+
+  /* Lesson nav (prev / index / next) at the foot. */
+  nav.lesson-nav {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 1rem; align-items: center;
+    margin: 5rem 0 2rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-sans); font-size: 0.9rem;
+  }
+  nav.lesson-nav .home {
+    text-align: center;
+    font-family: var(--font-mono); font-size: 0.75rem;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-faint); text-decoration: none;
+  }
+  nav.lesson-nav .home:hover { color: var(--accent); }
+  nav.lesson-nav .prev, nav.lesson-nav .next {
+    color: var(--text-muted); text-decoration: none;
+  }
+  nav.lesson-nav .next { text-align: right; }
+  nav.lesson-nav .prev .arr, nav.lesson-nav .next .arr {
+    font-family: var(--font-mono); color: var(--text-faint);
+    margin: 0 0.5em;
+  }
+  nav.lesson-nav .disabled { color: var(--text-faint); opacity: 0.55; pointer-events: none; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hdr-bar">
+    <a href="kip_course.html">← KIP 课程</a>
+    <span>第 1 课 / Part A · 纯代数预备</span>
+    <button class="theme-toggle" id="themeToggle">auto</button>
+  </div>
+
+  <header class="hero">
+    <div class="eyebrow">Lesson 01 · 约 20 分钟阅读 + 30 分钟作业</div>
+    <h1>链复形与同调</h1>
+    <p class="deck">谱序列的最底层构件。这一节我们从你熟悉的正合列出发，给出链复形的定义、$d^2 = 0$ 的含义、同调群 $H_n = \ker / \mathrm{im}$，配三个可手算的例子。</p>
+  </header>
+
+  <div class="callout">
+    <strong>本课目标。</strong> 读完之后你应当能：(1) 用一句话解释为什么链复形要求 $d^2 = 0$；(2) 拿到一个简单链复形能用 $\ker / \mathrm{im}$ 算出每一处的同调；(3) 说出同调到底"测量了什么"。
+  </div>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">1.1</span>从你已经熟悉的东西开始：正合</h2>
+    </div>
+
+    <p>你在抽代里见过这样的链子：</p>
+
+    $$0 \;\longrightarrow\; A \;\xrightarrow{\;f\;}\; B \;\xrightarrow{\;g\;}\; C \;\longrightarrow\; 0$$
+
+    <p>这叫 <strong>短正合列</strong>（short exact sequence, SES）。"正合"的精确含义是：<strong>在每个位置上，进来的映射的"像"等于出去的映射的"核"</strong>。把它在每个点上展开：</p>
+
+    <ul>
+      <li>在 $A$ 处：进来的是零映射（像为 $0$），出去的是 $f$。正合 $\Rightarrow \ker f = 0$，即 $f$ 是单射。</li>
+      <li>在 $B$ 处：$\mathrm{im}\, f = \ker g$。这是有内容的条件。</li>
+      <li>在 $C$ 处：$\mathrm{im}\, g = C$，即 $g$ 是满射。</li>
+    </ul>
+
+    <p>你最熟的例子：</p>
+
+    $$0 \;\to\; \mathbb{Z} \;\xrightarrow{\;\cdot 2\;}\; \mathbb{Z} \;\to\; \mathbb{Z}/2\mathbb{Z} \;\to\; 0.$$
+
+    <p>三条都成立，自己验一下。</p>
+
+    <div class="box note">
+      <span class="label">一句话直觉</span>
+      <p>正合 = $B$ 可以从 $A$ 和 $C$ 通过 $f, g$ "拼出来"的精确描述。后面我们会看到，链复形是"几乎正合"的列；同调测量它差正合多远。</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">1.2</span>把这种链子无限延长</h2>
+    </div>
+
+    <p>现在把链子向两端无限地伸出去（采用最常见的"下降指标"约定）：</p>
+
+    $$\cdots \;\longrightarrow\; C_{n+1} \;\xrightarrow{\;d_{n+1}\;}\; C_n \;\xrightarrow{\;d_n\;}\; C_{n-1} \;\longrightarrow\; \cdots$$
+
+    <p>每个 $C_n$ 是一个阿贝尔群（更一般地是某个环 $R$ 上的模，但你先当成阿贝尔群想就行），$d_n$ 是同态，叫 <strong>微分</strong>（differential）或 <strong>边界映射</strong>。</p>
+
+    <div class="box def">
+      <span class="label">定义 · 链复形</span>
+      <p>这种东西叫做 <strong>链复形</strong>（chain complex），但带一个关键要求：</p>
+      $$\boxed{\; d_n \circ d_{n+1} \;=\; 0 \quad \text{对所有 } n. \;}$$
+      <p>通常简记为 "$d^2 = 0$"。<strong>注意</strong>：我们不要求处处正合，只要求 $d^2 = 0$。</p>
+    </div>
+
+    <p>这个条件到底说了什么？翻译一下：对任何 $x \in C_{n+1}$，$d_n(d_{n+1}(x)) = 0$，即</p>
+
+    $$d_{n+1}(x) \in \ker d_n.$$
+
+    <p>换句话说，</p>
+
+    $$\mathrm{im}\, d_{n+1} \;\subseteq\; \ker d_n.$$
+
+    <p>这只是 <strong>包含</strong>，<strong>不是等号</strong>。如果碰巧处处是等号，链复形就退化成正合列。所以可以这样想：</p>
+
+    <blockquote>链复形 = "几乎正合"的列。正合到什么程度，由我们下面要定义的同调来精确测量。</blockquote>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">1.3</span>同调：测量"差多远才正合"</h2>
+    </div>
+
+    <p>既然 $\mathrm{im}\, d_{n+1} \subseteq \ker d_n$，那这个商 <strong>有定义</strong>：</p>
+
+    <div class="box def">
+      <span class="label">定义 · 同调群</span>
+      $$H_n(C_\bullet) \;:=\; \ker d_n \;/\; \mathrm{im}\, d_{n+1}.$$
+      <p>叫做链复形 $C_\bullet$ 的 <strong>第 $n$ 个同调群</strong>（或同调模）。</p>
+    </div>
+
+    <p>里面的元素叫法（请记住，后面会一直用）：</p>
+
+    <ul>
+      <li>$\ker d_n$ 里的元素叫 <strong>$n$-循环</strong>（cycle）—— 直觉："被微分打成零的元素"；</li>
+      <li>$\mathrm{im}\, d_{n+1}$ 里的元素叫 <strong>$n$-边界</strong>（boundary）—— 直觉："已经是别人微分像的元素"；</li>
+      <li>同调 $H_n$ = 循环 / 边界 = "真正有内容的循环"模掉"平凡循环"。</li>
+    </ul>
+
+    <div class="callout">
+      <strong>核心直觉。</strong> $H_n = 0 \iff$ 这一处正合。所以同调正是"非正合性"的测度。
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">1.4</span>三个你自己能算的例子</h2>
+      <span class="sub">请拿出纸笔——把抽象定义"做"出来才能真正吃透。</span>
+    </div>
+
+    <div class="box ex">
+      <span class="label">例 A · $\mathbb{Z} \xrightarrow{\cdot 2} \mathbb{Z}$</span>
+      <p>考虑只有两项非零的链复形（其他位置都是零，相关 $d$ 都是零映射）：</p>
+      $$\cdots \to 0 \to \underbrace{\mathbb{Z}}_{C_1} \xrightarrow{\;\cdot 2\;} \underbrace{\mathbb{Z}}_{C_0} \to 0 \to \cdots$$
+      <ul>
+        <li>$\ker d_1 = \ker(\cdot 2) = 0$；$\mathrm{im}\, d_2 = 0$。所以 $H_1 = 0$。</li>
+        <li>$\ker d_0 = \mathbb{Z}$（$d_0$ 是零映射）；$\mathrm{im}\, d_1 = 2\mathbb{Z}$。所以 $H_0 = \mathbb{Z}/2\mathbb{Z}$。</li>
+      </ul>
+      <p><strong>看 $H_0$ 抓到了什么？</strong> 它告诉你 "$\cdot 2$ 这个映射没把 $\mathbb{Z}$ 填满，差了一个 $\mathbb{Z}/2$"——这正是同调作为"非正合性测度"的体现。</p>
+    </div>
+
+    <div class="box ex">
+      <span class="label">例 B · $\mathbb{Z} \xrightarrow{\mathrm{id}} \mathbb{Z}$</span>
+      <p>把例 A 里的 $\cdot 2$ 换成恒等映射 $\mathrm{id}$。</p>
+      <ul>
+        <li>$\ker d_1 = 0$，所以 $H_1 = 0$。</li>
+        <li>$\ker d_0 = \mathbb{Z}$，$\mathrm{im}\, d_1 = \mathbb{Z}$，所以 $H_0 = 0$。</li>
+      </ul>
+      <p>整个同调都消失了——因为这次链子是正合的。和例 A 形成对比：同调真的能区分这两种情况。</p>
+    </div>
+
+    <div class="box ex">
+      <span class="label">例 C · 一个三角形（有几何味道）</span>
+      <p>三个顶点 $v_0, v_1, v_2$，三条边 $e_{01}, e_{12}, e_{02}$。令</p>
+      $$C_0 = \mathbb{Z}\langle v_0, v_1, v_2 \rangle, \qquad C_1 = \mathbb{Z}\langle e_{01}, e_{12}, e_{02} \rangle,$$
+      <p>其他 $C_n = 0$。边界映射定义为 "边界 = 终点 − 起点"：</p>
+      $$d_1(e_{ij}) = v_j - v_i.$$
+      <p>$d_2 = 0$ 因为我们没放二维东西。</p>
+
+      <p><strong>算 $H_0$。</strong> $\ker d_0 = C_0$；$\mathrm{im}\, d_1$ 由 $v_1 - v_0,\ v_2 - v_1,\ v_2 - v_0$ 张成，这三个差有一个线性关系 $v_2 - v_0 = (v_1 - v_0) + (v_2 - v_1)$，所以张出的是一个秩 2 子群。商 $= \mathbb{Z}$。<strong>直觉</strong>：三角形是连通的一块，$H_0$ 数"连通分支数"。</p>
+
+      <p><strong>算 $H_1$。</strong> 一般链 $\alpha e_{01} + \beta e_{12} + \gamma e_{02}$ 经过 $d_1$：</p>
+      $$d_1 = \alpha(v_1 - v_0) + \beta(v_2 - v_1) + \gamma(v_2 - v_0) = -(\alpha + \gamma) v_0 + (\alpha - \beta) v_1 + (\beta + \gamma) v_2.$$
+      <p>这等于零等价于 $\alpha + \gamma = 0,\ \alpha = \beta,\ \beta + \gamma = 0$，即 $\beta = \alpha,\ \gamma = -\alpha$。所以 $\ker d_1$ 由单个循环 $e_{01} + e_{12} - e_{02}$ 张成，是一维的。$\mathrm{im}\, d_2 = 0$，所以 $H_1 = \mathbb{Z}$。<strong>直觉</strong>：三角形（只有边、没填面）围出了一个一维洞，$H_1 = \mathbb{Z}$ 数"一维洞数"。</p>
+
+      <p>如果把三角形的"面"也加进去（$C_2 = \mathbb{Z}\langle T \rangle$，$d_2(T) = e_{01} + e_{12} - e_{02}$），那 $H_1$ 就归零了——那一个循环被填上了。</p>
+    </div>
+
+    <p>这就是同调论的源头：用链复形 + 同调给空间装配代数不变量。算出 $H_1 = \mathbb{Z}$ 你就知道"这里有一个洞"；算出 $H_1 = 0$ 你就知道"补上了"。同调群是空间的拓扑不变量，比原对象更鲁棒、更易计算，又保留了关键信息——这是 20 世纪代数与几何之间最重要的桥梁之一。</p>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">1.5</span>链复形之间的映射、同调的函子性</h2>
+    </div>
+
+    <p>最后再讲一个关键概念，下一课会立刻用到。</p>
+
+    <div class="box def">
+      <span class="label">定义 · 链映射</span>
+      <p>设 $C_\bullet, D_\bullet$ 是两个链复形。一个 <strong>链映射</strong>（chain map） $\varphi: C_\bullet \to D_\bullet$ 是一族同态 $\varphi_n : C_n \to D_n$，满足</p>
+      $$\varphi_{n-1} \circ d_n^C \;=\; d_n^D \circ \varphi_n,$$
+      <p>也就是说，<strong>$\varphi$ 与微分对易</strong>。</p>
+    </div>
+
+    <p>链映射自动诱导同调上的同态 $H_n(\varphi) : H_n(C_\bullet) \to H_n(D_\bullet)$：把 $[x] \in H_n(C)$ 送到 $[\varphi_n(x)] \in H_n(D)$。你需要自己验证：</p>
+
+    <ol>
+      <li>$\varphi_n$ 把循环送到循环（因为它与微分对易）；</li>
+      <li>$\varphi_n$ 把边界送到边界（同样的原因）；</li>
+      <li>所以在商上有定义、与代表元选取无关。</li>
+    </ol>
+
+    <p>这件事可以用一句行话总结：</p>
+
+    <blockquote>同调 $H_n$ 是从"链复形 + 链映射的范畴"到"阿贝尔群 + 同态的范畴"的一个 <strong>函子</strong>。</blockquote>
+
+    <p>这个观察看似平凡，但下一课你会发现：正是因为同调是个函子，我们才能把它对一族不断细化的链复形反复使用——<strong>这就是谱序列诞生的种子</strong>。</p>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">1.6</span>这一课的小结</h2>
+    </div>
+
+    <ol>
+      <li><strong>链复形</strong> = 一串模 / 阿贝尔群，带满足 $d^2 = 0$ 的微分。</li>
+      <li>$d^2 = 0$ $\Rightarrow$ $\mathrm{im}\, d_{n+1} \subseteq \ker d_n$ $\Rightarrow$ 商 $H_n$ 有定义。</li>
+      <li><strong>同调</strong> $H_n = \ker / \mathrm{im}$ 测量这一处距离正合多远。$H_n = 0$ 当且仅当此处正合。</li>
+      <li>同调是个 <strong>函子</strong>：链映射诱导同调上的映射。</li>
+      <li>链复形 / 同调既能从纯代数对象产生（如 $\mathbb{Z} \xrightarrow{\cdot n} \mathbb{Z}$），也能从几何对象产生（单纯剖分）——它是 20 世纪代数与几何最重要的桥梁。</li>
+    </ol>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">1.7</span>给你的作业</h2>
+      <span class="sub">认真做前两道。第三道是下一课的引子，先想就好，不必现在解出来。</span>
+    </div>
+
+    <div class="box work">
+      <span class="label">练习 1 · $\mathbb{Z}/4 \xrightarrow{\cdot 2} \mathbb{Z}/4$</span>
+      <p>算下面链复形的所有同调群：</p>
+      $$\cdots \to 0 \to \underbrace{\mathbb{Z}/4}_{C_1} \xrightarrow{\;\cdot 2\;} \underbrace{\mathbb{Z}/4}_{C_0} \to 0 \to \cdots$$
+      <p>提示：注意 $\cdot 2$ 在 $\mathbb{Z}/4$ 上既不是单也不是满。</p>
+    </div>
+
+    <div class="box work">
+      <span class="label">练习 2 · 直和的同调</span>
+      <p>如果把链复形 $C_\bullet$ 的每个 $C_n$ 都换成 $C_n \oplus C_n$，微分对应地变成 $d_n \oplus d_n$，新的同调是什么？直觉很自然，但请你严谨地证它。</p>
+    </div>
+
+    <div class="box work">
+      <span class="label">练习 3 · 下一课的引子（先想，不必现在做）</span>
+      <p>设有一个 <strong>双层</strong> 的链复形：每个 $C_n$ 都分解成 $C_n = F_n \oplus G_n$，且微分 $d_n$ 把 $F_n$ 送到 $F_{n-1} \oplus G_{n-1}$，把 $G_n$ 送到 $G_{n-1}$（注意微分 <strong>可能</strong> 把 $F$ 的元素送到带 $G$ 分量的地方）。问：$H_*(C_\bullet)$ 与 $H_*(F_\bullet)$、$H_*(G_\bullet)$ 之间是什么关系？</p>
+      <p>先别尝试回答（很难），先在心里盘一下"为什么不像练习 2 那么简单"。<strong>它正是谱序列出现的最朴素动机</strong>：当一个链复形"内部有结构"，简单地把每层同调拼起来不够用，需要更精细的工具一层层修正——那个工具就是谱序列。</p>
+    </div>
+
+    <div class="callout">
+      <strong>读完这节课，请回我两件事：</strong> 哪里讲得不够清楚 / 算的时候卡住了？是否进入第 2 课（过滤、关联分次、动机问题）？我会根据反馈调整下一课的详细程度和节奏。
+    </div>
+  </section>
+
+  <nav class="lesson-nav">
+    <span class="prev disabled">无 <span class="arr">·</span> 已是第一课</span>
+    <a class="home" href="kip_course.html">课程目录</a>
+    <a class="next" href="kip_course_02.html">第 2 课 · 过滤、关联分次 <span class="arr">→</span></a>
+  </nav>
+
+  <footer class="footer">
+    <span>位置 · <code>report-hub/prototypes/kip_course_01.html</code></span>
+    <span><a href="mailto:surenny233@sjtu.edu.cn">surenny233@sjtu.edu.cn</a></span>
+  </footer>
+
+</div>
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true, tags: 'none'
+  },
+  options: {
+    skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  chtml: { scale: 1.0 }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script src="../shared/hub.js"></script>
+<script>
+  const state = setupTheme('themeToggle', 'report-hub:kip_course_01');
+</script>
+</body>
+</html>

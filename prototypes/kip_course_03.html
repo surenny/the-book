@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 3 课 谱序列 · 迭代逼近的引擎 — KIP 形式化课程</title>
+<link rel="stylesheet" href="../shared/tokens.css">
+<link rel="stylesheet" href="../shared/base.css">
+<link rel="stylesheet" href="../shared/components.css">
+<style>
+  .page { max-width: 880px; }
+  .sec { margin: 3rem 0; }
+  .sec h2 { font-size: 1.55rem; }
+  .sec h3 {
+    font-family: var(--font-serif); font-weight: 500;
+    font-size: 1.15rem; margin: 2rem 0 0.7rem; color: var(--text);
+  }
+  .sec p, .sec ul, .sec ol {
+    max-width: 68ch; font-family: var(--font-serif);
+    font-size: 1.02rem; line-height: 1.75;
+  }
+  .sec li { margin: 0.35rem 0; }
+  .box {
+    padding: 1rem 1.25rem;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    margin: 1.5rem 0; max-width: 78ch;
+    border-left: 3px solid var(--border-strong);
+    background: var(--bg-subtle);
+    font-family: var(--font-serif);
+    font-size: 0.97rem; line-height: 1.7;
+  }
+  .box .label {
+    display: inline-block; font-family: var(--font-sans);
+    font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+    font-weight: 600; color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+  .box.def { border-left-color: var(--accent); background: var(--accent-muted); }
+  .box.def .label { color: var(--accent); }
+  .box.ex  { border-left-color: var(--success); background: color-mix(in srgb, var(--success) 8%, transparent); }
+  .box.ex  .label { color: var(--success); }
+  .box.work { border-left-color: var(--warn); background: color-mix(in srgb, var(--warn) 9%, transparent); }
+  .box.work .label { color: var(--warn); }
+  .box.note { border-left-color: var(--border-strong); }
+  .box p:first-child { margin-top: 0; }
+  .box p:last-child  { margin-bottom: 0; }
+  mjx-container[display="true"] { margin: 1.25rem 0 !important; }
+
+  nav.lesson-nav {
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 1rem; align-items: center;
+    margin: 5rem 0 2rem; padding: 1.5rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-sans); font-size: 0.9rem;
+  }
+  nav.lesson-nav a, nav.lesson-nav .home {
+    text-decoration: none; color: var(--text-muted);
+  }
+  nav.lesson-nav .home {
+    text-align: center; font-family: var(--font-mono); font-size: 0.75rem;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint);
+  }
+  nav.lesson-nav .home:hover, nav.lesson-nav a:hover { color: var(--accent); }
+  nav.lesson-nav .next { text-align: right; }
+  nav.lesson-nav .arr {
+    font-family: var(--font-mono); color: var(--text-faint);
+    margin: 0 0.5em;
+  }
+  nav.lesson-nav .disabled { color: var(--text-faint); opacity: 0.55; pointer-events: none; }
+
+  /* Visualizing $(p,q)$ grid */
+  .grid-fig {
+    margin: 1.5rem auto; padding: 1rem 1.25rem;
+    background: var(--bg-elevated); border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    font-family: var(--font-mono); font-size: 0.9rem;
+    overflow-x: auto; line-height: 1.6;
+    color: var(--text);
+  }
+  .grid-fig pre { margin: 0; background: none; padding: 0; color: inherit; }
+  .grid-fig .cap {
+    font-family: var(--font-sans); font-size: 0.78rem;
+    color: var(--text-muted); margin-top: 0.6rem;
+    border-top: 1px dashed var(--border); padding-top: 0.5rem;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hdr-bar">
+    <a href="kip_course.html">← KIP 课程</a>
+    <span>第 3 课 / Part A · 纯代数预备</span>
+    <button class="theme-toggle" id="themeToggle">auto</button>
+  </div>
+
+  <header class="hero">
+    <div class="eyebrow">Lesson 03 · 约 30 分钟阅读 + 45 分钟练习</div>
+    <h1>谱序列 · 迭代逼近的引擎</h1>
+    <p class="deck">上一课我们看清楚了：$H_*(\mathrm{gr})$ 是 $H_*(C)$ 的"第一近似"，但它把 cycle 条件放宽、把 boundary 条件收紧。谱序列就是把这两个条件 <em>逐级</em> 修正到真值的机器。这一课我们造出它，并手把手算一个完整的例子。</p>
+  </header>
+
+  <div class="callout">
+    <strong>本课目标。</strong> 读完之后你应当能：(1) 给出 $r$-cycle / $r$-boundary 的精确定义；(2) 写出 $Z_r$ 嵌套 $\supseteq$、$B_r$ 嵌套 $\subseteq$ 的关系，并解释为什么 $B_r \subseteq Z_r$；(3) 说出 $E_r = Z_r/B_r$、$d_r$、$E_{r+1} = H(E_r, d_r)$ 这一整套结构；(4) 手算一个小双复形的 $E_1, E_2 = E_\infty$ 并对照 $H^*(\mathrm{Tot})$。
+  </div>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">3.1</span>一个约定切换</h2>
+    </div>
+
+    <p>前两课我们用 <strong>同调（homological）</strong> 约定——微分降阶 $d: C_n \to C_{n-1}$。从这一课起，谱序列文献里更通行的 <strong>上同调（cohomological）</strong> 约定会方便得多：</p>
+
+    <ul>
+      <li>链复形写作 $C^\bullet = \{C^n\}_{n \in \mathbb{Z}}$，微分 $d^n: C^n \to C^{n+1}$ <strong>升阶</strong>；</li>
+      <li>$d^2 = 0$、$H^n = \ker d^n / \mathrm{im}\, d^{n-1}$，理论完全等价；</li>
+      <li>降序过滤 $\cdots \supseteq F^p C^\bullet \supseteq F^{p+1} C^\bullet \supseteq \cdots$，$d$ 保过滤的意思是 $d(F^p C^n) \subseteq F^p C^{n+1}$（不降低过滤指标）；</li>
+      <li>关联分次 $\mathrm{gr}^p C^\bullet = F^p / F^{p+1}$。</li>
+    </ul>
+
+    <p>这只是 indexing 翻面。等下一课讲收敛我们再说约定的取舍。</p>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">3.2</span>核心想法：cycle 有"精炼度"</h2>
+    </div>
+
+    <p>上节课我们看到：gr 看 cycle 太宽——只要 $dx$ 沉到 $F^{p+1}$ 就算 cycle。真 cycle 要 $dx = 0$，相当于"沉到 $F^\infty$"。这两个极端之间应当填进一族中间概念：</p>
+
+    <div class="box def">
+      <span class="label">定义 · $r$-cocycle 和 $r$-coboundary</span>
+      <p>设 $C^\bullet$ 带过滤 $F^\bullet$。对 $r \geq 0$，<strong>$r$-cocycle 集合</strong> 是</p>
+      $$\widetilde{Z}_r^{p, q} \;:=\; \{\, x \in F^p C^{p+q} \,:\, dx \in F^{p+r} C^{p+q+1} \,\},$$
+      <p>$r$ 越大条件越严，$r = \infty$（即 $dx = 0$）就是真 cocycle。<strong>$r$-coboundary 集合</strong> 是</p>
+      $$\widetilde{B}_r^{p, q} \;:=\; \{\, x \in F^p C^{p+q} \,:\, x \in d\!\left(F^{p-r+1} C^{p+q-1}\right) \,\},$$
+      <p>意思是 "$x$ 是来自上方 $r-1$ 层之内某个东西的 $d$ 像"。$r$ 越大条件越松，$r = \infty$ 就是真 coboundary。</p>
+    </div>
+
+    <p>这两个家族都活在 $F^p C^{p+q}$ 里，<strong>跟过滤指标 $p$ 是绑定的</strong>。为了得到一个"在第 $p$ 层有意义"的对象，我们把它们都模掉 $F^{p+1}$——也就是落到 $\mathrm{gr}^p C^{p+q}$ 中：</p>
+
+    $$Z_r^{p, q} \;:=\; \widetilde{Z}_r^{p, q} \,/\, (\widetilde{Z}_r^{p, q} \cap F^{p+1} C^{p+q}) \;\subseteq\; \mathrm{gr}^p C^{p+q},$$
+
+    $$B_r^{p, q} \;:=\; \widetilde{B}_r^{p, q} \,/\, (\widetilde{B}_r^{p, q} \cap F^{p+1} C^{p+q}) \;\subseteq\; \mathrm{gr}^p C^{p+q}.$$
+
+    <p>这两个都是 $\mathrm{gr}^p C^{p+q}$ 的子对象。</p>
+
+    <div class="box note">
+      <span class="label">提示</span>
+      <p>看到 "$\mathrm{gr}^p$ 的子对象"，再回想第 0 课提到的 <code>SSData</code>——你已经能猜到下一节我们要拼出什么了：把 $\mathrm{gr}^p C^{p+q}$ 当成"环境对象 $V$"，$Z_r, B_r$ 就是它的两族嵌套子对象。</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">3.3</span>嵌套结构 · 由定义直接读出</h2>
+    </div>
+
+    <p>把定义里的不等号读一遍，下面这些关系都是显然的（你应该亲自把每一行验一遍）：</p>
+
+    $$\mathrm{gr}^p \;\supseteq\; Z_0^p \;\supseteq\; Z_1^p \;\supseteq\; Z_2^p \;\supseteq\; \cdots \;\supseteq\; Z_\infty^p,$$
+    $$0 \;\subseteq\; B_0^p \;\subseteq\; B_1^p \;\subseteq\; B_2^p \;\subseteq\; \cdots \;\subseteq\; B_\infty^p,$$
+    $$\text{并且对每个 } r:\quad B_r^p \;\subseteq\; Z_r^p.$$
+
+    <p>"$Z_r$ 单调下降"对应"cycle 条件越来越严"，"$B_r$ 单调上升"对应"boundary 范围越来越宽"，"$B_r \subseteq Z_r$"对应"任何 $r$-boundary 自动也是 $r$-cycle"（因为 $d \circ d = 0$）。</p>
+
+    <p>注意两端：</p>
+
+    <ul>
+      <li>$Z_0^p = \mathrm{gr}^p$（"$dx \in F^p$" 对 $x \in F^p$ 自动成立——零条件）；</li>
+      <li>$B_0^p = 0$（"$x \in d(F^{p+1})$" 模 $F^{p+1}$ 就是 0）；</li>
+      <li>$Z_\infty^p = $ 真 cocycle 在 $\mathrm{gr}^p$ 里的像；</li>
+      <li>$B_\infty^p = $ 真 coboundary 在 $\mathrm{gr}^p$ 里的像。</li>
+    </ul>
+
+    <p>所以"两端的商"就是 $H^*(C)$ 的关联分次：</p>
+
+    $$\frac{Z_\infty^p}{B_\infty^p} \;=\; \mathrm{gr}^p H^{p+q}(C).$$
+
+    <p>而<strong>中间的商</strong> $Z_r^p / B_r^p$ 就是"$r$ 级近似下的同调"——这正是谱序列的第 $r$ 页。</p>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">3.4</span>第 $r$ 页 $E_r$ 和微分 $d_r$</h2>
+    </div>
+
+    <div class="box def">
+      <span class="label">定义 · 第 $r$ 页</span>
+      $$E_r^{p, q} \;:=\; Z_r^{p, q} \,/\, B_r^{p, q}.$$
+      <p>这是 $\mathrm{gr}^p C^{p+q}$ 的一个子商。$r = 0, 1, 2, \ldots, \infty$ 都有意义。</p>
+    </div>
+
+    <p>几个立刻的观察：</p>
+
+    <ul>
+      <li>$E_0^{p, q} = Z_0/B_0 = \mathrm{gr}^p / 0 = \mathrm{gr}^p C^{p+q}$。第 0 页 = 关联分次本身。</li>
+      <li>$E_1^{p, q} = Z_1/B_1$。可以验证（$r=1$ 时 $Z_1$ 是 gr-cocycle、$B_1$ 是 gr-coboundary）这就是 $H^{p+q}(\mathrm{gr}^p C^\bullet)$ — gr 的同调。这正是上一课说的"第一近似"。</li>
+      <li>$E_\infty^{p, q} = \mathrm{gr}^p H^{p+q}(C)$ — $H^*(C)$ 的关联分次。这就是我们最终想要的"答案"（再加扩展信息）。</li>
+    </ul>
+
+    <h3>微分 $d_r$ 是怎么造出来的</h3>
+
+    <p>问题：怎么从第 $r$ 页跳到第 $r+1$ 页？答案：每一页上都有一个自然的微分 $d_r$，且 $E_{r+1} = H(E_r, d_r)$。</p>
+
+    <p>$d_r$ 怎么定义？取代表元 $x \in \widetilde{Z}_r^{p, q}$，定义</p>
+
+    $$d_r([x]) \;:=\; [dx] \;\in\; E_r^{p+r, q-r+1}.$$
+
+    <p>需要验证这是 well-defined 的，且 $d_r^2 = 0$。两件事都直接从定义跟下来——我们一点点拆：</p>
+
+    <ol>
+      <li><strong>$dx$ 落在哪里？</strong> 由 $r$-cocycle 的定义 $dx \in F^{p+r} C^{p+q+1}$。它在 $\mathrm{gr}^{p+r} C^{p+q+1}$ 中代表一个元素，记作 $[dx]$。</li>
+      <li><strong>$[dx]$ 是 $r$-cocycle 吗？</strong> $d(dx) = 0 \in F^\infty$，特别是 $\in F^{p+2r}$。所以 $dx \in \widetilde{Z}_r^{p+r, q-r+1}$，因而 $[dx] \in Z_r^{p+r, q-r+1}$。</li>
+      <li><strong>跟代表元选取无关？</strong> 如果 $x' = x + y$，$y \in F^{p+1}$，那 $dx' - dx = dy \in F^{p+1}$，但 $dy$ 经过 mod $\widetilde{B}_r^{p+r}$ 会被吸收（$dy$ 来自 $F^{p+1} \supseteq F^{p+r - r + 1}$，正好是 $\widetilde{B}_r^{p+r}$ 的源）。所以模 $B_r$ 之后两者相等。</li>
+      <li><strong>$d_r^2 = 0$？</strong> $d_r(d_r [x]) = [d(dx)] = [0]$。</li>
+    </ol>
+
+    <p>结论：$d_r$ 是 $E_r$ 上良定义的微分，degree 是 <strong>$(+r, -r+1)$</strong> ——即 $p \to p+r$，$q \to q-r+1$。总度数变化 $\Delta(p+q) = +1$，跟原来的 $d$ 一样升一阶。</p>
+
+    <p>把谱序列画在 $(p, q)$ 网格上，$d_r$ 的箭头是这样的：</p>
+
+    <div class="grid-fig">
+<pre>
+   q ↑
+     |              · · ·
+     |    E_r^{p,q} ─────d_r────→ E_r^{p+r, q-r+1}
+     |        ●                       ↘
+     |                                  ↘ ↘ (slope = -1/r → 1)
+     |                                    ●
+     |                            · · ·
+     +─────────────────────────────────────────→ p
+
+   r = 1:  →  右 1 格
+   r = 2:  ↘  右 2 格、下 1 格
+   r = 3:  ↘↘ 右 3 格、下 2 格
+   ...      箭头越来越平
+</pre>
+      <div class="cap">$d_r$ 在双指标 $(p, q)$ 平面上的方向。$r$ 越大，箭头越长越平。</div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">3.5</span>关键定理 · $E_{r+1} = H(E_r, d_r)$</h2>
+    </div>
+
+    <div class="box def">
+      <span class="label">定理（谱序列的核心事实）</span>
+      <p>对每个 $r \geq 0$，</p>
+      $$E_{r+1}^{p, q} \;\cong\; \frac{\ker\!\left(d_r : E_r^{p, q} \to E_r^{p+r, q-r+1}\right)}{\mathrm{im}\!\left(d_r : E_r^{p-r, q+r-1} \to E_r^{p, q}\right)}.$$
+    </div>
+
+    <p>这一步是整个理论最重要的一步。它说：第 $r+1$ 页就是第 $r$ 页关于 $d_r$ 的同调。所以谱序列就是一台<strong>自更新的机器</strong>：</p>
+
+    $$E_0 \;\xrightarrow{\;H(-, d_0)\;}\; E_1 \;\xrightarrow{\;H(-, d_1)\;}\; E_2 \;\xrightarrow{\;H(-, d_2)\;}\; \cdots \;\to\; E_\infty.$$
+
+    <p>这是哪门子的"$\ker / \mathrm{im}$"？把每一项对照定义就好：</p>
+
+    <ul>
+      <li>$\ker d_r$ 的代表元 $x \in \widetilde{Z}_r^p$ 满足 $dx \in \widetilde{B}_r^{p+r}$，即 $dx$ 已经是个 $r$-boundary。但 $dx \in \widetilde{B}_r^{p+r}$ 意味着 $dx = du$ for $u \in F^{p+r - r + 1} C = F^{p+1} C$，所以 $d(x - u) = 0$ in higher filtration. 取 $x' = x - u$，我们得到 $dx' \in F^{p+r+1}$，即 $x' \in \widetilde{Z}_{r+1}^p$。也就是说，$\ker d_r$ 的内容就是 $\widetilde{Z}_{r+1}/\widetilde{Z}_r$ 加上 $\widetilde{B}_r$。简化后：</li>
+    </ul>
+
+    $$\ker d_r \;\equiv\; \frac{Z_{r+1}^p + B_r^p}{B_r^p} \;\equiv\; \frac{Z_{r+1}^p}{Z_{r+1}^p \cap B_r^p} \;=\; \frac{Z_{r+1}^p}{B_r^p}$$
+
+    <p>（最后一步用了 $B_r \subseteq B_{r+1} \subseteq Z_{r+1}$）。同理，</p>
+
+    $$\mathrm{im}\, d_r \;\equiv\; \frac{B_{r+1}^p}{B_r^p}.$$
+
+    <p>所以</p>
+
+    $$H(E_r, d_r) \;=\; \frac{Z_{r+1}^p / B_r^p}{B_{r+1}^p / B_r^p} \;\overset{\text{第三同构定理}}{=}\; \frac{Z_{r+1}^p}{B_{r+1}^p} \;=\; E_{r+1}^p.$$
+
+    <p>这步"第三同构定理"就是你们项目 <code>KIP/SpectralSequence/Basic.lean</code> 第 229 行 <code>Subobject.thirdIso</code> 的事情——它在范畴论意义下是同一个推理。</p>
+
+    <div class="callout">
+      <strong>记牢这条公式。</strong> 每一次"翻页"$E_r \to E_{r+1}$ 都是<strong>取关于 $d_r$ 的同调</strong>。$E_r$ 上的 cycle = $d_r$ 杀不动的、$E_r$ 上的 boundary = 被 $d_r$ 命中的。两者商，就是下一页。
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">3.6</span>手把手算一个例子：2-列双复形</h2>
+    </div>
+
+    <p>现在把上面所有抽象的东西在一个最小的具体例子里全跑一遍。请你拿出纸，跟着算。</p>
+
+    <h3>设置</h3>
+
+    <p>取双复形（cohomological，$d_h$ 升 $p$，$d_v$ 升 $q$）：</p>
+
+    <div class="grid-fig">
+<pre>
+   q
+   1 |    0                    0
+     |
+   0 |   ℤ ───── ·2 ─────→    ℤ
+     |   C^{0,0}              C^{1,0}
+     |
+     +────────────────────────────→ p
+              0          1
+</pre>
+      <div class="cap">两列、一行的最小双复形。$d_h = \cdot 2$，$d_v = 0$，其余位置都是零。</div>
+    </div>
+
+    <p>总复形 $\mathrm{Tot}^n = \bigoplus_{p+q=n} C^{p,q}$ 是</p>
+
+    $$\mathrm{Tot}^0 = \mathbb{Z} \;\xrightarrow{\;\cdot 2\;}\; \mathrm{Tot}^1 = \mathbb{Z}, \quad \mathrm{Tot}^n = 0\ (n \neq 0, 1).$$
+
+    <p>所以</p>
+
+    $$H^0(\mathrm{Tot}) = \ker(\cdot 2) = 0, \quad H^1(\mathrm{Tot}) = \mathbb{Z}/2\mathbb{Z}.$$
+
+    <p>这就是我们最终的"目标答案"，谱序列应当算出它。</p>
+
+    <h3>过滤、$E_0$ 与 $d_0$</h3>
+
+    <p>取列过滤：$F^0 = \mathrm{Tot}$、$F^1 = $ 第 1 列以右、$F^2 = 0$。所以：</p>
+
+    <ul>
+      <li>$\mathrm{gr}^0 = $ 第 0 列 = $C^{0, \bullet}$，仅在 $(p, q) = (0, 0)$ 处为 $\mathbb{Z}$。</li>
+      <li>$\mathrm{gr}^1 = $ 第 1 列 = $C^{1, \bullet}$，仅在 $(p, q) = (1, 0)$ 处为 $\mathbb{Z}$。</li>
+    </ul>
+
+    <p>$E_0^{p, q} = \mathrm{gr}^p C^{p+q} = C^{p, q}$（每列内部）。$d_0$ 是 $d$ 模 $F^{p+1}$ 后剩下的部分——就是 $d_v$，本例中为零。</p>
+
+    <h3>$E_1$ 与 $d_1$</h3>
+
+    <p>$E_1^{p, q} = H^q(C^{p, \bullet}, d_v)$。因为 $d_v = 0$，所以 $E_1 = E_0$：</p>
+
+    <div class="grid-fig">
+<pre>
+   E_1 :    q = 0  |   ℤ            ℤ
+                   |  (0,0)        (1,0)
+                   +────────────────────→  p
+                        0       1
+</pre>
+    </div>
+
+    <p>$d_1: E_1^{p, q} \to E_1^{p+1, q}$（degree $(+1, 0)$，从 §3.4 的方向公式）。从 $(0, 0)$ 到 $(1, 0)$：取代表元 $1 \in \mathbb{Z} = C^{0, 0}$，作用 $d = d_h$，得 $2 \in C^{1, 0}$，落到 $E_1^{1, 0}$ 中就是 $2$。所以</p>
+
+    $$d_1: \mathbb{Z} \to \mathbb{Z}, \quad d_1 = \cdot 2.$$
+
+    <h3>$E_2$</h3>
+
+    <ul>
+      <li>在 $(0, 0)$：$\ker(d_1) = \ker(\cdot 2 : \mathbb{Z} \to \mathbb{Z}) = 0$。$\mathrm{im}\, d_1$ 进 $(0, 0)$ 来自 $(-1, 1)$ = 零。所以 $E_2^{0, 0} = 0$。</li>
+      <li>在 $(1, 0)$：$\ker(d_1$ 出 $(1, 0)) = $ 整个 $E_1^{1,0} = \mathbb{Z}$（目标 $(2, 0)$ 是零）。$\mathrm{im}\, d_1$ 进 $(1, 0)$ 来自 $(0, 0)$ = $2\mathbb{Z}$。所以 $E_2^{1, 0} = \mathbb{Z}/2\mathbb{Z}$。</li>
+    </ul>
+
+    <div class="grid-fig">
+<pre>
+   E_2 :    q = 0  |   0           ℤ/2
+                   |  (0,0)        (1,0)
+                   +────────────────────→  p
+                        0       1
+</pre>
+    </div>
+
+    <h3>$E_3 = E_\infty$</h3>
+
+    <p>$d_2: E_2^{p, q} \to E_2^{p+2, q-1}$。所有源 / 目标都在零位置上（要么 $p+2$ 太大，要么 $q-1 = -1$ 没东西）。所以 $d_2 = 0$，$E_3 = E_2$。同理所有更高的 $d_r$ 都是零，$E_\infty = E_2$。</p>
+
+    <h3>对账</h3>
+
+    <p>$E_\infty^{p, q}$ 是 $H^{p+q}(\mathrm{Tot})$ 的关联分次。我们读出：</p>
+
+    <ul>
+      <li>总度 $n = 0$（$p + q = 0$）：唯一对应位置 $(0, 0)$，$E_\infty = 0$。所以 $H^0(\mathrm{Tot}) = 0$。✓</li>
+      <li>总度 $n = 1$（$p + q = 1$）：唯一对应位置 $(1, 0)$，$E_\infty = \mathbb{Z}/2$。所以 $H^1(\mathrm{Tot}) = \mathbb{Z}/2$。✓</li>
+    </ul>
+
+    <div class="box ex">
+      <span class="label">复盘 · 谱序列做了什么</span>
+      <p>$E_1$ 给了我们两个 $\mathbb{Z}$——这是 gr 的同调，是第一近似。</p>
+      <p>$E_2$ 收紧成 $0$ 和 $\mathbb{Z}/2$——$d_1$ 干了两件事：</p>
+      <ol>
+        <li>把 $E_1^{0,0} = \mathbb{Z}$ 全部杀掉，因为 $1 \in C^{0,0}$ 在 $C$ 里 <strong>不是真 cycle</strong>（$d(1) = 2 \in C^{1,0}$ 非零）——这正是上一课说的"失败模式 ①"，由 $d_1$ 一次性纠正。</li>
+        <li>把 $E_1^{1,0} = \mathbb{Z}$ 商掉 $2\mathbb{Z}$，得到 $\mathbb{Z}/2$，因为 $2 \in C^{1,0}$ 在 $C$ 里 <strong>是真 boundary</strong>（$2 = d(1)$）——这正是上一课的"失败模式 ②"。</li>
+      </ol>
+      <p>两个错觉一并被 $d_1$ 修正。本例 $E_2 = E_\infty$ 是因为复形只有两列、$d_1$ 已经足够；一般情形需要更多页。</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">3.7</span>对接 <code>SSData</code></h2>
+    </div>
+
+    <p>现在回头看你们项目里 <code>KIP/SpectralSequence/Basic.lean</code> 第 29 行的 <code>SSData</code>：</p>
+
+    <div class="box note">
+<pre style="font-family: var(--font-mono); font-size: 0.85em; margin: 0;">structure SSData (C : Type u) [Category.{v} C] [Abelian C] where
+  V : C
+  Z : WithTop ℕ → Subobject V    -- decreasing
+  B : WithTop ℕ → Subobject V    -- increasing
+  Z_anti : Antitone Z
+  B_mono : Monotone B
+  Z_zero : Z 0 = ⊤
+  B_le_Z : ∀ r, B r ≤ Z r
+  Z_top_greatest : ...   -- Z ⊤ is glb of Z ↑i
+  B_top_least    : ...   -- B ⊤ is lub of B ↑i</pre>
+    </div>
+
+    <p>对照本课所学：</p>
+
+    <ul>
+      <li><code>V</code> = 环境对象 = $\mathrm{gr}^p C^{p+q}$（某个固定的 $(p, q)$）；</li>
+      <li><code>Z r</code> = $Z_r^{p, q}$，子对象，$r$ 越大越小（<code>Antitone</code>）；</li>
+      <li><code>B r</code> = $B_r^{p, q}$，子对象，$r$ 越大越大（<code>Monotone</code>）；</li>
+      <li><code>Z_zero</code>：$Z_0 = \mathrm{gr}^p$ 整个 = $\top$；</li>
+      <li><code>B_le_Z</code>：$B_r \subseteq Z_r$；</li>
+      <li><code>Z_top_greatest</code>：$Z_\infty = \bigcap_r Z_r$（在 $\mathrm{Subobject}\ V$ 这个完备格里取下确界）；</li>
+      <li><code>B_top_least</code>：$B_\infty = \bigcup_r B_r$；</li>
+      <li><code>SSData.page r</code> = $E_r^{p, q} = Z_r / B_r$；</li>
+      <li><code>SSData.eInfty</code> = $E_\infty^{p, q} = Z_\infty / B_\infty$。</li>
+    </ul>
+
+    <p>整个 <code>SSData</code> 就是<strong>把本课的全部数据在一个固定的 $(p, q)$ 上抽象成一组嵌套子对象</strong>。把 $(p, q)$ 遍历整个双指标网格、再加上 $d_r$，就是 <code>SpectralSequence</code> 结构（同一文件第 143 行）。</p>
+
+    <p>当时我说"项目用嵌套子对象描述谱序列是最干净的范畴论刻画"——你现在就懂为什么了。每一页 $E_r = Z_r/B_r$ 都是同一个公共环境 $V$ 的子商；页与页之间的关系（如 $E_{r+1} = H(E_r, d_r)$）翻译成嵌套关系 + 第三同构。这是 Mathlib 里有完整 API 支撑的对象。</p>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">3.8</span>这一课的小结</h2>
+    </div>
+
+    <ol>
+      <li>$r$-cocycle = "$dx$ 沉到 $F^{p+r}$"，$r$ 越大越严。$r$-coboundary = "来自上方 $r-1$ 层内"，$r$ 越大越松。</li>
+      <li>$Z_r$ 在 $\mathrm{gr}^p$ 中嵌套下降，$B_r$ 嵌套上升，恒有 $B_r \subseteq Z_r$。</li>
+      <li><strong>第 $r$ 页 $E_r = Z_r / B_r$</strong>；微分 $d_r$ 由 $d$ 诱导，degree $(+r, -r+1)$，满足 $d_r^2 = 0$。</li>
+      <li><strong>核心定理</strong>：$E_{r+1} = H(E_r, d_r)$。证明三件事：(a) $\ker d_r = Z_{r+1}/B_r$，(b) $\mathrm{im}\, d_r = B_{r+1}/B_r$，(c) 第三同构 $(Z_{r+1}/B_r)/(B_{r+1}/B_r) = Z_{r+1}/B_{r+1}$。</li>
+      <li><strong>$E_\infty^{p, q} = \mathrm{gr}^p H^{p+q}(C)$</strong>。下一课讲清楚"收敛"的精确含义和扩展问题。</li>
+      <li>整套数据 = 一族 $\mathrm{Subobject}(V)$ 的嵌套，正对应 <code>SSData</code>。</li>
+    </ol>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <h2><span class="num">3.9</span>作业</h2>
+    </div>
+
+    <div class="box work">
+      <span class="label">练习 1 · 自己跑一遍 §3.6 例子</span>
+      <p>不看上面的算过程，自己从设置开始，把 $E_0, E_1, E_2$ 全部独立算一遍。算完对照。如果中间任何一步卡住，标出来告诉我。</p>
+    </div>
+
+    <div class="box work">
+      <span class="label">练习 2 · 改一个数</span>
+      <p>把 §3.6 的 $d_h = \cdot 2$ 改成 $d_h = \cdot 3$。重新算 $E_1, E_2, E_\infty$ 和 $H^*(\mathrm{Tot})$。再改成 $d_h = $ 零映射，重算一遍。比较三种情况，看 $d_1$ 怎么变。</p>
+    </div>
+
+    <div class="box work">
+      <span class="label">练习 3 · 一个非平凡 $d_2$ 例子</span>
+      <p>构造一个 3-列双复形（cohomological，$p \in \{0, 1, 2\}$，$q \in \{0, 1\}$），使得 <strong>$d_1 = 0$ 但 $d_2 \neq 0$</strong>。提示：你需要让 $d_v$ 在某列贡献，把 gr-同调向上"挤一格"，然后让 $d_h$ 把它送到右边两列以外。具体构造留给你。</p>
+      <p>这个练习会让你对"高阶微分 $d_r$ 真实存在并起作用"有切身体会——很多人学谱序列时只见过 $d_1$、$d_2$，从来没造过自己的例子。造一个出来，对下一课讲收敛有帮助。</p>
+    </div>
+
+    <div class="box work">
+      <span class="label">练习 4 · 引子 · 收敛到底是什么</span>
+      <p>本课讲了"$E_\infty = \mathrm{gr}^\bullet H^*(C)$"。但请仔细想：$\mathrm{gr}^\bullet H^*(C)$ 是 $H^*(C)$ 关于某个过滤的关联分次。<strong>$H^*(C)$ 上的过滤是从哪里来的？</strong> $C$ 上的过滤如何"下传"到 $H^*(C)$ 上？</p>
+      <p>再追一步：一旦你知道了 $\mathrm{gr}^\bullet H^*(C)$，你能完全恢复 $H^*(C)$ 吗？想想 §2.1 的反例：知道 $\mathrm{gr}^\bullet = \mathbb{Z} \oplus \mathbb{Z}$ 并不能告诉你 $H^*(C)$ 是 $\mathbb{Z}^2$ 还是 $\mathbb{Z}/4$ 还是别的什么——这就是 <strong>扩展问题</strong>。第 4 课的主题。</p>
+    </div>
+
+    <div class="callout">
+      <strong>读完告诉我两件事：</strong> §3.6 的例子是否让你看出 $d_r$ 不是抽象魔法、而是被一步步算出来的？要不要进第 4 课（收敛 + 扩展问题）？
+    </div>
+  </section>
+
+  <nav class="lesson-nav">
+    <a class="prev" href="kip_course_02.html"><span class="arr">←</span> 第 2 课 · 过滤、关联分次</a>
+    <a class="home" href="kip_course.html">课程目录</a>
+    <span class="next disabled">第 4 课 · 收敛、$E_\infty$、扩展 <span class="arr">→</span> 写作中</span>
+  </nav>
+
+  <footer class="footer">
+    <span>位置 · <code>report-hub/prototypes/kip_course_03.html</code></span>
+    <span><a href="mailto:surenny233@sjtu.edu.cn">surenny233@sjtu.edu.cn</a></span>
+  </footer>
+
+</div>
+
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']],
+    processEscapes: true, tags: 'none'
+  },
+  options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] },
+  chtml: { scale: 1.0 }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<script src="../shared/hub.js"></script>
+<script>
+  const state = setupTheme('themeToggle', 'report-hub:kip_course_03');
+</script>
+</body>
+</html>
