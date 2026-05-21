@@ -238,7 +238,7 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
   <h1>FormalQualBench Leaderboard</h1>
   <!-- BEGIN AUTO:deck -->
 <p class="deck">23 research-level Lean theorems · 7 main runs · solve rates, wall time, and token usage compared side by side.</p>
-  <div class="gen">Auto-generated 2026-05-14T10:11Z · <code>harness/aggregate.py</code></div>
+  <div class="gen">Auto-generated 2026-05-21T02:18Z · <code>harness/aggregate.py</code></div>
   <!-- END AUTO:deck -->
 </header>
 
@@ -335,7 +335,7 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 <footer class="footer">
   <!-- BEGIN AUTO:footer -->
 <span>Source · <code>FormalQualBench/runs/{LEADERBOARD,MATRIX}.md</code></span>
-  <span>Snapshot · 2026-05-14</span>
+  <span>Snapshot · 2026-05-21</span>
   <!-- END AUTO:footer -->
 </footer>
 
@@ -347,11 +347,11 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 // BEGIN AUTO:data
 const RUNS = [
   { id: "run-20260430-151426-5th_try_opus_4_7_lean_tools", short: "5th_try_opus_4_7_lean_tools", config: "claude-code-lean-tools", model: "claude-opus-4-7", effort: "xhigh", solved: 6, sorry: 17, err: 0, wall: "4h", n: 23, walltime_total_solved: "4h59m", token_total: 1969.6, token_solved: 146.9 },
-  { id: "run-20260513-011039-baseline-23-clean", short: "baseline-23-clean", config: "codex-gpt-5.5", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 6, sorry: 17, err: 0, wall: "1h34m", n: 23, walltime_total_solved: "3h17m", token_total: 0.0, token_solved: 0.0 },
+  { id: "run-20260513-011039-baseline-23-clean", short: "baseline-23-clean", config: "codex-gpt-5.5", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 6, sorry: 17, err: 0, wall: "1h34m", n: 23, walltime_total_solved: "3h17m", token_total: 193.9, token_solved: 100.4 },
   { id: "run-20260428-172408-4th_try_opus_4_7", short: "4th_try_opus_4_7", config: "?", model: "claude-opus-4-7", effort: "xhigh", solved: 4, sorry: 18, err: 1, wall: "42m", n: 23, walltime_total_solved: "1h27m", token_total: 96.5, token_solved: 24.7 },
   { id: "run-20260508-095234-claude-sonnet-4-6", short: "claude-sonnet-4-6", config: "claude-code-sonnet", model: "claude-sonnet-4-6", effort: "xhigh", solved: 3, sorry: 20, err: 0, wall: "2h51m", n: 23, walltime_total_solved: "1h15m", token_total: 201.0, token_solved: 11.8 },
   { id: "run-20260501-163348-deepseek_opus8", short: "deepseek_opus8", config: "claude-code-deepseek", model: "deepseek-v4-pro[1m]", effort: "max", solved: 3, sorry: 3, err: 2, wall: "4h", n: 8, walltime_total_solved: "3h38m", token_total: 153.1, token_solved: 85.0 },
-  { id: "run-20260513-113030-strict-17", short: "strict-17", config: "codex-gpt-5.5-strict", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 2, sorry: 11, err: 4, wall: "1h24m", n: 17, walltime_total_solved: "1h40m", token_total: 0.0, token_solved: 0.0 },
+  { id: "run-20260513-113030-strict-17", short: "strict-17", config: "codex-gpt-5.5-strict", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 2, sorry: 11, err: 4, wall: "1h24m", n: 17, walltime_total_solved: "1h40m", token_total: 398.8, token_solved: 116.6 },
   { id: "run-20260507-171416-mimo_opus8", short: "mimo_opus8", config: "claude-code-mimo", model: "mimo-v2.5-pro", effort: "xhigh", solved: 1, sorry: 4, err: 3, wall: "4h", n: 8, walltime_total_solved: "47m", token_total: 26.2, token_solved: 4.0 }
 ];
 const PROBLEMS = [
@@ -416,14 +416,18 @@ const TOKENS = {
   "DeBruijnErdos:3": "2.9M",
   "DeBruijnErdos:4": "4.6M",
   "DeBruijnErdos:6": "4.0M",
+  "GleasonKahaneZelazkoTheorem:1": "83.9M",
   "JordanDerangementTheorem:0": "2.1M",
   "JordanDerangementTheorem:2": "3.1M",
   "JordanDerangementTheorem:3": "5.1M",
   "JordanDerangementTheorem:4": "6.2M",
   "ParisHarringtonPrinciple:0": "6.5M",
+  "ParisHarringtonPrinciple:1": "16.5M",
   "ParisHarringtonPrinciple:2": "6.4M",
   "ParisHarringtonPrinciple:4": "74.2M",
-  "VonNeumannDoubleCommutantTheorem:0": "41.7M"
+  "SchauderFixedPointTheorem:5": "83.6M",
+  "VonNeumannDoubleCommutantTheorem:0": "41.7M",
+  "VonNeumannDoubleCommutantTheorem:5": "33.0M"
 };
 // END AUTO:data
 
