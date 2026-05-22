@@ -15,6 +15,9 @@
   --border: #E8E2D5; --border-strong: #C9C2B0;
   --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12);
   --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F;
+  /* sorry = honest hole in a proof (`sorry` placeholder); a cool slate so it
+     reads distinctly from warn-yellow (cheat) and danger-red (build fail) */
+  --sorry: #5B7B9A; --sorry-muted: rgba(91,123,154,.14);
   --shadow-sm: 0 1px 2px rgba(26,18,0,.04);
   --shadow-md: 0 4px 16px rgba(26,18,0,.06);
 }
@@ -25,10 +28,11 @@
     --border: #2D2A25; --border-strong: #45403A;
     --accent: #E48060; --accent-muted: rgba(228,128,96,.16);
     --success: #82B374; --warn: #D9A847; --danger: #D87268;
+    --sorry: #8FA9C2; --sorry-muted: rgba(143,169,194,.18);
   }
 }
-[data-theme="light"] { --bg: #FAF7F2; --bg-elevated: #FFFFFF; --bg-subtle: #F0EDE6; --bg-code: #1C1A17; --text: #1A1815; --text-muted: #6B6557; --text-faint: #9C957F; --border: #E8E2D5; --border-strong: #C9C2B0; --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12); --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F; }
-[data-theme="dark"]  { --bg: #0F0E0C; --bg-elevated: #1A1815; --bg-subtle: #252320; --bg-code: #0A0908; --text: #F0EDE6; --text-muted: #9C957F; --text-faint: #6B6557; --border: #2D2A25; --border-strong: #45403A; --accent: #E48060; --accent-muted: rgba(228,128,96,.16); --success: #82B374; --warn: #D9A847; --danger: #D87268; }
+[data-theme="light"] { --bg: #FAF7F2; --bg-elevated: #FFFFFF; --bg-subtle: #F0EDE6; --bg-code: #1C1A17; --text: #1A1815; --text-muted: #6B6557; --text-faint: #9C957F; --border: #E8E2D5; --border-strong: #C9C2B0; --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12); --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F; --sorry: #5B7B9A; --sorry-muted: rgba(91,123,154,.14); }
+[data-theme="dark"]  { --bg: #0F0E0C; --bg-elevated: #1A1815; --bg-subtle: #252320; --bg-code: #0A0908; --text: #F0EDE6; --text-muted: #9C957F; --text-faint: #6B6557; --border: #2D2A25; --border-strong: #45403A; --accent: #E48060; --accent-muted: rgba(228,128,96,.16); --success: #82B374; --warn: #D9A847; --danger: #D87268; --sorry: #8FA9C2; --sorry-muted: rgba(143,169,194,.18); }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -112,7 +116,7 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 .legend .l-item { display: inline-flex; align-items: center; gap: .35rem; }
 .legend .sw { width: 14px; height: 14px; border-radius: 3px; display: inline-block; }
 .sw.solved { background: var(--success); }
-.sw.sorry  { background: var(--warn); }
+.sw.sorry  { background: var(--sorry); }
 .sw.cheat  { background: rgba(199,144,44,.22); }
 .sw.error  { background: var(--danger); }
 .sw.absent { background: var(--bg-subtle); border: 1px solid var(--border); }
@@ -148,7 +152,7 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 .mx-cell.verdict { font-family: var(--font-mono); cursor: pointer; position: relative; }
 .mx-cell.verdict:hover { transform: scale(1.1); z-index: 5; box-shadow: var(--shadow-md); }
 .mx-cell.verdict.solved { background: rgba(92,138,79,.32); color: var(--success); font-weight: 600; }
-.mx-cell.verdict.sorry  { background: rgba(199,144,44,.18); color: var(--warn); }
+.mx-cell.verdict.sorry  { background: var(--sorry-muted); color: var(--sorry); font-weight: 600; }
 /* cheat: orange-yellow background — distinct from error red; M/D/A get different
    text colors via [data-verdict] so the specific cheat mode is readable at a glance */
 .mx-cell.verdict.cheat                    { background: rgba(199,144,44,.22); font-weight: 600; }
@@ -159,7 +163,7 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 .mx-cell.verdict.absent { background: var(--bg-elevated); color: var(--text-faint); }
 @media (prefers-color-scheme: dark) {
   .mx-cell.verdict.solved { background: rgba(130,179,116,.28); color: var(--success); }
-  .mx-cell.verdict.sorry  { background: rgba(217,168,71,.22); color: var(--warn); }
+  .mx-cell.verdict.sorry  { background: var(--sorry-muted); color: var(--sorry); }
   .mx-cell.verdict.cheat                    { background: rgba(217,168,71,.22); }
   .mx-cell.verdict.cheat[data-verdict="M"]  { color: #E5B568; }
   .mx-cell.verdict.cheat[data-verdict="D"]  { color: #B894E0; }
@@ -167,7 +171,7 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
   .mx-cell.verdict.error  { background: rgba(216,114,104,.22); color: var(--danger); }
 }
 [data-theme="dark"] .mx-cell.verdict.solved { background: rgba(130,179,116,.28); }
-[data-theme="dark"] .mx-cell.verdict.sorry  { background: rgba(217,168,71,.22); }
+[data-theme="dark"] .mx-cell.verdict.sorry  { background: var(--sorry-muted); color: var(--sorry); }
 [data-theme="dark"] .mx-cell.verdict.cheat                    { background: rgba(217,168,71,.22); }
 [data-theme="dark"] .mx-cell.verdict.cheat[data-verdict="M"]  { color: #E5B568; }
 [data-theme="dark"] .mx-cell.verdict.cheat[data-verdict="D"]  { color: #B894E0; }
@@ -175,8 +179,9 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 [data-theme="dark"] .mx-cell.verdict.error  { background: rgba(216,114,104,.22); }
 
 /* heat cells (for wall/token mode) */
-.mx-cell.heat { font-family: var(--font-mono); font-size: .72rem; cursor: pointer; position: relative; }
+.mx-cell.heat { font-family: var(--font-mono); font-size: .72rem; cursor: pointer; position: relative; color: var(--text-muted); }
 .mx-cell.heat:hover { transform: scale(1.1); z-index: 5; box-shadow: var(--shadow-md); }
+.mx-cell.heat.sorry  { background: var(--sorry-muted); color: var(--sorry); }
 .mx-cell.heat.absent { background: var(--bg-elevated); color: var(--text-faint); }
 
 /* tooltip */
@@ -279,6 +284,7 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
           <th>Config / Model</th>
           <th class="right">Effort</th>
           <th class="right">Clean</th>
+          <th class="right" title="proof type-checks with `sorry` placeholder(s) — honest hole, not a cheat">Sorry</th>
           <th class="right">Cheat</th>
           <th class="right">Fail</th>
           <th class="right">Wall</th>
@@ -304,9 +310,10 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
     </div>
     <div class="legend">
       <span class="l-item"><span class="sw solved"></span>✓ clean (kernel-accepted)</span>
+      <span class="l-item" title="proof type-checks but a sub-goal is filled by the `sorry` placeholder — honest hole, not a cheat"><span class="sw sorry"></span>s use_sorry</span>
       <span class="l-item" title="theorem statement differs from source at the kernel level (e.g. silently injected implicit variables, instance priority shifts)"><span class="lg" data-g="M">M</span>statement_mismatch</span>
       <span class="l-item" title="statement matches but a transitive dependency was redefined in the submission (def shadow / hidden instance attack)"><span class="lg" data-g="D">D</span>dep_mismatch</span>
-      <span class="l-item" title="proof body depends on an axiom not in the whitelist (sorry, user-declared axiom, etc.)"><span class="lg" data-g="A">A</span>illegal_axiom</span>
+      <span class="l-item" title="proof body depends on an axiom not in the whitelist (user-declared axiom, opaque def, etc.)"><span class="lg" data-g="A">A</span>illegal_axiom</span>
       <span class="l-item"><span class="sw error"></span>F/T build_fail / timeout</span>
       <span class="l-item"><span class="sw absent"></span>· not in run / theorem missing</span>
     </div>
@@ -442,16 +449,33 @@ const TOKENS = {
 // Comparator glyphs only — HTML is comparator-as-truth.
 const VERDICT_TO_CLASS = {
   '✓': 'solved',
+  's': 'sorry',
   'M': 'cheat', 'D': 'cheat', 'A': 'cheat',
   'F': 'error', 'T': 'error',
   '?': 'absent', '·': 'absent'
 };
 const VERDICT_LABEL = {
   '✓': 'clean (kernel-accepted)',
+  's': 'use_sorry (proof contains `sorry` placeholder — honest hole)',
   'M': 'statement_mismatch (cheat)', 'D': 'dep_mismatch (cheat)', 'A': 'illegal_axiom (cheat)',
   'F': 'build_fail', 'T': 'timeout',
   '?': 'theorem missing', '·': 'not in run / no submission'
 };
+// Per-run totals re-derived from PROBLEMS. Buckets match `harness/aggregate.py`:
+//   clean = ✓ · cheat = M+D+A · fail = F+T · (s and ? are tracked separately so
+//   the leaderboard columns add up cleanly without double-counting sorry).
+function runTotals(i) {
+  let clean = 0, sorry = 0, cheat = 0, fail = 0, missing = 0;
+  for (const p of PROBLEMS) {
+    const v = p.v[i];
+    if (v === '✓') clean++;
+    else if (v === 's') sorry++;
+    else if (v === 'M' || v === 'D' || v === 'A') cheat++;
+    else if (v === 'F' || v === 'T') fail++;
+    else if (v === '?') missing++;  // theorem_missing — verify.sh-bypassing absence
+  }
+  return { clean, sorry, cheat, fail, missing };
+}
 const STORAGE_KEY = 'report-hub:formalqualbench_leaderboard';
 const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"mode":"verdict","sortBy":null,"onlySolved":false,"theme":"auto"}');
 
@@ -469,18 +493,21 @@ applyTheme();
 // ---- leaderboard ----
 function renderLeaderboard() {
   const tb = document.getElementById('lbBody');
-  tb.innerHTML = RUNS.map((r, i) => `
+  tb.innerHTML = RUNS.map((r, i) => {
+    const t = runTotals(i);
+    return `
     <tr class="${i === 0 ? 'top' : ''}">
       <td class="rank">#${i + 1}</td>
       <td class="run-name">${r.short}</td>
       <td><span class="config">${r.config}</span><br><span class="model">${r.model}</span></td>
       <td class="right"><code>${r.effort}</code></td>
-      <td class="right"><div class="solve-cell"><div class="solve-bar"><div class="fill" style="width:${(r.solved/r.n)*100}%"></div></div><span class="solve-num">${r.solved}<span class="pct">/${r.n}</span> · ${Math.round(r.solved/r.n*100)}%</span></div></td>
-      <td class="right">${r.sorry}</td>
-      <td class="right">${r.err}</td>
+      <td class="right"><div class="solve-cell"><div class="solve-bar"><div class="fill" style="width:${(t.clean/r.n)*100}%"></div></div><span class="solve-num">${t.clean}<span class="pct">/${r.n}</span> · ${Math.round(t.clean/r.n*100)}%</span></div></td>
+      <td class="right" style="color:${t.sorry ? 'var(--sorry)' : 'var(--text-faint)'};font-weight:${t.sorry ? '600' : '400'};">${t.sorry}</td>
+      <td class="right">${t.cheat}</td>
+      <td class="right">${t.fail}</td>
       <td class="right">${r.wall}</td>
-    </tr>
-  `).join('');
+    </tr>`;
+  }).join('');
 }
 
 // ---- matrix ----
@@ -493,7 +520,8 @@ function renderMatrix() {
   if (state.sortBy !== null) {
     probs.sort((a, b) => {
       const av = a.v[state.sortBy]; const bv = b.v[state.sortBy];
-      const order = { '✓': 0, 'e': 1, 's': 2, '·': 3 };
+      // clean → sorry → cheat → fail → absent
+      const order = { '✓': 0, 's': 1, 'M': 2, 'D': 2, 'A': 2, '?': 3, 'F': 4, 'T': 4, '·': 5 };
       return (order[av] ?? 9) - (order[bv] ?? 9);
     });
   } else {
@@ -573,17 +601,19 @@ function renderMatrix() {
 function renderRunCards() {
   const grid = document.getElementById('runGrid');
   grid.innerHTML = RUNS.map((r, i) => {
+    const t = runTotals(i);
     const solvedProbs = PROBLEMS.filter(p => p.v[i] === '✓').map(p => p.name);
     return `<div class="run-card ${i === 0 ? 'top' : ''}">
       <h4>${r.short}</h4>
       <div class="ck"><code class="accent">${r.config}</code><code>${r.model}</code><code>${r.effort}</code></div>
-      <div class="big">${r.solved}<span class="sub">/${r.n}</span></div>
-      <div style="font-size:.78rem;color:var(--text-muted);">solved · ${Math.round(r.solved/r.n*100)}% of in-scope</div>
+      <div class="big">${t.clean}<span class="sub">/${r.n}</span></div>
+      <div style="font-size:.78rem;color:var(--text-muted);">clean · ${Math.round(t.clean/r.n*100)}% of in-scope</div>
       <div class="stats">
-        <div><div class="lbl">Sorry</div><div class="vv">${r.sorry}</div></div>
-        <div><div class="lbl">Error</div><div class="vv">${r.err}</div></div>
-        <div><div class="lbl">Wall</div><div class="vv">${r.walltime_total_solved}</div></div>
+        <div><div class="lbl">Sorry</div><div class="vv" style="color:${t.sorry ? 'var(--sorry)' : 'var(--text)'};">${t.sorry}</div></div>
+        <div><div class="lbl">Cheat</div><div class="vv">${t.cheat}</div></div>
+        <div><div class="lbl">Fail</div><div class="vv">${t.fail}</div></div>
       </div>
+      <div style="font-size:.7rem;color:var(--text-faint);margin-top:.5rem;font-family:var(--font-mono);">wall on clean · ${r.walltime_total_solved}</div>
       ${solvedProbs.length > 0 ? `<div class="solved-list">
         <div class="lbl">Solved problems</div>
         <div class="items">${solvedProbs.map(s => `<span class="it">${s}</span>`).join('')}</div>
