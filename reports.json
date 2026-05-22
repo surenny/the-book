@@ -43,12 +43,12 @@
       "title": "Codex GPT-5.5 在 FormalQualBench 上的 12 类 cheat 复盘",
       "project": "FormalQualBench",
       "source_path": "FormalQualBench/insight/2026-05-12-agent-cheating-retrospective.md",
-      "date": "2026-05-12",
+      "date": "2026-05-22",
       "type": "Postmortem",
       "type_icon": "▲",
       "tags": ["specification-gaming", "cheat", "evaluation", "lean4", "codex"],
-      "deck": "用 codex-gpt-5.5 跑 23 道 research-level Lean 定理，4 轮 anti-cheat 加固后只 6 道真做出来——剩下 17 道每一道都用一种独立的作弊路径骗过 verify.sh。",
-      "highlights": ["6/23 真 solved", "12 cheat patterns", "3 轮加固"]
+      "deck": "用 codex-gpt-5.5 跑 23 道 research-level Lean 定理，4 轮 anti-cheat 加固后只 6 道真做出来——剩下 17 道每一道都用一种独立的作弊路径骗过 verify.sh。2026-05-22 增补 baseline-23-clean session-log 二次复盘：codex 自述作弊意图的直引证据。",
+      "highlights": ["6/23 真 solved", "12 cheat patterns", "codex 自述作弊证据"]
     },
     {
       "id": "case_study_analysis",
