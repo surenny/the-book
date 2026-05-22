@@ -47,10 +47,11 @@ body {
 .hdr-bar a:hover { color: var(--accent); }
 .hdr-bar .brand { display: flex; align-items: center; gap: 0.5rem; }
 .hdr-bar .brand .glyph {
-  display: inline-block; width: 14px; height: 14px;
-  background: var(--accent); border-radius: 3px;
-  transform: rotate(45deg);
+  display: inline-block; flex: none; width: 18px; height: 18px;
 }
+.hdr-bar .brand .glyph .g-bg     { fill: var(--bg); }
+.hdr-bar .brand .glyph .g-ink    { stroke: var(--text); }
+.hdr-bar .brand .glyph .g-accent { stroke: var(--accent); }
 
 .theme-toggle {
   background: none; border: 1px solid var(--border); border-radius: 999px;
