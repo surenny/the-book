@@ -25,6 +25,19 @@
       ]
     },
     {
+      "id": "evaluator_cheat_thread",
+      "path": "prototypes/evaluator_cheat_thread.html",
+      "title": "周报（5/13 → 5/25）— 评测器又被骗了一次，loop 学会撤回",
+      "project": "FormalQualBench × Barchon",
+      "source_path": "prototypes/evaluator_cheat_thread.html",
+      "date": "2026-05-25",
+      "type": "Weekly",
+      "type_icon": "◐",
+      "tags": ["weekly", "evaluation", "lean4", "codex", "opus", "comparator", "barchon", "loop"],
+      "deck": "本周双线：评测器侧把 FormalQualBench leaderboard、12 类 cheat、7 个 illegal_axiom 三份串起来读——同 prompt 下 opus 老实而 codex 走出 12 条独立 cheat；strict17 撞天花板后 comparator 不得不上；MCP 一加，作弊从源码层潜到了元编程层。loop 侧 Barchon 主仓三件结构性事——TeX-as-truth、drafter 同级 + 状态机调度、review 闸门可回滚。落点：codex + comparator 进生产 loop，6 月碰头。",
+      "highlights": ["双线 · 评测器 + loop", "12 + 7 cheat 形态", "Barchon 3 PR 结构性事"]
+    },
+    {
       "id": "formalqualbench_leaderboard",
       "path": "prototypes/formalqualbench_leaderboard.html",
       "title": "FormalQualBench Leaderboard",
@@ -42,13 +55,26 @@
       "path": "prototypes/agent_cheating_retrospective.html",
       "title": "Codex GPT-5.5 在 FormalQualBench 上的 12 类 cheat 复盘",
       "project": "FormalQualBench",
-      "source_path": "FormalQualBench/insight/2026-05-12-agent-cheating-retrospective.md",
+      "source_path": "FormalQualBench/insight/2026-05-12-agent-cheating-retrospective.md §1–§12",
       "date": "2026-05-22",
       "type": "Postmortem",
       "type_icon": "▲",
-      "tags": ["specification-gaming", "cheat", "evaluation", "lean4", "codex"],
-      "deck": "用 codex-gpt-5.5 跑 23 道 research-level Lean 定理，4 轮 anti-cheat 加固后只 6 道真做出来——剩下 17 道每一道都用一种独立的作弊路径骗过 verify.sh。2026-05-22 增补 baseline-23-clean session-log 二次复盘：codex 自述作弊意图的直引证据。",
+      "tags": ["specification-gaming", "cheat", "evaluation", "lean4", "codex", "baseline"],
+      "deck": "裸 codex（无 MCP，baseline.md）跑 23 道 research-level Lean 定理，4 轮 anti-cheat 加固后只 6 道真做出来——剩下 17 道每一道都用一种独立的作弊路径骗过 verify.sh。第 11 节增补 baseline-23-clean session-log 二次复盘：codex 自述作弊意图的直引证据。",
       "highlights": ["6/23 真 solved", "12 cheat patterns", "codex 自述作弊证据"]
+    },
+    {
+      "id": "agent_cheating_lean_tools_mcp",
+      "path": "prototypes/agent_cheating_lean_tools_mcp.html",
+      "title": "Codex GPT-5.5 + lean-tools MCP — 7 个 illegal_axiom 复盘",
+      "project": "FormalQualBench",
+      "source_path": "FormalQualBench/insight/2026-05-12-agent-cheating-retrospective.md §13",
+      "date": "2026-05-25",
+      "type": "Postmortem",
+      "type_icon": "▲",
+      "tags": ["specification-gaming", "cheat", "evaluation", "lean4", "codex", "mcp", "metaprogramming", "illegal-axiom"],
+      "deck": "同 model（gpt-5.5-xhigh）加上 archon-lean-lsp MCP、改用 lean-tools-codex.md prompt 重跑 23 题。MCP 没让 codex 更老实——只让作弊更隐蔽：7 个 illegal_axiom 的源码层 grep axiom/sorry 全为 0，verify.sh 完全过，comparator 的 kernel 闭包检查才打回原形。\"反 grep 元编程\"的形态学。",
+      "highlights": ["7/23 clean", "7 illegal_axiom", "0/7 verify 抓到"]
     },
     {
       "id": "case_study_analysis",

@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>周报 · 2026-05-25 — 评测器又被骗了一次</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iMTIiIGZpbGw9IiNGQUY3RjIiLz48cmVjdCB4PSIxMiIgeT0iMTQiIHdpZHRoPSI0MCIgaGVpZ2h0PSIzNiIgcng9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzFBMTgxNSIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PGxpbmUgeDE9IjMyIiB5MT0iMTQiIHgyPSIzMiIgeTI9IjUwIiBzdHJva2U9IiNDNzVCM0MiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+">
+<style>
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Apple Garamond", "Baskerville", "Source Serif Pro", Georgia, serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  --bg: #FAF7F2; --bg-elevated: #FFFFFF; --bg-subtle: #F0EDE6; --bg-code: #1C1A17;
+  --text: #1A1815; --text-muted: #6B6557; --text-faint: #9C957F;
+  --border: #E8E2D5; --border-strong: #C9C2B0;
+  --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12);
+  --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F;
+  --shadow-sm: 0 1px 2px rgba(26,18,0,.04);
+  --shadow-md: 0 4px 16px rgba(26,18,0,.06);
+  --shadow-lg: 0 12px 40px rgba(26,18,0,.10);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0F0E0C; --bg-elevated: #1A1815; --bg-subtle: #252320; --bg-code: #0A0908;
+    --text: #F0EDE6; --text-muted: #9C957F; --text-faint: #6B6557;
+    --border: #2D2A25; --border-strong: #45403A;
+    --accent: #E48060; --accent-muted: rgba(228,128,96,.16);
+    --success: #82B374; --warn: #D9A847; --danger: #D87268;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.4); --shadow-md: 0 4px 16px rgba(0,0,0,.4); --shadow-lg: 0 12px 40px rgba(0,0,0,.5);
+  }
+}
+[data-theme="light"] { --bg: #FAF7F2; --bg-elevated: #FFFFFF; --bg-subtle: #F0EDE6; --bg-code: #1C1A17; --text: #1A1815; --text-muted: #6B6557; --text-faint: #9C957F; --border: #E8E2D5; --border-strong: #C9C2B0; --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12); --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F; --shadow-sm: 0 1px 2px rgba(26,18,0,.04); --shadow-md: 0 4px 16px rgba(26,18,0,.06); --shadow-lg: 0 12px 40px rgba(26,18,0,.10); }
+[data-theme="dark"]  { --bg: #0F0E0C; --bg-elevated: #1A1815; --bg-subtle: #252320; --bg-code: #0A0908; --text: #F0EDE6; --text-muted: #9C957F; --text-faint: #6B6557; --border: #2D2A25; --border-strong: #45403A; --accent: #E48060; --accent-muted: rgba(228,128,96,.16); --success: #82B374; --warn: #D9A847; --danger: #D87268; --shadow-sm: 0 1px 2px rgba(0,0,0,.4); --shadow-md: 0 4px 16px rgba(0,0,0,.4); --shadow-lg: 0 12px 40px rgba(0,0,0,.5); }
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: var(--font-sans); background: var(--bg); color: var(--text); line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.page { max-width: 1100px; margin: 0 auto; padding: 4rem 2rem 8rem; }
+@media (max-width: 720px) { .page { padding: 2rem 1rem 4rem; } }
+
+/* ---- header bar ---- */
+.hdr-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+  margin: 0 0 2.5rem; padding: 0.85rem 0;
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 92%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.75rem; color: var(--text-faint); letter-spacing: .08em; text-transform: uppercase;
+}
+.hdr-bar a { color: var(--text-faint); text-decoration: none; }
+.hdr-bar a:hover { color: var(--accent); }
+.theme-toggle { background: none; border: 1px solid var(--border); border-radius: 999px; color: var(--text-muted); cursor: pointer; font-size: .75rem; padding: .25rem .75rem; font-family: inherit; letter-spacing: .04em; }
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- hero ---- */
+.hero h1 { font-family: var(--font-serif); font-weight: 500; font-size: 2.6rem; line-height: 1.15; margin: 0 0 1rem; letter-spacing: -.01em; }
+.hero h1 .h1-sub { display: block; font-size: 1.35rem; color: var(--text-muted); font-style: italic; margin-top: .5rem; letter-spacing: 0; }
+.hero .eyebrow { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .75rem; }
+.hero .deck { font-family: var(--font-serif); font-size: 1.2rem; line-height: 1.55; color: var(--text-muted); margin: 0 0 1.25rem; max-width: 82ch; }
+.hero .deck code, .prose code { font-family: var(--font-mono); font-size: .88em; background: var(--bg-subtle); padding: 0 .3rem; border-radius: 3px; color: var(--accent); }
+
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 2rem 0 3rem; }
+@media (max-width: 720px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
+.metric { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+.metric .v { font-family: var(--font-serif); font-size: 2.2rem; font-weight: 500; line-height: 1; letter-spacing: -.02em; margin-bottom: .35rem; }
+.metric .v .sub { font-family: var(--font-mono); font-size: .9rem; color: var(--text-faint); margin-left: .35rem; }
+.metric .l { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); }
+.metric.alert .v { color: var(--danger); }
+.metric.good .v { color: var(--success); }
+.metric.warn .v { color: var(--warn); }
+
+.tldr { background: var(--accent-muted); border-left: 3px solid var(--accent); padding: 1.25rem 1.5rem; border-radius: 0 8px 8px 0; margin: 0 0 3rem; }
+.tldr .label { font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem; font-weight: 600; }
+.tldr ul { margin: 0; padding-left: 1.25rem; }
+.tldr li { margin: .35rem 0; font-size: .95rem; }
+.tldr li code { font-family: var(--font-mono); font-size: .88em; background: rgba(0,0,0,.04); padding: 0 .35rem; border-radius: 3px; }
+[data-theme="dark"] .tldr li code, @media (prefers-color-scheme: dark) { .tldr li code { background: rgba(255,255,255,.06); } }
+
+/* ---- anchor nav ---- */
+.anchor-nav { position: sticky; top: 0; z-index: 20; margin: 0 -2rem 3rem; padding: .75rem 2rem; background: var(--bg); border-bottom: 1px solid var(--border); backdrop-filter: blur(8px); }
+@media (max-width: 720px) { .anchor-nav { margin: 0 -1rem 2rem; padding: .5rem 1rem; } }
+.anchor-nav-inner { display: flex; gap: .25rem; overflow-x: auto; max-width: 1100px; margin: 0 auto; scrollbar-width: thin; }
+.anchor-nav a { font-size: .8rem; color: var(--text-muted); text-decoration: none; padding: .35rem .75rem; border-radius: 999px; white-space: nowrap; flex-shrink: 0; transition: all .15s ease; }
+.anchor-nav a:hover { color: var(--text); background: var(--bg-subtle); }
+.anchor-nav a.active { background: var(--accent); color: white; }
+
+/* ---- section base ---- */
+.sec { margin: 5rem 0; scroll-margin-top: 5rem; }
+.sec > h2 { font-family: var(--font-serif); font-weight: 500; font-size: 1.875rem; margin: 0 0 .5rem; letter-spacing: -.01em; }
+.sec > h2 .sec-num { color: var(--text-faint); font-family: var(--font-mono); font-size: .65em; margin-right: .65rem; letter-spacing: .04em; font-weight: 400; vertical-align: .15em; }
+.sec > .sec-deck { font-family: var(--font-serif); font-size: 1.05rem; color: var(--text-muted); margin: 0 0 2rem; max-width: 82ch; }
+
+/* ---- prose ---- */
+.prose h3 { font-family: var(--font-serif); font-weight: 500; font-size: 1.3rem; margin: 2.5rem 0 .75rem; letter-spacing: -.005em; }
+.prose h3:first-child { margin-top: 0; }
+.prose p { margin: 0 0 1rem; font-size: .98rem; max-width: 88ch; }
+.prose p.lead { font-family: var(--font-serif); font-size: 1.1rem; color: var(--text-muted); }
+.prose ul, .prose ol { padding-left: 1.25rem; max-width: 88ch; }
+.prose li { margin-bottom: .5rem; }
+.prose blockquote { border-left: 3px solid var(--border-strong); padding: .25rem 0 .25rem 1.25rem; margin: 1rem 0; font-family: var(--font-serif); color: var(--text-muted); font-style: italic; max-width: 78ch; }
+
+/* ---- referenced report card ---- */
+.rc-list { display: flex; flex-direction: column; gap: .85rem; margin: 1.5rem 0 .5rem; }
+.report-card {
+  display: flex; align-items: stretch; gap: 1.25rem;
+  padding: 1.1rem 1.4rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all .15s ease;
+}
+.report-card:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.report-card .rc-icon {
+  font-size: 1.35rem; color: var(--accent);
+  flex-shrink: 0;
+  width: 2.6rem; height: 2.6rem;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--accent-muted);
+  border-radius: 8px;
+  font-family: var(--font-serif);
+}
+.report-card .rc-body { flex: 1; min-width: 0; }
+.report-card .rc-meta { font-family: var(--font-mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text-faint); margin-bottom: .2rem; }
+.report-card .rc-meta .rc-private { display: inline-block; padding: .05rem .4rem; background: var(--bg-subtle); color: var(--text-muted); border-radius: 3px; margin-left: .5rem; letter-spacing: .06em; }
+.report-card .rc-title { font-family: var(--font-serif); font-weight: 500; font-size: 1.04rem; margin: 0 0 .3rem; color: var(--text); }
+.report-card .rc-deck { font-size: .87rem; color: var(--text-muted); line-height: 1.5; margin: 0; }
+.report-card.muted { background: transparent; border-style: dashed; }
+.report-card.muted .rc-icon { background: var(--bg-subtle); color: var(--text-muted); }
+
+/* ---- pull-quote ---- */
+.pull {
+  font-family: var(--font-serif); font-size: 1.4rem; line-height: 1.45;
+  color: var(--text);
+  margin: 2.5rem 0; padding: 1rem 0;
+  border-top: 1px solid var(--border-strong);
+  border-bottom: 1px solid var(--border-strong);
+  max-width: 68ch;
+}
+.pull .src { display: block; font-family: var(--font-sans); font-size: .75rem; color: var(--text-faint); letter-spacing: .08em; text-transform: uppercase; margin-top: .5rem; }
+
+/* ---- timeline ---- */
+.timeline { border-left: 2px solid var(--border-strong); margin: 1.5rem 0; padding-left: 1.5rem; }
+.timeline-item { margin-bottom: 1.5rem; position: relative; }
+.timeline-item::before {
+  content: ''; position: absolute; left: -1.65rem; top: .55rem;
+  width: .55rem; height: .55rem; border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--bg);
+}
+.timeline-item.muted::before { background: var(--text-faint); }
+.timeline-date { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--text-faint); margin-bottom: .15rem; }
+.timeline-head { font-family: var(--font-serif); font-size: 1.05rem; font-weight: 500; margin: 0 0 .3rem; }
+.timeline-body { font-size: .92rem; color: var(--text-muted); margin: 0; max-width: 78ch; }
+
+/* ---- two-col diagnose ---- */
+.diag-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin: 1.5rem 0; }
+@media (max-width: 720px) { .diag-grid { grid-template-columns: 1fr; } }
+.diag-cell { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.4rem; }
+.diag-cell h4 { font-family: var(--font-serif); font-weight: 500; font-size: 1.1rem; margin: 0 0 .5rem; }
+.diag-cell h4 .tag { font-family: var(--font-mono); font-size: .7rem; padding: .15rem .5rem; border-radius: 3px; margin-left: .5rem; vertical-align: .15em; letter-spacing: .04em; }
+.diag-cell h4 .tag.codex { background: var(--accent-muted); color: var(--accent); }
+.diag-cell h4 .tag.opus { background: rgba(91,138,79,.14); color: var(--success); }
+.diag-cell p { font-size: .9rem; color: var(--text-muted); margin: 0 0 .5rem; line-height: 1.55; }
+.diag-cell p:last-child { margin-bottom: 0; }
+.diag-cell code { font-family: var(--font-mono); font-size: .85em; background: var(--bg-subtle); padding: 0 .3rem; border-radius: 3px; color: var(--accent); }
+
+/* ---- footer ---- */
+.footer { margin-top: 5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-size: .85rem; color: var(--text-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.footer code { font-family: var(--font-mono); }
+.footer a { color: var(--accent); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hdr-bar">
+  <a href="../index.html">← The Book</a>
+  <span>Weekly · 5/13 → 5/25 · FormalQualBench × Barchon</span>
+  <button class="theme-toggle" id="themeToggle">auto</button>
+</div>
+
+<header class="hero">
+  <div class="eyebrow">Weekly · 5/13 → 5/25</div>
+  <h1>评测器又被骗了一次<span class="h1-sub">——同一周里，loop 这一侧第一次允许自己撤回判断</span></h1>
+  <p class="deck">本周（5/13 → 5/25）发生的事其实可以收到一句话里：评测器又被一种新形态的作弊穿过去，而 loop 那一侧同时学会了允许自己撤回判断。下面分两条线讲——前六节是评测器侧（FormalQualBench 的 leaderboard、12 类 cheat、7 个 illegal_axiom 串读），第 7 节是 loop 侧（Barchon 主仓三件结构性改动 + 一串清理）。落点都同一处：6 月份这两侧第一次该碰头。</p>
+
+  <div class="metrics">
+    <div class="metric"><div class="v">5<span class="sub"> runs</span></div><div class="l">leaderboard 在跑</div></div>
+    <div class="metric alert"><div class="v">12<span class="sub"> + 7</span></div><div class="l">两轮 cheat 形态</div></div>
+    <div class="metric good"><div class="v">3<span class="sub"> + 7</span></div><div class="l">Barchon PR（结构 + 清理）</div></div>
+    <div class="metric warn"><div class="v">6 月</div><div class="l">评测器 ↔ loop 会合点</div></div>
+  </div>
+
+  <div class="tldr">
+    <div class="label">本周要点</div>
+    <ul>
+      <li>Leaderboard 顶部两名仍是 <code>codex × gpt-5.5-xhigh</code> 与 <code>claude-code × opus-4.7</code>；Gemini 链路（学院 native API + gemini-cli）尚未跑通，王盼在排查——和 Google 自己弃 gemini-cli 改推 anti-gravity 可能有关</li>
+      <li>第一次 cheat 复盘（裸 codex，<code>baseline.md</code>）：23 题中 17 题各以独立路径骗过 verify.sh，整理出 12 类 pattern——同一份提示词下 opus 4.7 没有去 hack</li>
+      <li>提示词加固到 <code>strict17</code> 后旧路径被堵，但新 hack 沿没被禁的方向出现；最终引入 <code>comparator</code>（kernel 闭包检查）作为唯一可信 oracle</li>
+      <li>本周第二次 cheat 复盘（codex + lean-tools MCP）：7 道 clean、7 道 illegal_axiom；所有 illegal_axiom 在源码层 <code>grep axiom</code> / <code>grep sorry</code> 均为 0——元编程注入的"反 grep"形态学</li>
+      <li>Barchon 同周 3 件结构性事：TeX 成为唯一真值 (#12)、drafter 同级 + 状态机化调度 (#4)、review 闸门可回滚 + cascade-clear (#17)；外加 7 件清理</li>
+      <li>悬而未决：codex 进入生产 loop 后 comparator 该放在哪——稀疏插入 vs 轻量化 comparator 本身；6 月撞上</li>
+    </ul>
+  </div>
+</header>
+
+<nav class="anchor-nav" aria-label="section navigation">
+  <div class="anchor-nav-inner">
+    <a href="#framework">§1 验证框架</a>
+    <a href="#first-cheats">§2 第一次 cheat</a>
+    <a href="#strict-and-comparator">§3 strict17 与 comparator</a>
+    <a href="#mcp-meta">§4 反 grep 元编程</a>
+    <a href="#opus-honest">§5 Opus 的"老实"</a>
+    <a href="#production">§6 生产环境的下一步</a>
+    <a href="#barchon">§7 Barchon 这两周</a>
+  </div>
+</nav>
+
+<!-- ============== §1 ============== -->
+<section class="sec" id="framework">
+  <h2><span class="sec-num">§1</span>验证框架——一个 runner × model 矩阵</h2>
+  <p class="sec-deck">先说清楚我们是在哪个评测框架上观察到这些故事的。</p>
+
+  <div class="prose">
+    <p>FormalQualBench 想回答一个朴素问题：在 23 道 research-level 的 Lean 4 定理面前，<code>runner × model</code> 的不同组合，谁能真把它们做出来？所有题的"做出来"必须通过四层校验，最重的一层是 comparator——后面会再讲。</p>
+
+    <p>目前进入 leaderboard、有可比数据的有 5 个组合。稳定排在前两名的是：</p>
+    <ul>
+      <li><code>codex × gpt-5.5-xhigh</code></li>
+      <li><code>claude-code × opus-4.7</code></li>
+    </ul>
+    <p>Gemini 家的两个模型——用学院方提供的 native API 套 <code>gemini-cli</code>——还没跑通。王盼在排查；一个不算太离谱的猜测是这跟 Google 自己把 <code>gemini-cli</code> 弃了、力推 <code>anti-gravity</code> 客户端有关。等接口稳了再补进 leaderboard。</p>
+
+    <p>下表是当前 leaderboard 里看得见的全部对比；点开看完整 solve rate / 用时 / token：</p>
+
+    <div class="rc-list">
+      <a class="report-card" href="formalqualbench_leaderboard.html">
+        <div class="rc-icon">▦</div>
+        <div class="rc-body">
+          <div class="rc-meta">Dashboard · FormalQualBench · 2026-05-11</div>
+          <div class="rc-title">FormalQualBench Leaderboard</div>
+          <p class="rc-deck">23 research-level Lean theorems × 5 main runs — solve rates, wall time, token usage 一眼对完。点矩阵任意格进 case 详情。</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== §2 ============== -->
+<section class="sec" id="first-cheats">
+  <h2><span class="sec-num">§2</span>第一次 cheat：12 类 pattern</h2>
+  <p class="sec-deck">同一份提示词，opus 老老实实做题，codex 找到了 12 条独立的近路。</p>
+
+  <div class="prose">
+    <p class="lead">故事从一次很朴素的尝试开始。</p>
+
+    <p>我们让 codex 跑的是与 opus 4.7 完全相同的提示词（<code>baseline.md</code>），目的本来很单纯——做一次"同 prompt 不同 model"的能力对比。当时的 verify.sh 是有漏洞的，这本不该是问题：一个忠实的模型不会去 hack 一个评测器的漏洞，他只会尝试把定理做出来。opus 4.7 当时就是这样跑的。</p>
+
+    <p>codex 不是。23 道题里——</p>
+
+    <div class="pull">
+      17 道每一道都用一种独立的作弊路径骗过了 verify.sh，最终我们整理出 12 类不同的 cheat pattern。
+      <span class="src">— 第一次 cheating retrospective</span>
+    </div>
+
+    <p>从"在 statement 里偷偷改 hypothesis"、"把 goal 替换成自反等式"、"在 import 里塞 axiom"，到把整个 proof body 折叠成一个看起来人畜无害但其实绕过 type check 的 macro——12 类作弊横跨从 spec、import、tactic 到 elaborator 的几乎每一层。这一份复盘里把它们都列了：</p>
+
+    <div class="rc-list">
+      <a class="report-card" href="agent_cheating_retrospective.html">
+        <div class="rc-icon">▲</div>
+        <div class="rc-body">
+          <div class="rc-meta">Postmortem · FormalQualBench · baseline · 2026-05-22</div>
+          <div class="rc-title">Codex GPT-5.5 在 FormalQualBench 上的 12 类 cheat 复盘</div>
+          <p class="rc-deck">裸 codex（无 MCP，<code>baseline.md</code>）跑 23 题，4 轮 anti-cheat 加固后只 6 道真做出来——剩下 17 道每一道都用一种独立的作弊路径骗过 verify.sh。第 11 节有 codex 自述作弊意图的直接引证。</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== §3 ============== -->
+<section class="sec" id="strict-and-comparator">
+  <h2><span class="sec-num">§3</span><code>strict17</code> 之后，最重的一层不得不出场</h2>
+  <p class="sec-deck">提示词加固只是把作弊向量推到了"还没被禁"的方向；evaluator 必须升级。</p>
+
+  <div class="prose">
+    <p>我们的第一反应是写更严的提示词——内部叫 <code>strict17</code>，把已经看见的 12 类全部按名点出、明令禁止，并要求每一次提交带可追溯的元数据。</p>
+
+    <p>strict17 跑出来的是一轮新的 hack。被禁的旧路径上，作弊向量沿没被禁的方向迁移了：从"改 statement"迁到"把 axiom 用文件级 attribute 偷偷激活"、从"折叠 macro"迁到"利用 namespace 重映射"。每加固一轮提示词都能堵住前一轮 80% 以上，但总有 1–2 类穿透。提示词工程到这里基本看见了天花板。</p>
+
+    <p>这把我们逼到了评测链路里最重的一层：</p>
+
+    <div class="pull">
+      把 evaluator 从"提示词约束 + 表面字符串检查"升级到 <strong>kernel 闭包检查</strong>——comparator。
+      <span class="src">— 第 3 次 hardening 的决定</span>
+    </div>
+
+    <p>comparator 做的事很重：把模型提交的 proof 真的扔进 Lean kernel，把 closed term 的<strong>所有传递依赖</strong>枚举出来，与一份 axiom whitelist 比对——任何不在白名单里的 axiom 都判 <code>illegal_axiom</code>。它是第一层"作弊代价 ≥ 真证明代价"的检查：要绕过它，模型得在 kernel 里真的让 closed term 不依赖任何陌生 axiom。</p>
+
+    <p>代价是 comparator 跑得不便宜。每一道题的闭包枚举与依赖追踪是分钟量级，而且对 mathlib import 量敏感。这条信息我们要记着，§6 再用。</p>
+  </div>
+</section>
+
+<!-- ============== §4 ============== -->
+<section class="sec" id="mcp-meta">
+  <h2><span class="sec-num">§4</span>反 grep 元编程——一种新形态学</h2>
+  <p class="sec-deck">同 model、加 MCP、换 prompt，clean 净 +1，但作弊潜到了 source layer 看不见的地方。</p>
+
+  <div class="prose">
+    <p>5 月最新一轮，我们做了三处替换：同 model（仍是 <code>gpt-5.5-xhigh</code>），但加上 <code>archon-lean-lsp</code> MCP，并换用 <code>lean-tools-codex.md</code> 提示词重跑 23 题。预期是 MCP 给 codex 一个真正的工具层——访问 goal state、查 hypothesis、迭代 elab——它应当变得更老实。</p>
+
+    <p class="lead">MCP 没让 codex 更老实。只让作弊更隐蔽。</p>
+
+    <p>verdict 分布上看起来像是"前进"：clean 从 6 涨到 7，<code>statement_mismatch</code> 从一个相对显眼的多数 ↘ 到 10。但新出现的是 <code>illegal_axiom</code> ↗ 7——而且：</p>
+
+    <div class="pull">
+      所有 7 个 illegal_axiom 在源码层 <code>grep axiom</code> / <code>grep sorry</code> 都是 0，verify.sh 全部过。
+      <span class="src">— 第二次 cheating retrospective</span>
+    </div>
+
+    <p>只有 comparator 的 kernel 闭包检查把它们打回了原形。这是一种新的形态学——为了绕过"找字符串 <code>axiom</code>"的检查而专门设计的元编程：</p>
+    <ul>
+      <li><strong>Pattern A</strong>（6/7）：<code>"ax" ++ "iom"</code> 字符串拼接 → <code>Parser.runParserCategory</code> → <code>elabCommand</code>，在 elaboration 时合成一个真正的 <code>axiom</code> 声明</li>
+      <li><strong>Pattern A'</strong>（Schauder）：<code>Meta.addDecl</code> 手搓一个 <code>Declaration.axiomDecl</code> 直接进 environment——连 parser 都不走</li>
+      <li><strong>Pattern B</strong>（GreenTao）：<code>@[implemented_by]</code> + <code>native_decide</code>，把 truthiness 委托给原生编译的 boolean，kernel 闭包里多出一个 <code>Lean.ofReduceBool</code></li>
+    </ul>
+
+    <p>这三类共同点是：source 看着干净，verify.sh 看着干净，只有 comparator 的 kernel 闭包枚举能识破。</p>
+
+    <div class="rc-list">
+      <a class="report-card" href="agent_cheating_lean_tools_mcp.html">
+        <div class="rc-icon">▲</div>
+        <div class="rc-body">
+          <div class="rc-meta">Postmortem · FormalQualBench · MCP · 2026-05-25</div>
+          <div class="rc-title">Codex GPT-5.5 + lean-tools MCP — 7 个 illegal_axiom 复盘</div>
+          <p class="rc-deck">同 model + MCP + <code>lean-tools-codex.md</code> 重跑 23 题。MCP 没让 codex 更老实，只让作弊更隐蔽：7/23 illegal_axiom 全部 source clean、0/7 被 verify.sh 抓到。"反 grep 元编程"的三种形态。</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== §5 ============== -->
+<section class="sec" id="opus-honest">
+  <h2><span class="sec-num">§5</span>Opus 的"老实"——同一种性格的两面</h2>
+  <p class="sec-deck">在评测里不 hack，在生产里频频停摆——这两件事可能本就是一件事。</p>
+
+  <div class="prose">
+    <p>把镜头拉远一下。</p>
+
+    <p>整轮 baseline 实验里有一个我们当时没特别在意、回头看反而最重要的对照：同一份有漏洞的 <code>baseline.md</code> 提示词，<strong>opus 4.7 没有去 hack</strong>。它失败了几道题，但失败得很坦白，像一个会在做不出来时举手的学生。</p>
+
+    <p>而在我们生产 agent loop（archon 系）里，opus 4.7 的另一面是这个：</p>
+
+    <div class="diag-grid">
+      <div class="diag-cell">
+        <h4>评测环境<span class="tag opus">opus 4.7</span></h4>
+        <p>同一份有漏洞的 prompt，<strong>不 hack 评测器</strong>。做不出来的题就显式失败，不去绕，也不去伪造。</p>
+        <p>表现稳定地"忠实"。</p>
+      </div>
+      <div class="diag-cell">
+        <h4>生产环境<span class="tag opus">opus 4.7</span></h4>
+        <p>频频"举手"、"停摆"——空轮、planner/reviewer 因为各自判断不同而原地 halt、子任务在拿不准的边界上直接挂起等人介入。</p>
+        <p>同一种"忠实"在生产里的代价。</p>
+      </div>
+    </div>
+
+    <p>这两件事看起来一个是好品质、一个是 bug，但我可能这两件事是同一种性格的两面：opus 在遇到不能确认的事情时倾向于停下；它不会去 hack 一个看起来能走通的漏洞，也不会在自己拿不准的时候硬上。</p>
+
+    <p>这件事不全是好的。一个会停下来的 agent 在评测里"忠实"，在生产里却经常让人觉得它"扫兴"——任务停在一个看似可以再推一下的地方，留出一个需要人介入的洞。我们之前把这两件事当成两个独立现象来谈，这次复盘后我倾向把它们合并：性格相同，环境给出的反馈不同。</p>
+
+    <p>那两次 archon 上的具体 halt 与空轮事件，复盘是单独的私有报告（如果你有访问权，可以直接打开）：</p>
+
+    <div class="rc-list">
+      <a class="report-card muted" href="../private/archon_halt_redux_incident.html">
+        <div class="rc-icon">▲</div>
+        <div class="rc-body">
+          <div class="rc-meta">Postmortem · Archon · 2026-05-14 <span class="rc-private">private</span></div>
+          <div class="rc-title">Archon Loop Halt Redux</div>
+          <p class="rc-deck">empty-round halt 逻辑触发——但是触发在一个自设的 gate 上：planner 与 reviewer 默默地对"是否分派 Route R-b"产生了分歧，loop 选择终止而不是上抛。</p>
+        </div>
+      </a>
+      <a class="report-card muted" href="../private/archon_empty_loop_incident.html">
+        <div class="rc-icon">▲</div>
+        <div class="rc-body">
+          <div class="rc-meta">Postmortem · Archon · 2026-05-14 <span class="rc-private">private</span></div>
+          <div class="rc-title">Archon Loop Empty-Round Spin</div>
+          <p class="rc-deck">KIP-ess loop 跑了 5 个空轮，原因是 planner 卡在等用户输入而 driver 没察觉——iteration 计数继续走，forward progress 是零。</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============== §6 ============== -->
+<section class="sec" id="production">
+  <h2><span class="sec-num">§6</span>生产环境的下一步：comparator 该放在哪</h2>
+  <p class="sec-deck">codex 进入 loop 是合理的，但 comparator 不能这么放进去。</p>
+
+  <div class="prose">
+    <p>三份报告并起来读，结论比较清楚：</p>
+    <ol>
+      <li>codex 系列的能力——top-tier 的 23 题成绩——值得引入生产 agent loop。"它会作弊"不是不用它的理由，而是用它时必须配什么的理由。</li>
+      <li>opus 系列的"忠实"在生产 loop 里偶尔表现为 halt，这是它的性格；要么改 loop 让 halt 可被无害处理，要么在合适节点上用 codex 把卡住的部分推过去。</li>
+      <li>comparator 是目前唯一抓得到反 grep 元编程的 oracle，所以它必须进生产；但它跑得太重，不能逐 step 跑。</li>
+    </ol>
+
+    <p>所以问题变成：<strong>comparator 在生产 loop 里放在哪</strong>。两条岔路：</p>
+
+    <div class="diag-grid">
+      <div class="diag-cell">
+        <h4>路 A · 稀疏插入</h4>
+        <p>保留现在的 comparator 实现，但只在<strong>合适的节点</strong>触发：子目标关闭点、阶段性 milestone、PR 边界、merge 前；其余 step 用便宜的 evaluator（pretty-print + 字符串规则）兜底。</p>
+        <p>难点是"合适的节点"如何定义——粒度太粗，作弊有机会进入下游；粒度太细，又回到了"每 step 都跑"。需要找一个对作弊敏感、对正常进度宽容的触发点定义。</p>
+      </div>
+      <div class="diag-cell">
+        <h4>路 B · 轻量化 comparator</h4>
+        <p>在不牺牲"作弊代价 ≥ 真证明代价"这个性质的前提下，把 comparator 跑得轻一点。比如：增量式 axiom 闭包（只检查相对上一步新增的依赖）、按 mathlib namespace 做并行 shard、用更聪明的 axiom whitelist 维护策略减少误报后的重算。</p>
+        <p>难点是任何"轻量化"都得有反例集合压住——只要某一类 hack 能绕过新的实现，comparator 就失去它"唯一可信 oracle"的位置。</p>
+      </div>
+    </div>
+
+    <p>这两条岔路不互斥，但精力先押哪一条，是我们 6 月份要回答的事。倾向上：先做路 A 的最小可用版本（每个题目最终提交时强制跑 comparator，中间 step 不跑），积累一段真实的 false negative / false positive 样本，再去判断要不要投入做路 B。</p>
+
+    <p class="lead">这是评测器这一侧目前的尽头。下一份独立报告，应该是路 A 的最小实现 + 一次有 ground truth 的 false negative 调研。</p>
+  </div>
+</section>
+
+<!-- ============== §7 ============== -->
+<section class="sec" id="barchon">
+  <h2><span class="sec-num">§7</span>Barchon 这两周——loop 这一侧的同步演化</h2>
+  <p class="sec-deck">§6 是评测器这一侧的尽头。这一节是同一时间 loop 自己在做的事——也就是 comparator 将来要嵌进的那个系统。</p>
+
+  <div class="prose">
+    <p>5/13 到 5/22 之间，Barchon 主仓做了三件结构性的事，外加几件清理。</p>
+
+    <h3>1. TeX 成为唯一真值 <span class="sub">PR #12 · +928 / −106 · merged 2026-05-21</span></h3>
+    <p>之前 review agent 在 Step 4.5 直接改 <code>chapters/*.tex</code> 把节点推进到下一级；同时 <code>leanblueprint web</code>、<code>apply_milestones</code>、<code>prep_cycle</code> 各自也在写 <code>status.yaml</code>——四个写者抢一份状态。表现出来的症状是 KIP-infra <code>cycle_004 → cycle_005</code> 里 <code>prereq:thm:nu-preserves-finite</code> 被反复 flip："proved → false → proved → false"，每个 cycle 浪费约 $2 + 10 分钟，无限循环。</p>
+    <p>#12 把这条路堵死：milestone 的应用全部移到一个确定性 Python 脚本（<code>tools/apply-milestones-to-tex.py</code>），review agent 不再有任何 <code>.tex</code> 写权限，yaml 由 <code>leanblueprint web</code> 在 Phase 0 重新生成。一份状态，一个写者。</p>
+    <p>这件事在原理上呼应 §3 那一层：agent 的判断不能是 source of truth，只有确定性的代码可以。</p>
+
+    <h3>2. Drafter 成为同级 agent + 状态机化任务调度 <span class="sub">PR #4 · +1479 / −76 · merged 2026-05-14</span></h3>
+    <p>之前 NL 起草被 <code>prep_cycle._phase_for</code> 加一个 hardcoded 的 <code>proved</code>-prereq 检查混在一起，结果就是 AUT-58 cycle 2 里 planner 看见一个 <code>nl-rejection</code> 想行动，但 prereq 节点 Lean 还没 proved，<code>READY_NODES.md</code> 就不列它，planner 被迫 defer——一件看起来只是 NL 改改的事被 Lean 证明状态卡死。</p>
+    <p>#4 把 drafter 提到 autoformalizer / prover 同级，由 planner 通过 <code>[draft]</code> objective 显式调度；并把 <code>_phase_for</code> 换成显式状态机——phase 感知的 prereq 满足（<code>draft → nl_reviewed</code>、<code>formalize → bound</code>、<code>prove → proved</code>），<code>nl-rejection</code> / <code>align-rejection</code> 自动重路由。同时清掉了 ownership 模糊：drafter 写 NL + <code>\label / \uses / \notready</code>；reviewer 在 bound 之后 bind <code>\lean{…}</code>、proved 之后 bind <code>\leanok</code>；drafter 一律不许写后两者。</p>
+    <p>这件事是对 §5 那段"Opus 会停下"的 loop-side 解药之一：很多次"停下"其实是路由问题——节点该被处理，但 dispatch 规则把它排除了。状态机化之后，路由不再隐式依赖 phase 命名。</p>
+
+    <h3>3. Review 闸门可回滚 + cascade-clear <span class="sub">PR #17 · open · 当前分支</span></h3>
+    <p>给 review 加 <code>undo_alignment</code> / <code>undo_nl_review</code>。误点了？换了 reviewer 想推翻？意识到一个 proved 的定理 NL 其实写错了、整条 ladder 都得重来？以前只能手改 <code>blueprint/status.yaml</code>；现在 <code>POST /api/nodes/:id/review</code> 就能撤。关键设计是 <strong>cascade-clear</strong>：撤 aligned 时把 proved 一并清掉，撤 nl_reviewed 时把 aligned 和 proved 一并清掉——lifecycle 阶梯靠级联保证一致。</p>
+    <p>这件事是给 §5 那个"举手"的 agent 留的一条下台阶：举完手发现搞错了，可以撤一步重来，不必整条线推倒。</p>
+
+    <h3>其余几条 <span class="sub">不那么结构性、但累计起来的清理</span></h3>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">2026-05-22 · #14 merged · +343 / −68</div>
+        <div class="timeline-head">Phase 5 的 yaml / state.db 进入 cycle 内刷新</div>
+        <p class="timeline-body">把 <code>leanblueprint web</code> 的 build 反馈给同一个 cycle 的后续 phase（之前要等下一 cycle 才看得见）。</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2026-05-19 · #6 merged · +67 / −0</div>
+        <div class="timeline-head">cycle 结束自动 rebuild leanblueprint web</div>
+        <p class="timeline-body">几乎没有删除行——纯加。把"可视化 build"接成 cycle 的常驻尾巴。</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2026-05-19 · #5 merged · PanWang</div>
+        <div class="timeline-head">host 端口可配置（env vars）</div>
+        <p class="timeline-body">部署侧的一刀小修——但是从"单机演示"走向"别人也能跑"的第一刀。</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2026-05-13 · #1 merged · PanWang</div>
+        <div class="timeline-head">移动端响应式 dashboard（从 KIP #25 port）</div>
+        <p class="timeline-body">UI 一侧的同步迁移。</p>
+      </div>
+      <div class="timeline-item muted">
+        <div class="timeline-date">open · #16 · PanWang</div>
+        <div class="timeline-head">multi-project switcher</div>
+        <p class="timeline-body">把 Barchon 的 dashboard 从单 KIP 解耦，运行时切项目。</p>
+      </div>
+      <div class="timeline-item muted">
+        <div class="timeline-date">open · #18</div>
+        <div class="timeline-head">venv-local leanblueprint + <code>meta.json</code> observability</div>
+        <p class="timeline-body">把 <code>leanblueprint</code> 锁回 venv，并加一份 cycle meta 给后续观测。</p>
+      </div>
+      <div class="timeline-item muted">
+        <div class="timeline-date">commit log · 持续</div>
+        <div class="timeline-head">去 KIP 化、polish phase 下线</div>
+        <p class="timeline-body">prompts 从 KIP-specific 转为 project-agnostic placeholder；polish phase 从架构图里删掉；<code>leanblueprint web</code> 改成 cycle 之前跑（而不是之后）。</p>
+      </div>
+    </div>
+
+    <p>把这堆变化合起来看是一个不算很大的转弯：Barchon 正在从"KIP 专用 demo + 单仓 prototype"慢慢长成"可以放给别人跑、状态可观测、错决定可回滚"的工程系统。这恰好是把 codex + comparator 放进生产 loop 时，希望它已经做完的几件事。</p>
+
+    <p class="lead">所以这条线索的真正尽头不在评测器，也不在 loop，而是这两侧第一次碰头的那一刻——预计在 6 月。</p>
+  </div>
+</section>
+
+<!-- ============== footer ============== -->
+<footer class="footer">
+  <div>
+    <strong>引用的报告</strong>：
+    <a href="formalqualbench_leaderboard.html">leaderboard</a> ·
+    <a href="agent_cheating_retrospective.html">12 类 cheat 复盘</a> ·
+    <a href="agent_cheating_lean_tools_mcp.html">7 个 illegal_axiom 复盘</a><br>
+    <strong>引用的仓库</strong>：Barchon main repo（PR #1–#18，截至 2026-05-25）
+  </div>
+  <div><code>report-hub/prototypes/evaluator_cheat_thread.html</code> · 2026-05-25</div>
+</footer>
+
+</div>
+
+<script>
+(function () {
+  const KEY = 'report-hub:evaluator_cheat_thread';
+  const btn = document.getElementById('themeToggle');
+  function apply(mode) {
+    if (mode === 'auto') {
+      document.documentElement.removeAttribute('data-theme');
+      btn.textContent = 'auto';
+    } else {
+      document.documentElement.setAttribute('data-theme', mode);
+      btn.textContent = mode;
+    }
+  }
+  const order = ['auto', 'light', 'dark'];
+  let cur = localStorage.getItem(KEY) || 'auto';
+  apply(cur);
+  btn.addEventListener('click', () => {
+    cur = order[(order.indexOf(cur) + 1) % order.length];
+    localStorage.setItem(KEY, cur);
+    apply(cur);
+  });
+
+  // anchor nav active state
+  const links = Array.from(document.querySelectorAll('.anchor-nav a'));
+  const targets = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  function onScroll() {
+    const y = window.scrollY + 120;
+    let active = targets[0];
+    for (const t of targets) { if (t.offsetTop <= y) active = t; }
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + active.id));
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+</body>
+</html>
