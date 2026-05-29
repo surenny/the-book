@@ -63,6 +63,14 @@ body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
 .hero .deck { font-family: var(--font-serif); font-size: 1.15rem; color: var(--text-muted); margin: 0 0 1.5rem; max-width: 60ch; line-height: 1.5; }
 .hero .gen { font-size: .8rem; color: var(--text-faint); font-family: var(--font-mono); }
 
+/* ---- external benchmark note ---- */
+.ext-ref { background: var(--bg-elevated); border: 1px solid var(--border); border-left: 4px solid var(--accent); border-radius: 10px; padding: 1rem 1.15rem; margin: -1rem 0 2.5rem; max-width: 860px; box-shadow: var(--shadow-sm); }
+.ext-ref .label { font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; color: var(--text-faint); font-weight: 600; margin-bottom: .35rem; }
+.ext-ref p { margin: 0; color: var(--text-muted); font-size: .92rem; line-height: 1.55; }
+.ext-ref a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.ext-ref a:hover { text-decoration: underline; }
+.ext-ref code { font-family: var(--font-mono); font-size: .86em; color: var(--text); background: var(--bg-subtle); padding: .08rem .28rem; border-radius: 4px; }
+
 /* ---- KPI strip ---- */
 .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 2rem 0 3rem; }
 @media (max-width: 720px) { .kpis { grid-template-columns: repeat(2, 1fr); } }
@@ -247,6 +255,21 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
   <div class="gen">Auto-generated 2026-05-25T01:38Z · <code>harness/aggregate.py</code></div>
   <!-- END AUTO:deck -->
 </header>
+
+<aside class="ext-ref">
+  <div class="label">External calibration</div>
+  <p>
+    For a public frontier-model reference point, see Vals AI's
+    <a href="https://www.vals.ai/benchmarks/proof_bench" target="_blank" rel="noopener">ProofBench leaderboard</a>
+    and the corresponding
+    <a href="https://arxiv.org/abs/2603.26996" target="_blank" rel="noopener">FormalProofBench paper</a>.
+    The live Vals leaderboard is the source of truth for current general-model scores; it is a moving snapshot, currently marked
+    updated <code>2026-05-28</code>. For an older competition-math formalization reference, the
+    <a href="https://trishullab.github.io/PutnamBench/leaderboard.html" target="_blank" rel="noopener">PutnamBench leaderboard</a>
+    tracks Putnam problems across Lean, Isabelle, and Coq, though its model results should be treated as a stale historical baseline rather
+    than a current frontier snapshot. This dashboard is our internal FormalQualBench view for model selection and failure-mode diagnosis.
+  </p>
+</aside>
 
 <section class="kpis">
   <!-- BEGIN AUTO:kpis -->
