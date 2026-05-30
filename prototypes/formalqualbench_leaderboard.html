@@ -150,6 +150,8 @@ table.lb tr.top td.rank { color: var(--accent); font-weight: 600; }
 table.lb td.run-name { font-family: var(--font-mono); font-size: .82em; color: var(--text-muted); max-width: 240px; word-break: break-all; }
 table.lb td.config { font-family: var(--font-mono); font-size: .82em; color: var(--accent); }
 table.lb td.model { font-family: var(--font-mono); font-size: .82em; vertical-align: top; white-space: nowrap; }
+table.lb td.model .model-name { line-height: 1.35; }
+table.lb td.model .tag-row { margin-top: .28rem; }
 table.lb td.right { text-align: right; font-family: var(--font-mono); }
 .lb-config { display: flex; align-items: flex-start; gap: .55rem; min-width: 220px; }
 .lb-config .primary { font-family: var(--font-mono); font-size: .82rem; color: var(--text); line-height: 1.35; }
@@ -302,8 +304,8 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
   <div class="eyebrow">Benchmark Dashboard</div>
   <h1>FormalQualBench Leaderboard</h1>
   <!-- BEGIN AUTO:deck -->
-<p class="deck">23 research-level Lean theorems · 11 main runs · solve rates, wall time, and token usage compared side by side.</p>
-  <div class="gen">Auto-generated 2026-05-30T08:41Z · <code>harness/aggregate.py</code></div>
+<p class="deck">23 research-level Lean theorems · 10 main runs · solve rates, wall time, and token usage compared side by side.</p>
+  <div class="gen">Auto-generated 2026-05-30T09:23Z · <code>harness/aggregate.py</code></div>
   <!-- END AUTO:deck -->
 </header>
 
@@ -336,8 +338,8 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
   </div>
   <div class="kpi">
     <div class="l">Main runs</div>
-    <div class="v">11</div>
-    <div class="s">8 on full 23, 3 on subsets</div>
+    <div class="v">10</div>
+    <div class="s">7 on full 23, 3 on subsets</div>
   </div>
   <div class="kpi">
     <div class="l">Problems</div>
@@ -424,42 +426,41 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 <script>
 // BEGIN AUTO:data
 const RUNS = [
-  { id: "run-20260522-163426__codex__gpt-5.5-xhigh__23-codex-lt", short: "codex__gpt-5.5-xhigh__23-codex-lt", config: "codex-gpt-5.5-lean-tools", config_group: "codex", config_group_label: "Codex", config_tool: "lean-tools", config_tags: ["codex", "lean-tools"], runner: "codex", runner_version: "", problem_set: "core", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 7, sorry: 13, err: 3, wall: "1h27m", n: 23, walltime_total_solved: "5h51m", token_total: 211.8, token_solved: 92.8 },
-  { id: "run-20260430-151426-5th_try_opus_4_7_lean_tools", short: "5th_try_opus_4_7_lean_tools", config: "claude-code-lean-tools", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], runner: "claude-code", runner_version: "", problem_set: "?", model: "claude-opus-4-7", effort: "xhigh", solved: 6, sorry: 3, err: 14, wall: "4h", n: 23, walltime_total_solved: "4h59m", token_total: 1969.6, token_solved: 146.9 },
-  { id: "run-20260513-011039-baseline-23-clean", short: "baseline-23-clean", config: "codex-gpt-5.5", config_group: "codex", config_group_label: "Codex", config_tool: "vanilla", config_tags: ["codex", "vanilla"], runner: "codex", runner_version: "", problem_set: "core", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 6, sorry: 17, err: 0, wall: "1h34m", n: 23, walltime_total_solved: "3h17m", token_total: 100.9, token_solved: 51.6 },
-  { id: "run-20260529-103845__claude-code__claude-opus-4-8", short: "claude-code__claude-opus-4-8", config: "claude-code-opus-4.8-lean-tools", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], runner: "claude-code", runner_version: "", problem_set: "core", model: "claude-opus-4-8", effort: "xhigh", solved: 6, sorry: 2, err: 15, wall: "2h08m", n: 23, walltime_total_solved: "4h18m", token_total: 115.3, token_solved: 33.1 },
-  { id: "run-20260528-164212__codex__gpt-5.5", short: "codex__gpt-5.5", config: "codex-gpt-5.5-chatgpt-lean-tools", config_group: "codex", config_group_label: "Codex", config_tool: "lean-tools", config_tags: ["codex", "lean-tools", "chatgpt-auth"], runner: "codex", runner_version: "", problem_set: "core", model: "gpt-5.5", effort: "xhigh", solved: 5, sorry: 10, err: 4, wall: "1h17m", n: 23, walltime_total_solved: "1h22m", token_total: 94.6, token_solved: 27.3 },
-  { id: "run-20260428-172408-4th_try_opus_4_7", short: "4th_try_opus_4_7", config: "?", config_group: "claude", config_group_label: "Claude Code", config_tool: "vanilla", config_tags: ["vanilla"], runner: "?", runner_version: "", problem_set: "?", model: "claude-opus-4-7", effort: "xhigh", solved: 4, sorry: 0, err: 19, wall: "42m", n: 23, walltime_total_solved: "1h27m", token_total: 96.5, token_solved: 24.7 },
-  { id: "run-20260508-095234-claude-sonnet-4-6", short: "claude-sonnet-4-6", config: "claude-code-sonnet", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], runner: "claude-code", runner_version: "", problem_set: "core", model: "claude-sonnet-4-6", effort: "xhigh", solved: 3, sorry: 0, err: 20, wall: "2h51m", n: 23, walltime_total_solved: "1h15m", token_total: 201.0, token_solved: 11.8 },
-  { id: "run-20260521-230745__claude-code__claude-opus-4-7", short: "claude-code__claude-opus-4-7", config: "claude-code-opus-4.7-lean-tools", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], runner: "claude-code", runner_version: "", problem_set: "core", model: "claude-opus-4-7", effort: "xhigh", solved: 3, sorry: 2, err: 8, wall: "1h51m", n: 23, walltime_total_solved: "1h20m", token_total: 546.0, token_solved: 31.6 },
-  { id: "run-20260501-163348-deepseek_opus8", short: "deepseek_opus8", config: "claude-code-deepseek", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools", "deepseek-gateway"], runner: "claude-code", runner_version: "", problem_set: "?", model: "deepseek-v4-pro[1m]", effort: "max", solved: 3, sorry: 2, err: 3, wall: "4h", n: 8, walltime_total_solved: "3h38m", token_total: 153.1, token_solved: 85.0 },
-  { id: "run-20260513-113030-strict-17", short: "strict-17", config: "codex-gpt-5.5-strict", config_group: "codex", config_group_label: "Codex", config_tool: "vanilla", config_tags: ["codex", "vanilla", "strict"], runner: "codex", runner_version: "", problem_set: "<custom>", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 2, sorry: 4, err: 11, wall: "1h24m", n: 17, walltime_total_solved: "1h40m", token_total: 207.2, token_solved: 59.9 },
-  { id: "run-20260507-171416-mimo_opus8", short: "mimo_opus8", config: "claude-code-mimo", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools", "mimo-gateway"], runner: "claude-code", runner_version: "", problem_set: "<custom>", model: "mimo-v2.5-pro", effort: "xhigh", solved: 1, sorry: 1, err: 6, wall: "4h", n: 8, walltime_total_solved: "47m", token_total: 26.2, token_solved: 4.0 }
+  { id: "run-20260522-163426__codex__gpt-5.5-xhigh__23-codex-lt", short: "codex__gpt-5.5-xhigh__23-codex-lt", config: "codex-gpt-5.5-lean-tools", config_group: "codex", config_group_label: "Codex", config_tool: "lean-tools", config_tags: ["codex", "lean-tools"], model_tags: ["czapi"], runner: "codex", runner_version: "", problem_set: "core", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 7, sorry: 13, err: 3, wall: "1h27m", n: 23, walltime_total_solved: "5h51m", token_total: 211.8, token_solved: 92.8 },
+  { id: "run-20260430-151426-5th_try_opus_4_7_lean_tools", short: "5th_try_opus_4_7_lean_tools", config: "claude-code-lean-tools", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], model_tags: [], runner: "claude-code", runner_version: "", problem_set: "?", model: "claude-opus-4-7", effort: "xhigh", solved: 6, sorry: 3, err: 14, wall: "4h", n: 23, walltime_total_solved: "4h59m", token_total: 1969.6, token_solved: 146.9 },
+  { id: "run-20260513-011039-baseline-23-clean", short: "baseline-23-clean", config: "codex-gpt-5.5", config_group: "codex", config_group_label: "Codex", config_tool: "vanilla", config_tags: ["codex", "vanilla"], model_tags: ["czapi"], runner: "codex", runner_version: "", problem_set: "core", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 6, sorry: 17, err: 0, wall: "1h34m", n: 23, walltime_total_solved: "3h17m", token_total: 100.9, token_solved: 51.6 },
+  { id: "run-20260529-103845__claude-code__claude-opus-4-8", short: "claude-code__claude-opus-4-8", config: "claude-code-opus-4.8-lean-tools", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], model_tags: [], runner: "claude-code", runner_version: "", problem_set: "core", model: "claude-opus-4-8", effort: "xhigh", solved: 6, sorry: 2, err: 15, wall: "2h08m", n: 23, walltime_total_solved: "4h18m", token_total: 115.3, token_solved: 33.1 },
+  { id: "run-20260528-164212__codex__gpt-5.5", short: "codex__gpt-5.5", config: "codex-gpt-5.5-chatgpt-lean-tools", config_group: "codex", config_group_label: "Codex", config_tool: "lean-tools", config_tags: ["codex", "lean-tools"], model_tags: ["chatgpt-auth"], runner: "codex", runner_version: "", problem_set: "core", model: "gpt-5.5", effort: "xhigh", solved: 5, sorry: 10, err: 4, wall: "1h17m", n: 23, walltime_total_solved: "1h22m", token_total: 94.6, token_solved: 27.3 },
+  { id: "run-20260428-172408-4th_try_opus_4_7", short: "4th_try_opus_4_7", config: "?", config_group: "claude", config_group_label: "Claude Code", config_tool: "vanilla", config_tags: ["vanilla"], model_tags: [], runner: "?", runner_version: "", problem_set: "?", model: "claude-opus-4-7", effort: "xhigh", solved: 4, sorry: 0, err: 19, wall: "42m", n: 23, walltime_total_solved: "1h27m", token_total: 96.5, token_solved: 24.7 },
+  { id: "run-20260508-095234-claude-sonnet-4-6", short: "claude-sonnet-4-6", config: "claude-code-sonnet", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], model_tags: [], runner: "claude-code", runner_version: "", problem_set: "core", model: "claude-sonnet-4-6", effort: "xhigh", solved: 3, sorry: 0, err: 20, wall: "2h51m", n: 23, walltime_total_solved: "1h15m", token_total: 201.0, token_solved: 11.8 },
+  { id: "run-20260501-163348-deepseek_opus8", short: "deepseek_opus8", config: "claude-code-deepseek", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], model_tags: ["deepseek-gateway"], runner: "claude-code", runner_version: "", problem_set: "?", model: "deepseek-v4-pro[1m]", effort: "max", solved: 3, sorry: 2, err: 3, wall: "4h", n: 8, walltime_total_solved: "3h38m", token_total: 153.1, token_solved: 85.0 },
+  { id: "run-20260513-113030-strict-17", short: "strict-17", config: "codex-gpt-5.5-strict", config_group: "codex", config_group_label: "Codex", config_tool: "vanilla", config_tags: ["codex", "vanilla", "strict"], model_tags: ["czapi"], runner: "codex", runner_version: "", problem_set: "<custom>", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 2, sorry: 4, err: 11, wall: "1h24m", n: 17, walltime_total_solved: "1h40m", token_total: 207.2, token_solved: 59.9 },
+  { id: "run-20260507-171416-mimo_opus8", short: "mimo_opus8", config: "claude-code-mimo", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], model_tags: ["mimo-gateway"], runner: "claude-code", runner_version: "", problem_set: "<custom>", model: "mimo-v2.5-pro", effort: "xhigh", solved: 1, sorry: 1, err: 6, wall: "4h", n: 8, walltime_total_solved: "47m", token_total: 26.2, token_solved: 4.0 }
 ];
 const PROBLEMS = [
-  { name: "BanachStoneTheorem", v: ["\u2713", "M", "M", "M", "\u2713", "s", "s", "s", "\u00b7", "M", "\u00b7"] },
-  { name: "BorsukUlamTheorem", v: ["M", "s", "M", "s", "A", "s", "s", "s", "\u00b7", "s", "\u00b7"] },
-  { name: "BurnsidePrimeDegreeTheorem", v: ["A", "s", "M", "s", "F", "s", "s", "s", "\u00b7", "F", "\u00b7"] },
-  { name: "CollatzMapAlmostBoundedValues", v: ["M", "s", "D", "s", "D", "s", "s", "D", "\u00b7", "D", "\u00b7"] },
-  { name: "ColorfulCaratheodoryTheorem", v: ["\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "s", "\u2713", "F", "\u00b7", "s"] },
-  { name: "DLOQuantifierElimination", v: ["\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "s", "\u2713", "s", "F", "\u00b7", "F"] },
-  { name: "DeBruijnErdos", v: ["\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u00b7", "\u2713"] },
-  { name: "ErdosDiscrepancyProblem", v: ["F", "s", "M", "s", "D", "s", "s", "?", "\u00b7", "s", "\u00b7"] },
-  { name: "GleasonKahaneZelazkoTheorem", v: ["\u2713", "s", "\u2713", "M", "?", "s", "s", "s", "\u00b7", "\u00b7", "\u00b7"] },
-  { name: "GreenTaoTheorem", v: ["A", "M", "M", "s", "M", "s", "s", "s", "A", "s", "s"] },
-  { name: "Hilbert17thProblem", v: ["s", "s", "M", "s", "s", "s", "s", "s", "\u00b7", "s", "\u00b7"] },
-  { name: "JordanCycleTheorem", v: ["M", "s", "M", "s", "s", "s", "s", "s", "\u00b7", "M", "\u00b7"] },
-  { name: "JordanDerangementTheorem", v: ["\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u00b7", "s"] },
-  { name: "KakeyaTheorem3D", v: ["M", "s", "M", "s", "M", "s", "s", "M", "\u00b7", "s", "\u00b7"] },
-  { name: "MaynardTaoBoundedPrimeGaps", v: ["M", "A", "M", "s", "M", "s", "s", "?", "A", "s", "A"] },
-  { name: "ParisHarringtonPrinciple", v: ["A", "\u2713", "\u2713", "\u2713", "M", "\u2713", "s", "?", "\u2713", "\u00b7", "F"] },
-  { name: "PontryaginDuality", v: ["F", "s", "M", "s", "A", "s", "s", "?", "\u00b7", "F", "\u00b7"] },
-  { name: "QuillenSuslinTheorem", v: ["A", "s", "M", "s", "M", "s", "s", "?", "\u00b7", "F", "\u00b7"] },
-  { name: "RungeTheorem", v: ["M", "s", "M", "s", "M", "s", "s", "?", "\u00b7", "s", "\u00b7"] },
-  { name: "SchauderFixedPointTheorem", v: ["A", "s", "M", "s", "?", "s", "s", "?", "\u00b7", "\u2713", "\u00b7"] },
-  { name: "SkolemMahlerLechTheorem", v: ["A", "s", "M", "s", "s", "s", "s", "?", "\u00b7", "F", "\u00b7"] },
-  { name: "TernaryGoldbachTheorem", v: ["A", "s", "M", "s", "?", "F", "s", "?", "\u00b7", "M", "\u00b7"] },
-  { name: "VonNeumannDoubleCommutantTheorem", v: ["\u2713", "\u2713", "M", "\u2713", "?", "s", "s", "?", "s", "\u2713", "F"] }
+  { name: "BanachStoneTheorem", v: ["\u2713", "M", "M", "M", "\u2713", "s", "s", "\u00b7", "M", "\u00b7"] },
+  { name: "BorsukUlamTheorem", v: ["M", "s", "M", "s", "A", "s", "s", "\u00b7", "s", "\u00b7"] },
+  { name: "BurnsidePrimeDegreeTheorem", v: ["A", "s", "M", "s", "F", "s", "s", "\u00b7", "F", "\u00b7"] },
+  { name: "CollatzMapAlmostBoundedValues", v: ["M", "s", "D", "s", "D", "s", "s", "\u00b7", "D", "\u00b7"] },
+  { name: "ColorfulCaratheodoryTheorem", v: ["\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "s", "F", "\u00b7", "s"] },
+  { name: "DLOQuantifierElimination", v: ["\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "s", "\u2713", "F", "\u00b7", "F"] },
+  { name: "DeBruijnErdos", v: ["\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u00b7", "\u2713"] },
+  { name: "ErdosDiscrepancyProblem", v: ["F", "s", "M", "s", "D", "s", "s", "\u00b7", "s", "\u00b7"] },
+  { name: "GleasonKahaneZelazkoTheorem", v: ["\u2713", "s", "\u2713", "M", "?", "s", "s", "\u00b7", "\u00b7", "\u00b7"] },
+  { name: "GreenTaoTheorem", v: ["A", "M", "M", "s", "M", "s", "s", "A", "s", "s"] },
+  { name: "Hilbert17thProblem", v: ["s", "s", "M", "s", "s", "s", "s", "\u00b7", "s", "\u00b7"] },
+  { name: "JordanCycleTheorem", v: ["M", "s", "M", "s", "s", "s", "s", "\u00b7", "M", "\u00b7"] },
+  { name: "JordanDerangementTheorem", v: ["\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u2713", "\u00b7", "s"] },
+  { name: "KakeyaTheorem3D", v: ["M", "s", "M", "s", "M", "s", "s", "\u00b7", "s", "\u00b7"] },
+  { name: "MaynardTaoBoundedPrimeGaps", v: ["M", "A", "M", "s", "M", "s", "s", "A", "s", "A"] },
+  { name: "ParisHarringtonPrinciple", v: ["A", "\u2713", "\u2713", "\u2713", "M", "\u2713", "s", "\u2713", "\u00b7", "F"] },
+  { name: "PontryaginDuality", v: ["F", "s", "M", "s", "A", "s", "s", "\u00b7", "F", "\u00b7"] },
+  { name: "QuillenSuslinTheorem", v: ["A", "s", "M", "s", "M", "s", "s", "\u00b7", "F", "\u00b7"] },
+  { name: "RungeTheorem", v: ["M", "s", "M", "s", "M", "s", "s", "\u00b7", "s", "\u00b7"] },
+  { name: "SchauderFixedPointTheorem", v: ["A", "s", "M", "s", "?", "s", "s", "\u00b7", "\u2713", "\u00b7"] },
+  { name: "SkolemMahlerLechTheorem", v: ["A", "s", "M", "s", "s", "s", "s", "\u00b7", "F", "\u00b7"] },
+  { name: "TernaryGoldbachTheorem", v: ["A", "s", "M", "s", "?", "F", "s", "\u00b7", "M", "\u00b7"] },
+  { name: "VonNeumannDoubleCommutantTheorem", v: ["\u2713", "\u2713", "M", "\u2713", "?", "s", "s", "s", "\u2713", "F"] }
 ];
 const WALL = {
   "BanachStoneTheorem:0": "1h18m",
@@ -470,7 +471,6 @@ const WALL = {
   "ColorfulCaratheodoryTheorem:3": "1h",
   "ColorfulCaratheodoryTheorem:4": "30m",
   "ColorfulCaratheodoryTheorem:5": "42m",
-  "ColorfulCaratheodoryTheorem:7": "44m",
   "DLOQuantifierElimination:0": "39m",
   "DLOQuantifierElimination:1": "1h30m",
   "DLOQuantifierElimination:2": "34m",
@@ -479,14 +479,13 @@ const WALL = {
   "DLOQuantifierElimination:6": "33m",
   "DeBruijnErdos:0": "14m",
   "DeBruijnErdos:1": "7m",
-  "DeBruijnErdos:10": "47m",
   "DeBruijnErdos:2": "11m",
   "DeBruijnErdos:3": "40m",
   "DeBruijnErdos:4": "4m",
   "DeBruijnErdos:5": "9m",
   "DeBruijnErdos:6": "14m",
-  "DeBruijnErdos:7": "30m",
-  "DeBruijnErdos:8": "55m",
+  "DeBruijnErdos:7": "55m",
+  "DeBruijnErdos:9": "47m",
   "GleasonKahaneZelazkoTheorem:0": "1h27m",
   "GleasonKahaneZelazkoTheorem:2": "1h34m",
   "JordanDerangementTheorem:0": "7m",
@@ -496,18 +495,17 @@ const WALL = {
   "JordanDerangementTheorem:4": "5m",
   "JordanDerangementTheorem:5": "7m",
   "JordanDerangementTheorem:6": "27m",
-  "JordanDerangementTheorem:7": "6m",
-  "JordanDerangementTheorem:8": "31m",
+  "JordanDerangementTheorem:7": "31m",
   "ParisHarringtonPrinciple:1": "37m",
   "ParisHarringtonPrinciple:2": "26m",
   "ParisHarringtonPrinciple:3": "39m",
   "ParisHarringtonPrinciple:5": "28m",
-  "ParisHarringtonPrinciple:8": "2h12m",
-  "SchauderFixedPointTheorem:9": "1h14m",
+  "ParisHarringtonPrinciple:7": "2h12m",
+  "SchauderFixedPointTheorem:8": "1h14m",
   "VonNeumannDoubleCommutantTheorem:0": "1h01m",
   "VonNeumannDoubleCommutantTheorem:1": "59m",
   "VonNeumannDoubleCommutantTheorem:3": "1h06m",
-  "VonNeumannDoubleCommutantTheorem:9": "25m"
+  "VonNeumannDoubleCommutantTheorem:8": "25m"
 };
 const TOKENS = {
   "BanachStoneTheorem:0": "13.7M",
@@ -517,7 +515,6 @@ const TOKENS = {
   "ColorfulCaratheodoryTheorem:3": "2.2M",
   "ColorfulCaratheodoryTheorem:4": "9.1M",
   "ColorfulCaratheodoryTheorem:5": "11.9M",
-  "ColorfulCaratheodoryTheorem:7": "15.9M",
   "DLOQuantifierElimination:0": "9.7M",
   "DLOQuantifierElimination:1": "61.0M",
   "DLOQuantifierElimination:3": "13.6M",
@@ -525,13 +522,12 @@ const TOKENS = {
   "DLOQuantifierElimination:6": "3.8M",
   "DeBruijnErdos:0": "1.5M",
   "DeBruijnErdos:1": "3.1M",
-  "DeBruijnErdos:10": "4.0M",
   "DeBruijnErdos:3": "1.1M",
   "DeBruijnErdos:4": "587k",
   "DeBruijnErdos:5": "3.3M",
   "DeBruijnErdos:6": "2.9M",
-  "DeBruijnErdos:7": "12.4M",
-  "DeBruijnErdos:8": "4.6M",
+  "DeBruijnErdos:7": "4.6M",
+  "DeBruijnErdos:9": "4.0M",
   "GleasonKahaneZelazkoTheorem:0": "28.2M",
   "GleasonKahaneZelazkoTheorem:2": "43.0M",
   "JordanDerangementTheorem:0": "1.7M",
@@ -540,18 +536,17 @@ const TOKENS = {
   "JordanDerangementTheorem:4": "1.2M",
   "JordanDerangementTheorem:5": "3.1M",
   "JordanDerangementTheorem:6": "5.1M",
-  "JordanDerangementTheorem:7": "3.4M",
-  "JordanDerangementTheorem:8": "6.2M",
+  "JordanDerangementTheorem:7": "6.2M",
   "ParisHarringtonPrinciple:1": "6.5M",
   "ParisHarringtonPrinciple:2": "8.6M",
   "ParisHarringtonPrinciple:3": "1.3M",
   "ParisHarringtonPrinciple:5": "6.4M",
-  "ParisHarringtonPrinciple:8": "74.2M",
-  "SchauderFixedPointTheorem:9": "43.0M",
+  "ParisHarringtonPrinciple:7": "74.2M",
+  "SchauderFixedPointTheorem:8": "43.0M",
   "VonNeumannDoubleCommutantTheorem:0": "24.7M",
   "VonNeumannDoubleCommutantTheorem:1": "41.7M",
   "VonNeumannDoubleCommutantTheorem:3": "13.9M",
-  "VonNeumannDoubleCommutantTheorem:9": "16.9M"
+  "VonNeumannDoubleCommutantTheorem:8": "16.9M"
 };
 // END AUTO:data
 
@@ -631,6 +626,7 @@ function toolMeta(r) {
     ? { tool: 'lean-tools', label: 'lean-tools', cls: 'tool-lean' }
     : { tool: 'vanilla', label: 'vanilla', cls: 'tool-vanilla' };
 }
+// Runner-column tags: execution-shell facets (runner + tool + strict).
 function configTags(r) {
   if (Array.isArray(r.config_tags) && r.config_tags.length) return r.config_tags;
   const hay = `${r.config || ''} ${r.runner || ''} ${r.model || ''}`.toLowerCase();
@@ -638,10 +634,17 @@ function configTags(r) {
   if (r.runner && r.runner !== '?') tags.push(r.runner);
   tags.push(runTool(r));
   if (hay.includes('strict')) tags.push('strict');
-  if (hay.includes('chatgpt')) tags.push('chatgpt-auth');
-  if (hay.includes('mimo')) tags.push('mimo-gateway');
-  if (hay.includes('deepseek')) tags.push('deepseek-gateway');
   return [...new Set(tags)];
+}
+// Model-column tags: how the model is reached (auth / gateway). Authoritative
+// value is r.model_tags from aggregate.py; fallback mirrors its logic.
+function modelTags(r) {
+  if (Array.isArray(r.model_tags)) return r.model_tags;
+  const hay = `${r.config || ''} ${r.runner || ''} ${r.model || ''}`.toLowerCase();
+  if (hay.includes('mimo')) return ['mimo-gateway'];
+  if (hay.includes('deepseek')) return ['deepseek-gateway'];
+  if (r.runner === 'codex' || hay.includes('codex')) return [hay.includes('chatgpt') ? 'chatgpt-auth' : 'czapi'];
+  return [];
 }
 // scope axis (full suite vs partial subset) — derived from run size so the
 // global RUNS index stays stable (PROBLEMS[].v[i] / WALL["p:i"] depend on it).
@@ -720,7 +723,7 @@ function renderConfigMap() {
     const meta = configGroupMeta(g);
     const best = rows.reduce((a, b) => (b.t.clean / b.r.n) > (a.t.clean / a.r.n) ? b : a, rows[0]);
     const models = [...new Set(rows.map(x => x.r.model))].join(' · ');
-    const tags = [...new Set(rows.flatMap(x => configTags(x.r)))];
+    const tags = [...new Set(rows.flatMap(x => [...configTags(x.r), ...modelTags(x.r)]))];
     return `<button class="config-card ${meta.cls}" data-config-group="${g}" aria-selected="${state.configGroup === g}">
       <div class="topline"><span class="name"><span class="cfg-dot"></span>${meta.label}</span><span class="count">${rows.length} runs</span></div>
       <div class="best">${Math.round(best.t.clean / best.r.n * 100)}%<span class="sub">${best.t.clean}/${best.r.n}</span></div>
@@ -762,7 +765,7 @@ function lbRow(i, rank) {
           </div>
         </div>
       </td>
-      <td class="model">${r.model}</td>
+      <td class="model"><div class="model-name">${r.model}</div>${modelTags(r).length ? `<div class="tag-row">${tagHtml(modelTags(r), 3)}</div>` : ''}</td>
       <td class="right"><code>${r.effort}</code></td>
       <td class="right"><div class="solve-cell"><div class="solve-bar"><div class="fill" style="width:${(t.clean/r.n)*100}%"></div></div><span class="solve-num">${t.clean}<span class="pct">/${r.n}</span> · ${Math.round(t.clean/r.n*100)}%</span></div></td>
       <td class="right" style="color:${t.sorry ? 'var(--sorry)' : 'var(--text-faint)'};font-weight:${t.sorry ? '600' : '400'};">${t.sorry}</td>
