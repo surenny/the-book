@@ -18,6 +18,10 @@
   /* sorry = honest hole in a proof (`sorry` placeholder); a cool slate so it
      reads distinctly from warn-yellow (cheat) and danger-red (build fail) */
   --sorry: #5B7B9A; --sorry-muted: rgba(91,123,154,.14);
+  /* tool axis — fixed site-wide encoding: lean-tools (blue) vs vanilla (grey).
+     Orthogonal to the §01 config-group palette, so they never share a region. */
+  --tool-lean: #3B6FB0; --tool-lean-muted: rgba(59,111,176,.12);
+  --tool-vanilla: #8A8275; --tool-vanilla-muted: rgba(138,130,117,.12);
   --shadow-sm: 0 1px 2px rgba(26,18,0,.04);
   --shadow-md: 0 4px 16px rgba(26,18,0,.06);
 }
@@ -29,10 +33,12 @@
     --accent: #E48060; --accent-muted: rgba(228,128,96,.16);
     --success: #82B374; --warn: #D9A847; --danger: #D87268;
     --sorry: #8FA9C2; --sorry-muted: rgba(143,169,194,.18);
+    --tool-lean: #6FA3D9; --tool-lean-muted: rgba(111,163,217,.16);
+    --tool-vanilla: #A89F8E; --tool-vanilla-muted: rgba(168,159,142,.16);
   }
 }
-[data-theme="light"] { --bg: #FAF7F2; --bg-elevated: #FFFFFF; --bg-subtle: #F0EDE6; --bg-code: #1C1A17; --text: #1A1815; --text-muted: #6B6557; --text-faint: #9C957F; --border: #E8E2D5; --border-strong: #C9C2B0; --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12); --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F; --sorry: #5B7B9A; --sorry-muted: rgba(91,123,154,.14); }
-[data-theme="dark"]  { --bg: #0F0E0C; --bg-elevated: #1A1815; --bg-subtle: #252320; --bg-code: #0A0908; --text: #F0EDE6; --text-muted: #9C957F; --text-faint: #6B6557; --border: #2D2A25; --border-strong: #45403A; --accent: #E48060; --accent-muted: rgba(228,128,96,.16); --success: #82B374; --warn: #D9A847; --danger: #D87268; --sorry: #8FA9C2; --sorry-muted: rgba(143,169,194,.18); }
+[data-theme="light"] { --bg: #FAF7F2; --bg-elevated: #FFFFFF; --bg-subtle: #F0EDE6; --bg-code: #1C1A17; --text: #1A1815; --text-muted: #6B6557; --text-faint: #9C957F; --border: #E8E2D5; --border-strong: #C9C2B0; --accent: #C75B3C; --accent-muted: rgba(199,91,60,.12); --success: #5C8A4F; --warn: #C7902C; --danger: #B14B3F; --sorry: #5B7B9A; --sorry-muted: rgba(91,123,154,.14); --tool-lean: #3B6FB0; --tool-lean-muted: rgba(59,111,176,.12); --tool-vanilla: #8A8275; --tool-vanilla-muted: rgba(138,130,117,.12); }
+[data-theme="dark"]  { --bg: #0F0E0C; --bg-elevated: #1A1815; --bg-subtle: #252320; --bg-code: #0A0908; --text: #F0EDE6; --text-muted: #9C957F; --text-faint: #6B6557; --border: #2D2A25; --border-strong: #45403A; --accent: #E48060; --accent-muted: rgba(228,128,96,.16); --success: #82B374; --warn: #D9A847; --danger: #D87268; --sorry: #8FA9C2; --sorry-muted: rgba(143,169,194,.18); --tool-lean: #6FA3D9; --tool-lean-muted: rgba(111,163,217,.16); --tool-vanilla: #A89F8E; --tool-vanilla-muted: rgba(168,159,142,.16); }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -107,10 +113,28 @@ body { font-family: var(--font-sans); background: var(--bg); color: var(--text);
 .cfg-dot { display: inline-block; width: .62rem; height: .62rem; border-radius: 50%; background: var(--cfg-color, var(--accent)); margin-right: .35rem; flex: 0 0 auto; }
 .cfg-codex { --cfg-color: #2E7D6B; }
 .cfg-claude { --cfg-color: #A9503C; }
-.cfg-gateway { --cfg-color: #7A5BB8; }
 .cfg-gemini { --cfg-color: #2E6FA3; }
 .cfg-legacy { --cfg-color: #787064; }
 .cfg-other { --cfg-color: #5F7E42; }
+
+/* ---- tool axis (lean-tools vs vanilla) — fixed colors, used wherever a
+   single run is shown (leaderboard rows, matrix headers, per-run cards). The
+   element sets --tool-color so dots/tags/borders inherit one source. ---- */
+.tool-lean    { --tool-color: var(--tool-lean);    --tool-muted: var(--tool-lean-muted); }
+.tool-vanilla { --tool-color: var(--tool-vanilla); --tool-muted: var(--tool-vanilla-muted); }
+.tool-dot { display: inline-block; width: .62rem; height: .62rem; border-radius: 50%; background: var(--tool-color, var(--border-strong)); margin-right: .35rem; flex: 0 0 auto; }
+.cfg-tag.is-tool { border-color: color-mix(in srgb, var(--tool-color, var(--border-strong)) 45%, var(--border)); background: var(--tool-muted, transparent); color: var(--tool-color, var(--text-muted)); font-weight: 600; }
+
+/* ---- scope panels (full suite vs partial subsets) ---- */
+.panel-block { margin-bottom: 1.75rem; }
+.panel-block:last-child { margin-bottom: 0; }
+.panel-sub { display: flex; align-items: baseline; gap: .75rem; margin: 0 0 .65rem; flex-wrap: wrap; }
+.panel-sub h3 { font-family: var(--font-serif); font-weight: 500; font-size: 1.12rem; margin: 0; letter-spacing: -.01em; }
+.panel-sub .meta { font-size: .78rem; color: var(--text-muted); }
+.panel-empty { color: var(--text-faint); font-size: .85rem; padding: .5rem 0; }
+.tool-legend { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin: 0 0 1rem; font-size: .78rem; color: var(--text-muted); }
+.tool-legend .lbl { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-faint); }
+.tool-legend .l-item { display: inline-flex; align-items: center; }
 
 /* ---- leaderboard table ---- */
 .lb-wrap { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
@@ -125,7 +149,7 @@ table.lb td.rank { width: 36px; font-family: var(--font-mono); color: var(--text
 table.lb tr.top td.rank { color: var(--accent); font-weight: 600; }
 table.lb td.run-name { font-family: var(--font-mono); font-size: .82em; color: var(--text-muted); max-width: 240px; word-break: break-all; }
 table.lb td.config { font-family: var(--font-mono); font-size: .82em; color: var(--accent); }
-table.lb td.model { font-family: var(--font-mono); font-size: .82em; }
+table.lb td.model { font-family: var(--font-mono); font-size: .82em; vertical-align: top; white-space: nowrap; }
 table.lb td.right { text-align: right; font-family: var(--font-mono); }
 .lb-config { display: flex; align-items: flex-start; gap: .55rem; min-width: 220px; }
 .lb-config .primary { font-family: var(--font-mono); font-size: .82rem; color: var(--text); line-height: 1.35; }
@@ -279,7 +303,7 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
   <h1>FormalQualBench Leaderboard</h1>
   <!-- BEGIN AUTO:deck -->
 <p class="deck">23 research-level Lean theorems · 11 main runs · solve rates, wall time, and token usage compared side by side.</p>
-  <div class="gen">Auto-generated 2026-05-29T10:34Z · <code>harness/aggregate.py</code></div>
+  <div class="gen">Auto-generated 2026-05-30T08:41Z · <code>harness/aggregate.py</code></div>
   <!-- END AUTO:deck -->
 </header>
 
@@ -332,25 +356,13 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 </section>
 
 <section class="sec" id="leaderboard">
-  <div class="sec-head"><h2><span class="num">02</span>Leaderboard</h2><span class="sub">Sorted by solved count. Bars scale within each run's problem subset.</span></div>
-  <div class="lb-wrap">
-    <table class="lb">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Run</th>
-          <th>Config / Model</th>
-          <th class="right">Effort</th>
-          <th class="right">Clean</th>
-          <th class="right" title="proof type-checks with `sorry` placeholder(s) — honest hole, not a cheat">Sorry</th>
-          <th class="right">Cheat</th>
-          <th class="right">Fail</th>
-          <th class="right">Wall</th>
-        </tr>
-      </thead>
-      <tbody id="lbBody"></tbody>
-    </table>
+  <div class="sec-head"><h2><span class="num">02</span>Leaderboard</h2><span class="sub">Split by run scope so partial-set runs aren't ranked against the full suite. Bars scale within each run's own problem set.</span></div>
+  <div class="tool-legend">
+    <span class="lbl">Tooling</span>
+    <span class="l-item tool-lean"><span class="tool-dot"></span>lean-tools (lean-lsp MCP)</span>
+    <span class="l-item tool-vanilla"><span class="tool-dot"></span>vanilla (no MCP)</span>
   </div>
+  <div id="lbPanels"></div>
 </section>
 
 <section class="sec" id="matrix">
@@ -376,7 +388,7 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
       <span class="l-item"><span class="sw absent"></span>· not in run / theorem missing</span>
     </div>
   </div>
-  <div class="mx-wrap"><div class="mx-scroll"><div class="mx" id="mx"></div></div></div>
+  <div id="mxPanels"></div>
 </section>
 
 <section class="sec" id="runs">
@@ -401,7 +413,7 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 <footer class="footer">
   <!-- BEGIN AUTO:footer -->
 <span>Source · <code>FormalQualBench/runs/{LEADERBOARD,MATRIX}.md</code></span>
-  <span>Snapshot · 2026-05-29</span>
+  <span>Snapshot · 2026-05-30</span>
   <!-- END AUTO:footer -->
 </footer>
 
@@ -412,17 +424,17 @@ table.lb tr.top .solve-num { color: var(--accent); font-weight: 600; }
 <script>
 // BEGIN AUTO:data
 const RUNS = [
-  { id: "run-20260522-163426__codex__gpt-5.5-xhigh__23-codex-lt", short: "codex__gpt-5.5-xhigh__23-codex-lt", config: "codex-gpt-5.5-lean-tools", config_group: "codex", config_group_label: "Codex", config_tags: ["codex", "lean-tools"], runner: "codex", problem_set: "core", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 7, sorry: 13, err: 3, wall: "1h27m", n: 23, walltime_total_solved: "5h51m", token_total: 211.8, token_solved: 92.8 },
-  { id: "run-20260430-151426-5th_try_opus_4_7_lean_tools", short: "5th_try_opus_4_7_lean_tools", config: "claude-code-lean-tools", config_group: "claude", config_group_label: "Claude Code", config_tags: ["claude-code", "lean-tools"], runner: "claude-code", problem_set: "?", model: "claude-opus-4-7", effort: "xhigh", solved: 6, sorry: 3, err: 14, wall: "4h", n: 23, walltime_total_solved: "4h59m", token_total: 1969.6, token_solved: 146.9 },
-  { id: "run-20260513-011039-baseline-23-clean", short: "baseline-23-clean", config: "codex-gpt-5.5", config_group: "codex", config_group_label: "Codex", config_tags: ["codex", "vanilla"], runner: "codex", problem_set: "core", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 6, sorry: 17, err: 0, wall: "1h34m", n: 23, walltime_total_solved: "3h17m", token_total: 100.9, token_solved: 51.6 },
-  { id: "run-20260529-103845__claude-code__claude-opus-4-8", short: "claude-code__claude-opus-4-8", config: "claude-code-opus-4.8-lean-tools", config_group: "claude", config_group_label: "Claude Code", config_tags: ["claude-code", "lean-tools"], runner: "claude-code", problem_set: "core", model: "claude-opus-4-8", effort: "xhigh", solved: 6, sorry: 2, err: 15, wall: "2h08m", n: 23, walltime_total_solved: "4h18m", token_total: 115.3, token_solved: 33.1 },
-  { id: "run-20260528-164212__codex__gpt-5.5", short: "codex__gpt-5.5", config: "codex-gpt-5.5-chatgpt-lean-tools", config_group: "codex", config_group_label: "Codex", config_tags: ["codex", "lean-tools", "chatgpt-auth"], runner: "codex", problem_set: "core", model: "gpt-5.5", effort: "xhigh", solved: 5, sorry: 10, err: 4, wall: "1h17m", n: 23, walltime_total_solved: "1h22m", token_total: 94.6, token_solved: 27.3 },
-  { id: "run-20260428-172408-4th_try_opus_4_7", short: "4th_try_opus_4_7", config: "?", config_group: "legacy", config_group_label: "Legacy", config_tags: ["vanilla"], runner: "?", problem_set: "?", model: "claude-opus-4-7", effort: "xhigh", solved: 4, sorry: 0, err: 19, wall: "42m", n: 23, walltime_total_solved: "1h27m", token_total: 96.5, token_solved: 24.7 },
-  { id: "run-20260508-095234-claude-sonnet-4-6", short: "claude-sonnet-4-6", config: "claude-code-sonnet", config_group: "claude", config_group_label: "Claude Code", config_tags: ["claude-code", "vanilla"], runner: "claude-code", problem_set: "core", model: "claude-sonnet-4-6", effort: "xhigh", solved: 3, sorry: 0, err: 20, wall: "2h51m", n: 23, walltime_total_solved: "1h15m", token_total: 201.0, token_solved: 11.8 },
-  { id: "run-20260521-230745__claude-code__claude-opus-4-7", short: "claude-code__claude-opus-4-7", config: "claude-code-opus-4.7-lean-tools", config_group: "claude", config_group_label: "Claude Code", config_tags: ["claude-code", "lean-tools"], runner: "claude-code", problem_set: "core", model: "claude-opus-4-7", effort: "xhigh", solved: 3, sorry: 2, err: 8, wall: "1h51m", n: 23, walltime_total_solved: "1h20m", token_total: 546.0, token_solved: 31.6 },
-  { id: "run-20260501-163348-deepseek_opus8", short: "deepseek_opus8", config: "claude-code-deepseek", config_group: "gateway", config_group_label: "Gateway", config_tags: ["claude-code", "deepseek-gateway"], runner: "claude-code", problem_set: "?", model: "deepseek-v4-pro[1m]", effort: "max", solved: 3, sorry: 2, err: 3, wall: "4h", n: 8, walltime_total_solved: "3h38m", token_total: 153.1, token_solved: 85.0 },
-  { id: "run-20260513-113030-strict-17", short: "strict-17", config: "codex-gpt-5.5-strict", config_group: "codex", config_group_label: "Codex", config_tags: ["codex", "strict"], runner: "codex", problem_set: "<custom>", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 2, sorry: 4, err: 11, wall: "1h24m", n: 17, walltime_total_solved: "1h40m", token_total: 207.2, token_solved: 59.9 },
-  { id: "run-20260507-171416-mimo_opus8", short: "mimo_opus8", config: "claude-code-mimo", config_group: "gateway", config_group_label: "Gateway", config_tags: ["claude-code", "mimo-gateway"], runner: "claude-code", problem_set: "<custom>", model: "mimo-v2.5-pro", effort: "xhigh", solved: 1, sorry: 1, err: 6, wall: "4h", n: 8, walltime_total_solved: "47m", token_total: 26.2, token_solved: 4.0 }
+  { id: "run-20260522-163426__codex__gpt-5.5-xhigh__23-codex-lt", short: "codex__gpt-5.5-xhigh__23-codex-lt", config: "codex-gpt-5.5-lean-tools", config_group: "codex", config_group_label: "Codex", config_tool: "lean-tools", config_tags: ["codex", "lean-tools"], runner: "codex", runner_version: "", problem_set: "core", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 7, sorry: 13, err: 3, wall: "1h27m", n: 23, walltime_total_solved: "5h51m", token_total: 211.8, token_solved: 92.8 },
+  { id: "run-20260430-151426-5th_try_opus_4_7_lean_tools", short: "5th_try_opus_4_7_lean_tools", config: "claude-code-lean-tools", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], runner: "claude-code", runner_version: "", problem_set: "?", model: "claude-opus-4-7", effort: "xhigh", solved: 6, sorry: 3, err: 14, wall: "4h", n: 23, walltime_total_solved: "4h59m", token_total: 1969.6, token_solved: 146.9 },
+  { id: "run-20260513-011039-baseline-23-clean", short: "baseline-23-clean", config: "codex-gpt-5.5", config_group: "codex", config_group_label: "Codex", config_tool: "vanilla", config_tags: ["codex", "vanilla"], runner: "codex", runner_version: "", problem_set: "core", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 6, sorry: 17, err: 0, wall: "1h34m", n: 23, walltime_total_solved: "3h17m", token_total: 100.9, token_solved: 51.6 },
+  { id: "run-20260529-103845__claude-code__claude-opus-4-8", short: "claude-code__claude-opus-4-8", config: "claude-code-opus-4.8-lean-tools", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], runner: "claude-code", runner_version: "", problem_set: "core", model: "claude-opus-4-8", effort: "xhigh", solved: 6, sorry: 2, err: 15, wall: "2h08m", n: 23, walltime_total_solved: "4h18m", token_total: 115.3, token_solved: 33.1 },
+  { id: "run-20260528-164212__codex__gpt-5.5", short: "codex__gpt-5.5", config: "codex-gpt-5.5-chatgpt-lean-tools", config_group: "codex", config_group_label: "Codex", config_tool: "lean-tools", config_tags: ["codex", "lean-tools", "chatgpt-auth"], runner: "codex", runner_version: "", problem_set: "core", model: "gpt-5.5", effort: "xhigh", solved: 5, sorry: 10, err: 4, wall: "1h17m", n: 23, walltime_total_solved: "1h22m", token_total: 94.6, token_solved: 27.3 },
+  { id: "run-20260428-172408-4th_try_opus_4_7", short: "4th_try_opus_4_7", config: "?", config_group: "claude", config_group_label: "Claude Code", config_tool: "vanilla", config_tags: ["vanilla"], runner: "?", runner_version: "", problem_set: "?", model: "claude-opus-4-7", effort: "xhigh", solved: 4, sorry: 0, err: 19, wall: "42m", n: 23, walltime_total_solved: "1h27m", token_total: 96.5, token_solved: 24.7 },
+  { id: "run-20260508-095234-claude-sonnet-4-6", short: "claude-sonnet-4-6", config: "claude-code-sonnet", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], runner: "claude-code", runner_version: "", problem_set: "core", model: "claude-sonnet-4-6", effort: "xhigh", solved: 3, sorry: 0, err: 20, wall: "2h51m", n: 23, walltime_total_solved: "1h15m", token_total: 201.0, token_solved: 11.8 },
+  { id: "run-20260521-230745__claude-code__claude-opus-4-7", short: "claude-code__claude-opus-4-7", config: "claude-code-opus-4.7-lean-tools", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools"], runner: "claude-code", runner_version: "", problem_set: "core", model: "claude-opus-4-7", effort: "xhigh", solved: 3, sorry: 2, err: 8, wall: "1h51m", n: 23, walltime_total_solved: "1h20m", token_total: 546.0, token_solved: 31.6 },
+  { id: "run-20260501-163348-deepseek_opus8", short: "deepseek_opus8", config: "claude-code-deepseek", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools", "deepseek-gateway"], runner: "claude-code", runner_version: "", problem_set: "?", model: "deepseek-v4-pro[1m]", effort: "max", solved: 3, sorry: 2, err: 3, wall: "4h", n: 8, walltime_total_solved: "3h38m", token_total: 153.1, token_solved: 85.0 },
+  { id: "run-20260513-113030-strict-17", short: "strict-17", config: "codex-gpt-5.5-strict", config_group: "codex", config_group_label: "Codex", config_tool: "vanilla", config_tags: ["codex", "vanilla", "strict"], runner: "codex", runner_version: "", problem_set: "<custom>", model: "gpt-5.5-xhigh", effort: "xhigh", solved: 2, sorry: 4, err: 11, wall: "1h24m", n: 17, walltime_total_solved: "1h40m", token_total: 207.2, token_solved: 59.9 },
+  { id: "run-20260507-171416-mimo_opus8", short: "mimo_opus8", config: "claude-code-mimo", config_group: "claude", config_group_label: "Claude Code", config_tool: "lean-tools", config_tags: ["claude-code", "lean-tools", "mimo-gateway"], runner: "claude-code", runner_version: "", problem_set: "<custom>", model: "mimo-v2.5-pro", effort: "xhigh", solved: 1, sorry: 1, err: 6, wall: "4h", n: 8, walltime_total_solved: "47m", token_total: 26.2, token_solved: 4.0 }
 ];
 const PROBLEMS = [
   { name: "BanachStoneTheorem", v: ["\u2713", "M", "M", "M", "\u2713", "s", "s", "s", "\u00b7", "M", "\u00b7"] },
@@ -561,12 +573,11 @@ const VERDICT_LABEL = {
 const CONFIG_GROUPS = {
   codex:   { label: 'Codex', cls: 'cfg-codex' },
   claude:  { label: 'Claude Code', cls: 'cfg-claude' },
-  gateway: { label: 'Gateway', cls: 'cfg-gateway' },
   gemini:  { label: 'Gemini', cls: 'cfg-gemini' },
   legacy:  { label: 'Legacy', cls: 'cfg-legacy' },
   other:   { label: 'Other', cls: 'cfg-other' }
 };
-const CONFIG_ORDER = ['codex', 'claude', 'gateway', 'gemini', 'legacy', 'other'];
+const CONFIG_ORDER = ['codex', 'claude', 'gemini', 'legacy', 'other'];
 // Per-run totals re-derived from PROBLEMS. Buckets match `harness/aggregate.py`:
 //   clean = ✓ · cheat = M+D+A · fail = F+T · (s and ? are tracked separately so
 //   the leaderboard columns add up cleanly without double-counting sorry).
@@ -589,34 +600,70 @@ const state = Object.assign(
 );
 
 function inferConfigGroup(r) {
+  // Group by execution path (runner CLI), not model brand — mimo/deepseek
+  // gateway runs ride on claude-code and belong to Claude Code.
   const hay = `${r.config || ''} ${r.runner || ''} ${r.model || ''}`.toLowerCase();
-  if (hay.includes('mimo') || hay.includes('deepseek')) return 'gateway';
   if (hay.includes('codex')) return 'codex';
-  if (hay.includes('claude-code')) return 'claude';
+  if (hay.includes('claude-code') || hay.includes('mimo') || hay.includes('deepseek')) return 'claude';
   if (hay.includes('gemini')) return 'gemini';
   if ((r.config || '?') === '?' || (r.config || '') === '<unset>') return 'legacy';
   return 'other';
 }
 function configGroup(r) { return r.config_group || inferConfigGroup(r); }
 function configGroupMeta(group) { return CONFIG_GROUPS[group] || CONFIG_GROUPS.other; }
+// Runner column label: execution-path group name + CLI version when recorded
+// (e.g. "Claude Code 2.0.74"). Historical runs have no version → name only.
+function runnerLabel(r) {
+  const name = configGroupMeta(configGroup(r)).label;
+  return r.runner_version ? `${name} ${r.runner_version}` : name;
+}
+// tool axis (lean-tools vs vanilla). Authoritative value is r.config_tool,
+// injected by aggregate.py from META's MCP truth; the fallback only kicks in
+// for hand-authored data and mirrors aggregate.py's degraded name-guess.
+function runTool(r) {
+  if (r.config_tool === 'lean-tools' || r.config_tool === 'vanilla') return r.config_tool;
+  if (r.mcp_disabled === true) return 'vanilla';
+  const hay = `${r.config || ''} ${r.model || ''}`.toLowerCase();
+  return hay.includes('lean-tools') ? 'lean-tools' : 'vanilla';
+}
+function toolMeta(r) {
+  return runTool(r) === 'lean-tools'
+    ? { tool: 'lean-tools', label: 'lean-tools', cls: 'tool-lean' }
+    : { tool: 'vanilla', label: 'vanilla', cls: 'tool-vanilla' };
+}
 function configTags(r) {
   if (Array.isArray(r.config_tags) && r.config_tags.length) return r.config_tags;
   const hay = `${r.config || ''} ${r.runner || ''} ${r.model || ''}`.toLowerCase();
   const tags = [];
-  if (r.runner) tags.push(r.runner);
-  if (hay.includes('lean-tools')) tags.push('lean-tools');
+  if (r.runner && r.runner !== '?') tags.push(r.runner);
+  tags.push(runTool(r));
   if (hay.includes('strict')) tags.push('strict');
   if (hay.includes('chatgpt')) tags.push('chatgpt-auth');
   if (hay.includes('mimo')) tags.push('mimo-gateway');
   if (hay.includes('deepseek')) tags.push('deepseek-gateway');
-  if (tags.length === 0) tags.push('vanilla');
   return [...new Set(tags)];
 }
-function filteredRunIndexes() {
-  return RUNS.map((_, i) => i).filter(i => state.configGroup === 'all' || configGroup(RUNS[i]) === state.configGroup);
+// scope axis (full suite vs partial subset) — derived from run size so the
+// global RUNS index stays stable (PROBLEMS[].v[i] / WALL["p:i"] depend on it).
+const MAX_N = Math.max(...RUNS.map(r => r.n), 0);
+function runScope(r) { return r.n >= MAX_N ? 'full' : 'subset'; }
+const SCOPE_PANELS = [
+  ['full', 'Full suite', `all ${MAX_N} problems · directly comparable`],
+  ['subset', 'Subset runs', 'partial problem sets · different denominators, not comparable to full-suite runs'],
+];
+function filteredRunIndexes(scope) {
+  return RUNS.map((_, i) => i).filter(i =>
+    (state.configGroup === 'all' || configGroup(RUNS[i]) === state.configGroup) &&
+    (!scope || runScope(RUNS[i]) === scope));
 }
 function tagHtml(tags, limit = 3) {
-  return tags.slice(0, limit).map(t => `<span class="cfg-tag" title="${t}">${t}</span>`).join('');
+  return tags.slice(0, limit).map(t => {
+    if (t === 'lean-tools' || t === 'vanilla') {
+      const cls = t === 'lean-tools' ? 'tool-lean' : 'tool-vanilla';
+      return `<span class="cfg-tag is-tool ${cls}" title="${t}">${t}</span>`;
+    }
+    return `<span class="cfg-tag" title="${t}">${t}</span>`;
+  }).join('');
 }
 function refreshAll() {
   if (state.configGroup !== 'all' && !RUNS.some(r => configGroup(r) === state.configGroup)) state.configGroup = 'all';
@@ -691,27 +738,31 @@ function renderConfigMap() {
 }
 
 // ---- leaderboard ----
-function renderLeaderboard() {
-  const tb = document.getElementById('lbBody');
-  const idxs = filteredRunIndexes();
-  tb.innerHTML = idxs.map((i, rank) => {
-    const r = RUNS[i];
-    const t = runTotals(i);
-    const meta = configGroupMeta(configGroup(r));
-    return `
+const LB_THEAD = `<thead><tr>
+  <th></th><th>Run</th><th>Runner</th><th>Model</th>
+  <th class="right">Effort</th><th class="right">Clean</th>
+  <th class="right" title="proof type-checks with \`sorry\` placeholder(s) — honest hole, not a cheat">Sorry</th>
+  <th class="right">Cheat</th><th class="right">Fail</th><th class="right">Wall</th>
+</tr></thead>`;
+function lbRow(i, rank) {
+  const r = RUNS[i];
+  const t = runTotals(i);
+  const meta = configGroupMeta(configGroup(r));
+  const tm = toolMeta(r);
+  return `
     <tr class="${rank === 0 ? 'top' : ''}">
       <td class="rank">#${rank + 1}</td>
       <td class="run-name">${r.short}</td>
       <td>
-        <div class="lb-config ${meta.cls}">
-          <span class="cfg-dot"></span>
+        <div class="lb-config ${tm.cls}">
+          <span class="tool-dot" title="${tm.label}"></span>
           <div>
-            <div class="primary">${r.config}</div>
-            <div class="secondary">${meta.label} · ${r.model}</div>
-            <div class="tag-row">${tagHtml(configTags(r))}</div>
+            <div class="primary">${runnerLabel(r)}</div>
+            <div class="tag-row">${tagHtml(configTags(r).filter(t => t !== r.runner))}</div>
           </div>
         </div>
       </td>
+      <td class="model">${r.model}</td>
       <td class="right"><code>${r.effort}</code></td>
       <td class="right"><div class="solve-cell"><div class="solve-bar"><div class="fill" style="width:${(t.clean/r.n)*100}%"></div></div><span class="solve-num">${t.clean}<span class="pct">/${r.n}</span> · ${Math.round(t.clean/r.n*100)}%</span></div></td>
       <td class="right" style="color:${t.sorry ? 'var(--sorry)' : 'var(--text-faint)'};font-weight:${t.sorry ? '600' : '400'};">${t.sorry}</td>
@@ -719,17 +770,29 @@ function renderLeaderboard() {
       <td class="right">${t.fail}</td>
       <td class="right">${r.wall}</td>
     </tr>`;
+}
+function renderLeaderboard() {
+  const host = document.getElementById('lbPanels');
+  host.innerHTML = SCOPE_PANELS.map(([scope, title, blurb]) => {
+    const idxs = filteredRunIndexes(scope);
+    const body = idxs.length
+      ? `<div class="lb-wrap"><table class="lb">${LB_THEAD}<tbody>${idxs.map((i, rank) => lbRow(i, rank)).join('')}</tbody></table></div>`
+      : `<div class="panel-empty">No ${scope === 'full' ? 'full-suite' : 'subset'} runs in this filter.</div>`;
+    return `<div class="panel-block">
+      <div class="panel-sub"><h3>${title}</h3><span class="meta">${blurb}</span></div>
+      ${body}
+    </div>`;
   }).join('');
 }
 
 // ---- matrix ----
-function renderMatrix() {
-  const mx = document.getElementById('mx');
-  const idxs = filteredRunIndexes();
+function mxPanelHtml(scope, title, blurb) {
+  const idxs = filteredRunIndexes(scope);
+  if (!idxs.length) return '';
   let probs = [...PROBLEMS];
   if (state.onlySolved) probs = probs.filter(p => idxs.some(i => p.v[i] === '✓'));
 
-  // sort by current column if set
+  // sort by current column only if that column lives in this panel
   if (state.sortBy !== null && idxs.includes(state.sortBy)) {
     probs.sort((a, b) => {
       const av = a.v[state.sortBy]; const bv = b.v[state.sortBy];
@@ -744,7 +807,7 @@ function renderMatrix() {
 
   // grid template: 220px (problem) + 1fr × runs + 80px (row sum)
   const cols = idxs.length;
-  mx.style.gridTemplateColumns = `220px repeat(${cols}, minmax(80px, 1fr)) 80px`;
+  const gridCols = `220px repeat(${cols}, minmax(80px, 1fr)) 80px`;
 
   let html = '';
   // header row
@@ -752,8 +815,9 @@ function renderMatrix() {
   idxs.forEach(i => {
     const r = RUNS[i];
     const meta = configGroupMeta(configGroup(r));
+    const tm = toolMeta(r);
     const arrow = state.sortBy === i ? ' ↑' : '';
-    html += `<div class="mx-cell head ${meta.cls}" data-col="${i}"><span><span class="cfg-dot"></span>${r.short.replace(/[_-]/g, '<wbr>$&')}</span><span class="sub">${meta.label} · ${r.solved}/${r.n}${arrow}</span></div>`;
+    html += `<div class="mx-cell head ${tm.cls}" data-col="${i}"><span><span class="tool-dot" title="${tm.label}"></span>${r.short.replace(/[_-]/g, '<wbr>$&')}</span><span class="sub">${meta.label} · ${r.solved}/${r.n}${arrow}</span></div>`;
   });
   html += `<div class="mx-cell head" style="cursor:default;"><span>solved by</span></div>`;
 
@@ -777,10 +841,20 @@ function renderMatrix() {
     const pct = runsOnIt > 0 ? (solveCount / runsOnIt) * 100 : 0;
     html += `<div class="mx-cell row-sum"><span>${solveCount}/${runsOnIt}</span><span class="bar"><span class="fill" style="width:${pct}%"></span></span></div>`;
   });
-  mx.innerHTML = html;
 
-  // wire header sort
-  mx.querySelectorAll('.mx-cell.head[data-col]').forEach(h => {
+  return `<div class="panel-block">
+    <div class="panel-sub"><h3>${title}</h3><span class="meta">${blurb}</span></div>
+    <div class="mx-wrap"><div class="mx-scroll"><div class="mx" style="grid-template-columns:${gridCols}">${html}</div></div></div>
+  </div>`;
+}
+
+function renderMatrix() {
+  const host = document.getElementById('mxPanels');
+  host.innerHTML = SCOPE_PANELS.map(([scope, title, blurb]) => mxPanelHtml(scope, title, blurb)).join('')
+    || '<div class="panel-empty">No runs in this filter.</div>';
+
+  // wire header sort (across both panels)
+  host.querySelectorAll('.mx-cell.head[data-col]').forEach(h => {
     h.addEventListener('click', () => {
       const col = parseInt(h.dataset.col);
       state.sortBy = state.sortBy === col ? null : col;
@@ -789,7 +863,7 @@ function renderMatrix() {
   });
   // wire tooltip
   const tip = document.getElementById('mxTip');
-  mx.querySelectorAll('.mx-cell[data-prob]').forEach(c => {
+  host.querySelectorAll('.mx-cell[data-prob]').forEach(c => {
     c.addEventListener('mouseenter', e => {
       const p = c.dataset.prob; const i = parseInt(c.dataset.run); const r = RUNS[i];
       const v = c.dataset.verdict;
@@ -817,15 +891,17 @@ function renderMatrix() {
 // ---- per-run cards ----
 function renderRunCards() {
   const grid = document.getElementById('runGrid');
-  const idxs = filteredRunIndexes();
+  // full-suite runs first, then subset runs — keep the scopes from interleaving
+  const idxs = [...filteredRunIndexes('full'), ...filteredRunIndexes('subset')];
   grid.innerHTML = idxs.map((i, rank) => {
     const r = RUNS[i];
     const t = runTotals(i);
     const meta = configGroupMeta(configGroup(r));
+    const tm = toolMeta(r);
     const solvedProbs = PROBLEMS.filter(p => p.v[i] === '✓').map(p => p.name);
-    return `<div class="run-card ${rank === 0 ? 'top' : ''} ${meta.cls}">
+    return `<div class="run-card ${rank === 0 ? 'top' : ''} ${tm.cls}" style="border-left:3px solid var(--tool-color);">
       <h4>${r.short}</h4>
-      <div class="ck"><code class="accent"><span class="cfg-dot"></span>${r.config}</code><code>${meta.label}</code><code>${r.model}</code><code>${r.effort}</code></div>
+      <div class="ck"><code class="accent"><span class="tool-dot" title="${tm.label}"></span>${r.config}</code><code>${runnerLabel(r)}</code><code>${r.model}</code><code>${r.effort}</code></div>
       <div class="big">${t.clean}<span class="sub">/${r.n}</span></div>
       <div style="font-size:.78rem;color:var(--text-muted);">clean · ${Math.round(t.clean/r.n*100)}% of in-scope</div>
       <div class="stats">
